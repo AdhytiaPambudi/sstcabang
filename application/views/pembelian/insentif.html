@@ -1,0 +1,901 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+   resize: none;
+}
+</style>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Laporan Insentif Salesman</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Datatable Laporan Insentif Salesman
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form role="form" method="post" id="myForm">                             
+                                <div class="form-group">
+                                    <label class="control-label">Cabang</label>
+                                    {% if logs.userGroup == 'Admin' or logs.userGroup =='Pusat' or logs.userGroup =='Audit' %}
+                                    <select class="form-control" name="cabang" id="cabang" onchange="getSalesman()">
+                                        {% for cabang in cabang %}
+                                        <option value="{{cabang.Cabang}}">{{cabang.Cabang}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% endif %}
+                                    {% if logs.userGroup == 'Cabang' or logs.userGroup == 'BM'%}
+                                    <input type="text" class="form-control" name="cabang" id="cabang" value="{{logs.cabang}}" readonly=""> 
+                                    {% endif %}
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>                                      
+                                <div class="form-group">
+                                    <label class="control-label">Tanggal</label>
+                                    <input type="text" class="form-control" name="tgl" id="tgl"> 
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>                                   
+                                <div class="form-group">
+                                    <label class="control-label">Salesman</label>
+                                    <select class="form-control" name="salesman" id="salesman" onchange="getData()">
+                                        <option value="">--- Silahkan Pilih Salesman ---</option>
+                                        {% for salesman in salesman %}
+                                            <option value="{{salesman.KodeSalesman}}">{{salesman.NamaSalesman}} - {{salesman.KodeSalesman}} - {{salesman.TipeSalesman}} - {{salesman.Jabatan}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div> 
+                            </form>  
+                            <label class="control-label" id="dataSalesmanDetail"></label>
+                            <div>{{time}}</div>
+                            <table width="100%" class="table table-striped table-bordered table-hover">
+                        <div id="progressGIF" style="position: absolute; width: 100%; height: 370px; background-color: rgba(0, 0, 0, 0.05); z-index: 99; display: none;">
+                            <center>
+                            <img src="{{base_url}}assets/img/progress.gif" width="50px" style="padding-top: 15%; position: relative;">
+                            <p style="position: relative; font-size: 16px;">PROGRESS</p>
+                            </center>
+                        </div>
+                            <tr style="font-weight: bold;">
+                                <td width="20%">Insentif</td>
+                                <td width="60%" colspan="3">Keterangan</td>
+                                <td width="20%" >Value</td>
+                            </tr>
+                            <tr>
+                                <td width="80%" colspan="4" style="font-weight: bold;">Total Insentif</td>
+                                <td class="data" width="20%" id="totalInsentif"></td>
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Sales Total</td>
+                                <td class="data" width="20%" id="sales1"></td>
+                                <td class="data" width="20%" id="target1"></td>
+                                <td class="data" width="20%" id="persen1"></td>
+                                <td class="data" width="20%" id="val1"></td>
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Efektif CALL</td>
+                                <td class="data" width="20%" id="ec1"></td>
+                                <td class="data" width="20%" id="target2"></td>
+                                <td class="data" width="20%" id="kerja1"></td>
+                                <td class="data" width="20%" id="val2"></td>
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Item perTransaksi</td>
+                                <td class="data" width="20%" id="kIPT"></td>
+                                <td class="data" width="20%" id="targetIPT"></td>
+                                <td class="data" width="20%" id="kerjaIPT"></td>
+                                <td class="data" width="20%" id="valIPT"></td>
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Outlet per Transaksi</td>
+                                <td class="data" width="20%" id="kOT"></td>
+                                <td class="data" width="20%" id="targetOT"></td>
+                                <td class="data" width="20%" id="kerjaOT"></td>
+                                <td class="data" width="20%" id="valOT"></td>
+                            </tr>
+                            <!-- <tr>
+                                <td width="20%" style="font-weight: bold;">Insentif NOO</td>
+                                <td class="data" width="20%" id="insentifNoo"></td>
+                                <td class="data" width="40%" colspan="2" id="komisiNoo"></td>
+                                <td class="data" width="20%" id="val4"></td>
+                            </tr> -->
+                            <tr>
+                                <td width="25%" rowspan="4" valign="middle" style="font-weight: bold;">Komisi Tagihan</td>
+                                <td width="25">Tgh < 30</td>
+                                <td class="data" width="25" colspan="2" id="tagihanA"></td>
+                                <td class="data" width="25" id="val5"></td>
+                            </tr>                            
+                            <tr>
+                                <td width="25">Tgh < 45</td>
+                                <td class="data" width="25" colspan="2" id="tagihanB"></td>
+                                <td class="data" width="25" id="val6"></td>
+                            </tr>                            
+                            <tr>
+                                <td width="25">Tgh > 45</td>
+                                <td class="data" width="25" colspan="2" id="tagihanC"></td>
+                                <td class="data" width="25" id="val7"></td>
+                            </tr>                            
+                            <tr>
+                                <td width="25">Tgh > 60</td>
+                                <td class="data" width="25" colspan="2" id="tagihanD"></td>
+                                <td class="data" width="25" id="val8"></td>
+                            </tr>             
+                            <tr>
+                                <td width="25%" colspan="3" valign="middle" style="font-weight: bold;">Komisi Sales Prinsipal</td>
+                                <td class='data' width='25' colspan="2" id='TargetPrinsipalALL'></td>
+                            </tr>
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Adi</td>
+                                <td class='data' width='25' id='SalesAdi'></td>
+                                <td class='data' width='25' id='TargetAdi'></td>
+                                <td class='data' width='25' id='PersenAdi'></td>
+                                <td class='data' width='25' id='KomisiAdi'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Alkes</td>
+                                <td class='data' width='25' id='SalesAlkes'></td>
+                                <td class='data' width='25' id='TargetAlkes'></td>
+                                <td class='data' width='25' id='PersenAlkes'></td>
+                                <td class='data' width='25' id='KomisiAlkes'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Altamed</td>
+                                <td class='data' width='25' id='SalesAltamed'></td>
+                                <td class='data' width='25' id='TargetAltamed'></td>
+                                <td class='data' width='25' id='PersenAltamed'></td>
+                                <td class='data' width='25' id='KomisiAltamed'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Andalan</td>
+                                <td class='data' width='25' id='SalesAndalan'></td>
+                                <td class='data' width='25' id='TargetAndalan'></td>
+                                <td class='data' width='25' id='PersenAndalan'></td>
+                                <td class='data' width='25' id='KomisiAndalan'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Armoxindo</td>
+                                <td class='data' width='25' id='SalesArmoxindo'></td>
+                                <td class='data' width='25' id='TargetArmoxindo'></td>
+                                <td class='data' width='25' id='PersenArmoxindo'></td>
+                                <td class='data' width='25' id='KomisiArmoxindo'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Axion</td>
+                                <td class='data' width='25' id='SalesAxion'></td>
+                                <td class='data' width='25' id='TargetAxion'></td>
+                                <td class='data' width='25' id='PersenAxion'></td>
+                                <td class='data' width='25' id='KomisiAxion'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Bintang KK</td>
+                                <td class='data' width='25' id='SalesBintangKK'></td>
+                                <td class='data' width='25' id='TargetBintangKK'></td>
+                                <td class='data' width='25' id='PersenBintangKK'></td>
+                                <td class='data' width='25' id='KomisiBintangKK'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Calumika</td>
+                                <td class='data' width='25' id='SalesCalumika'></td>
+                                <td class='data' width='25' id='TargetCalumika'></td>
+                                <td class='data' width='25' id='PersenCalumika'></td>
+                                <td class='data' width='25' id='KomisiCalumika'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Cendo</td>
+                                <td class='data' width='25' id='SalesCendo'></td>
+                                <td class='data' width='25' id='TargetCendo'></td>
+                                <td class='data' width='25' id='PersenCendo'></td>
+                                <td class='data' width='25' id='KomisiCendo'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Coronet</td>
+                                <td class='data' width='25' id='SalesCoronet'></td>
+                                <td class='data' width='25' id='TargetCoronet'></td>
+                                <td class='data' width='25' id='PersenCoronet'></td>
+                                <td class='data' width='25' id='KomisiCoronet'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Corsa</td>
+                                <td class='data' width='25' id='SalesCorsa'></td>
+                                <td class='data' width='25' id='TargetCorsa'></td>
+                                <td class='data' width='25' id='PersenCorsa'></td>
+                                <td class='data' width='25' id='KomisiCorsa'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Dipa</td>
+                                <td class='data' width='25' id='SalesDipa'></td>
+                                <td class='data' width='25' id='TargetDipa'></td>
+                                <td class='data' width='25' id='PersenDipa'></td>
+                                <td class='data' width='25' id='KomisiDipa'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Dipa.OTC</td>
+                                <td class='data' width='25' id='SalesDipaOTC'></td>
+                                <td class='data' width='25' id='TargetDipaOTC'></td>
+                                <td class='data' width='25' id='PersenDipaOTC'></td>
+                                <td class='data' width='25' id='KomisiDipaOTC'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>E-KAT</td>
+                                <td class='data' width='25' id='SalesEKAT'></td>
+                                <td class='data' width='25' id='TargetEKAT'></td>
+                                <td class='data' width='25' id='PersenEKAT'></td>
+                                <td class='data' width='25' id='KomisiEKAT'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Erella</td>
+                                <td class='data' width='25' id='SalesErella'></td>
+                                <td class='data' width='25' id='TargetErella'></td>
+                                <td class='data' width='25' id='PersenErella'></td>
+                                <td class='data' width='25' id='KomisiErella'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Erlimpex N.Reg</td>
+                                <td class='data' width='25' id='SalesErlimpexNReg'></td>
+                                <td class='data' width='25' id='TargetErlimpexNReg'></td>
+                                <td class='data' width='25' id='PersenErlimpexNReg'></td>
+                                <td class='data' width='25' id='KomisiErlimpexNReg'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Erlimpex Reg</td>
+                                <td class='data' width='25' id='SalesErlimpexReg'></td>
+                                <td class='data' width='25' id='TargetErlimpexReg'></td>
+                                <td class='data' width='25' id='PersenErlimpexReg'></td>
+                                <td class='data' width='25' id='KomisiErlimpexReg'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Escolab</td>
+                                <td class='data' width='25' id='SalesEscolab'></td>
+                                <td class='data' width='25' id='TargetEscolab'></td>
+                                <td class='data' width='25' id='PersenEscolab'></td>
+                                <td class='data' width='25' id='KomisiEscolab'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>FhOTC</td>
+                                <td class='data' width='25' id='SalesFhOTC'></td>
+                                <td class='data' width='25' id='TargetFhOTC'></td>
+                                <td class='data' width='25' id='PersenFhOTC'></td>
+                                <td class='data' width='25' id='KomisiFhOTC'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Firstmed</td>
+                                <td class='data' width='25' id='SalesFirstmed'></td>
+                                <td class='data' width='25' id='TargetFirstmed'></td>
+                                <td class='data' width='25' id='PersenFirstmed'></td>
+                                <td class='data' width='25' id='KomisiFirstmed'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Gmp</td>
+                                <td class='data' width='25' id='SalesGmp'></td>
+                                <td class='data' width='25' id='TargetGmp'></td>
+                                <td class='data' width='25' id='PersenGmp'></td>
+                                <td class='data' width='25' id='KomisiGmp'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Hermed</td>
+                                <td class='data' width='25' id='SalesHermed'></td>
+                                <td class='data' width='25' id='TargetHermed'></td>
+                                <td class='data' width='25' id='PersenHermed'></td>
+                                <td class='data' width='25' id='KomisiHermed'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Holi</td>
+                                <td class='data' width='25' id='SalesHoli'></td>
+                                <td class='data' width='25' id='TargetHoli'></td>
+                                <td class='data' width='25' id='PersenHoli'></td>
+                                <td class='data' width='25' id='KomisiHoli'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Hufa</td>
+                                <td class='data' width='25' id='SalesHufa'></td>
+                                <td class='data' width='25' id='TargetHufa'></td>
+                                <td class='data' width='25' id='PersenHufa'></td>
+                                <td class='data' width='25' id='KomisiHufa'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Itra</td>
+                                <td class='data' width='25' id='SalesItra'></td>
+                                <td class='data' width='25' id='TargetItra'></td>
+                                <td class='data' width='25' id='PersenItra'></td>
+                                <td class='data' width='25' id='KomisiItra'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Karindo</td>
+                                <td class='data' width='25' id='SalesKarindo'></td>
+                                <td class='data' width='25' id='TargetKarindo'></td>
+                                <td class='data' width='25' id='PersenKarindo'></td>
+                                <td class='data' width='25' id='KomisiKarindo'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Lain-lain</td>
+                                <td class='data' width='25' id='SalesLainlain'></td>
+                                <td class='data' width='25' id='TargetLainlain'></td>
+                                <td class='data' width='25' id='PersenLainlain'></td>
+                                <td class='data' width='25' id='KomisiLainlain'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Las</td>
+                                <td class='data' width='25' id='SalesLas'></td>
+                                <td class='data' width='25' id='TargetLas'></td>
+                                <td class='data' width='25' id='PersenLas'></td>
+                                <td class='data' width='25' id='KomisiLas'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>MecNR</td>
+                                <td class='data' width='25' id='SalesMecNR'></td>
+                                <td class='data' width='25' id='TargetMecNR'></td>
+                                <td class='data' width='25' id='PersenMecNR'></td>
+                                <td class='data' width='25' id='KomisiMecNR'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>MecOTC</td>
+                                <td class='data' width='25' id='SalesMecOTC'></td>
+                                <td class='data' width='25' id='TargetMecOTC'></td>
+                                <td class='data' width='25' id='PersenMecOTC'></td>
+                                <td class='data' width='25' id='KomisiMecOTC'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>MecReg</td>
+                                <td class='data' width='25' id='SalesMecReg'></td>
+                                <td class='data' width='25' id='TargetMecReg'></td>
+                                <td class='data' width='25' id='PersenMecReg'></td>
+                                <td class='data' width='25' id='KomisiMecReg'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Mersi</td>
+                                <td class='data' width='25' id='SalesMersi'></td>
+                                <td class='data' width='25' id='TargetMersi'></td>
+                                <td class='data' width='25' id='PersenMersi'></td>
+                                <td class='data' width='25' id='KomisiMersi'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Nova</td>
+                                <td class='data' width='25' id='SalesNova'></td>
+                                <td class='data' width='25' id='TargetNova'></td>
+                                <td class='data' width='25' id='PersenNova'></td>
+                                <td class='data' width='25' id='KomisiNova'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Nutrindo</td>
+                                <td class='data' width='25' id='SalesNutrindo'></td>
+                                <td class='data' width='25' id='TargetNutrindo'></td>
+                                <td class='data' width='25' id='PersenNutrindo'></td>
+                                <td class='data' width='25' id='KomisiNutrindo'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Pyridam</td>
+                                <td class='data' width='25' id='SalesPyridam'></td>
+                                <td class='data' width='25' id='TargetPyridam'></td>
+                                <td class='data' width='25' id='PersenPyridam'></td>
+                                <td class='data' width='25' id='KomisiPyridam'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>SdmEth</td>
+                                <td class='data' width='25' id='SalesSdmEth'></td>
+                                <td class='data' width='25' id='TargetSdmEth'></td>
+                                <td class='data' width='25' id='PersenSdmEth'></td>
+                                <td class='data' width='25' id='KomisiSdmEth'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>SdmOTC</td>
+                                <td class='data' width='25' id='SalesSdmOTC'></td>
+                                <td class='data' width='25' id='TargetSdmOTC'></td>
+                                <td class='data' width='25' id='PersenSdmOTC'></td>
+                                <td class='data' width='25' id='KomisiSdmOTC'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>SdmOth</td>
+                                <td class='data' width='25' id='SalesSdmOth'></td>
+                                <td class='data' width='25' id='TargetSdmOth'></td>
+                                <td class='data' width='25' id='PersenSdmOth'></td>
+                                <td class='data' width='25' id='KomisiSdmOth'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>SdmPck</td>
+                                <td class='data' width='25' id='SalesSdmPck'></td>
+                                <td class='data' width='25' id='TargetSdmPck'></td>
+                                <td class='data' width='25' id='PersenSdmPck'></td>
+                                <td class='data' width='25' id='KomisiSdmPck'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Seles</td>
+                                <td class='data' width='25' id='SalesSeles'></td>
+                                <td class='data' width='25' id='TargetSeles'></td>
+                                <td class='data' width='25' id='PersenSeles'></td>
+                                <td class='data' width='25' id='KomisiSeles'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Solas Reg</td>
+                                <td class='data' width='25' id='SalesSolasReg'></td>
+                                <td class='data' width='25' id='TargetSolasReg'></td>
+                                <td class='data' width='25' id='PersenSolasReg'></td>
+                                <td class='data' width='25' id='KomisiSolasReg'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>SolasNR</td>
+                                <td class='data' width='25' id='SalesSolasNR'></td>
+                                <td class='data' width='25' id='TargetSolasNR'></td>
+                                <td class='data' width='25' id='PersenSolasNR'></td>
+                                <td class='data' width='25' id='KomisiSolasNR'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Sparta-X</td>
+                                <td class='data' width='25' id='SalesSpartaX'></td>
+                                <td class='data' width='25' id='TargetSpartaX'></td>
+                                <td class='data' width='25' id='PersenSpartaX'></td>
+                                <td class='data' width='25' id='KomisiSpartaX'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Sunthi</td>
+                                <td class='data' width='25' id='SalesSunthi'></td>
+                                <td class='data' width='25' id='TargetSunthi'></td>
+                                <td class='data' width='25' id='PersenSunthi'></td>
+                                <td class='data' width='25' id='KomisiSunthi'></td>
+                            </tr>                            
+                           <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Sutra Fiesta</td>
+                                <td class='data' width='25' id='SalesSutraFiesta'></td>
+                                <td class='data' width='25' id='TargetSutraFiesta'></td>
+                                <td class='data' width='25' id='PersenSutraFiesta'></td>
+                                <td class='data' width='25' id='KomisiSutraFiesta'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Tp.Reg</td>
+                                <td class='data' width='25' id='SalesTpReg'></td>
+                                <td class='data' width='25' id='TargetTpReg'></td>
+                                <td class='data' width='25' id='PersenTpReg'></td>
+                                <td class='data' width='25' id='KomisiTpReg'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>TpNREG</td>
+                                <td class='data' width='25' id='SalesTpNREG'></td>
+                                <td class='data' width='25' id='TargetTpNREG'></td>
+                                <td class='data' width='25' id='PersenTpNREG'></td>
+                                <td class='data' width='25' id='KomisiTpNREG'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>TpOBH</td>
+                                <td class='data' width='25' id='SalesTpOBH'></td>
+                                <td class='data' width='25' id='TargetTpOBH'></td>
+                                <td class='data' width='25' id='PersenTpOBH'></td>
+                                <td class='data' width='25' id='KomisiTpOBH'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Trifa</td>
+                                <td class='data' width='25' id='SalesTrifa'></td>
+                                <td class='data' width='25' id='TargetTrifa'></td>
+                                <td class='data' width='25' id='PersenTrifa'></td>
+                                <td class='data' width='25' id='KomisiTrifa'></td>
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>Zenith</td>
+                                <td class='data' width='25' id='SalesZenith'></td>
+                                <td class='data' width='25' id='TargetZenith'></td>
+                                <td class='data' width='25' id='PersenZenith'></td>
+                                <td class='data' width='25' id='KomisiZenith'></td>
+                            </tr>                            
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $( "#tgl" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        format: 'yyyy-mm-dd',
+        onClose: function(dateText, inst) { 
+            $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+        }
+    });
+    function getSalesman() {
+        var cabang = document.getElementById('cabang').value;
+        $('#salesman').empty();
+        $.ajax({
+            url : "{{ base_url }}getSalesman",
+            type: "POST",
+            data: {cabang:cabang},
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    $('#salesman').append('<option value="'+data[i].KodeSalesman+'">'+data[i].NamaSalesman+' - '+data[i].KodeSalesman+' - '+data[i].TipeSalesman+' - '+data[i].Jabatan+'</option>')
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data Salesman from ajax');
+            }
+        });   
+    }
+    function getData()
+    {
+        $('.data').empty();
+        var url = "{{ base_url }}dataLaporanInsentifSalesman"; 
+        var salesman = document.getElementById('salesman').value;
+        var tgl = document.getElementById('tgl').value;
+        var cabang = document.getElementById('cabang').value;
+
+        if (tgl == "") {
+            alert("PERHATIAN! Tanggal masih kosong");
+        }
+        else{            
+            $('#progressGIF').show();
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: {kode:salesman,tgl:tgl,cabang:cabang},
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    var persen = (data.sales/data.target)*100;
+                    var total = 0;
+                    var val1 = val2 = val3 = val4  = val5 = val6 = val7 = val8 = tgh30 = tgh45 = tgh60 = tgh60x = 0;
+                    var ecpersen = ectot = ectarget= echari = ecinsentif = 0;
+
+                    ecpersen = data.ecpersen;
+                    ectot = data.ectot;
+                    ectarget = data.ectarget;
+                    echari = data.echari;
+
+                    tgh30 = parseInt(data.tagihanA) + parseInt(data.tagihanA1);
+                    tgh45 = parseInt(data.tagihanB) + parseInt(data.tagihanB1) ;
+                    tgh60 = parseInt(data.tagihanC) + parseInt(data.tagihanC1) ;
+                    tgh60x = parseInt(data.tagihanD) ;
+
+
+                    val1 = data.valKS;
+                    val2 = data.ecinsentif;
+                    //val4 = data.noo * 20000;
+                    val5 = ((0.5/100)*parseInt(data.tagihanA)) + ((0.4/100)*parseInt(data.tagihanA1));
+                    val6 = ((0.35/100)*parseInt(data.tagihanB)) + ((0.25/100)*parseInt(data.tagihanB1));
+                    val7 = 0;
+                    val8 = (-0.15/100)*Math.abs(parseInt((tgh60x)));
+
+
+
+
+                    total = parseInt(val1) + parseInt(val2) + parseInt(val3) + parseInt(val4) + parseInt(val5) + parseInt(val6) + parseInt(val7) + parseInt(val8) + parseInt(data.iptKom) + parseInt(data.rotKom)+ parseInt(data.komPriSalestot);
+
+
+                    if(total > 4000000) total = 4000000;
+
+
+                    //Detail Salesman
+                    $("#dataSalesmanDetail").append(data.detSalesman)
+
+                    //Komisi IPT
+                    $("#kIPT").append('Detail: '+ numberWithCommas(data.iptDet));
+                    $("#targetIPT").append('Header: '+ numberWithCommas(data.iptHed));
+                    $("#kerjaIPT").append(data.iptVal +'%');
+                    $("#valIPT").append(numberWithCommas(data.iptKom));
+
+                    //Komisi ROT
+                    $("#kOT").append('OT: '+ numberWithCommas(data.rotJPel));
+                    $("#targetOT").append('Target: '+ numberWithCommas(data.rotTrgt));
+                    $("#targetOT").append('<br>MCL: '+ numberWithCommas(data.rotMCL));
+                    $("#kerjaOT").append(data.rotPci +'%');
+                    $("#valOT").append(numberWithCommas(data.rotKom));
+
+                    // Komisi SaleS Total
+                    $("#sales1").append('Sales: '+ numberWithCommas(data.sales));
+                    $("#target1").append('Target: '+ numberWithCommas(data.target));
+                    $("#persen1").append(data.persenKS +'%');
+                    $("#val1").append(numberWithCommas(data.valKS));
+
+
+                    // Target Komisi Sales Prinsipal
+                    $('#TargetPrinsipalALL').append('Target: '+ numberWithCommas(data.valtrgtprisipal));
+                    $('#TargetPrinsipalALL').append('<br>Total Sales Prinsipal: '+ numberWithCommas(data.sales));
+                    $('#TargetPrinsipalALL').append('<br>Total Sales Prinsipal Diskon: '+ numberWithCommas(data.komPriSalestot));
+                    $('#TargetAdi').append('Target: '+ numberWithCommas(data.targetAdi));
+                    $('#TargetAlkes').append('Target: '+ numberWithCommas(data.targetAlkes));
+                    $('#TargetAltamed').append('Target: '+ numberWithCommas(data.targetAlta));
+                    $('#TargetAndalan').append('Target: '+ numberWithCommas(data.targetAndalan));
+                    $('#TargetArmoxindo').append('Target: '+ numberWithCommas(data.targetArmoxindo));
+                    $('#TargetAxion').append('Target: '+ numberWithCommas(data.targetAxion));
+                    $('#TargetBintangKK').append('Target: '+ numberWithCommas(data.targetBintangKK));
+                    $('#TargetCalumika').append('Target: '+ numberWithCommas(data.targetCalumika));
+                    $('#TargetCendo').append('Target: '+ numberWithCommas(data.targetCendo));
+                    $('#TargetCoronet').append('Target: '+ numberWithCommas(data.targetCoronet));
+                    $('#TargetCorsa').append('Target: '+ numberWithCommas(data.targetCorsa));
+                    $('#TargetDipa').append('Target: '+ numberWithCommas(data.targetDipa));
+                    $('#TargetDipaOTC').append('Target: '+ numberWithCommas(data.targetDipaOTC));
+                    $('#TargetEKAT').append('Target: '+ numberWithCommas(data.targetEKAT));
+                    $('#TargetErella').append('Target: '+ numberWithCommas(data.targetErella));
+                    $('#TargetErlimpexNReg').append('Target: '+ numberWithCommas(data.targetErlimpexNReg));
+                    $('#TargetErlimpexReg').append('Target: '+ numberWithCommas(data.targetErlimpexReg));
+                    $('#TargetEscolab').append('Target: '+ numberWithCommas(data.targetEscolab));
+                    $('#TargetFhOTC').append('Target: '+ numberWithCommas(data.targetFhOTC));
+                    $('#TargetFirstmed').append('Target: '+ numberWithCommas(data.targetFirstmed));
+                    $('#TargetGmp').append('Target: '+ numberWithCommas(data.targetGmp));
+                    $('#TargetHermed').append('Target: '+ numberWithCommas(data.targetHermed));
+                    $('#TargetHoli').append('Target: '+ numberWithCommas(data.targetHoli));
+                    $('#TargetHufa').append('Target: '+ numberWithCommas(data.targetHufa));
+                    $('#TargetItra').append('Target: '+ numberWithCommas(data.targetItra));
+                    $('#TargetKarindo').append('Target: '+ numberWithCommas(data.targetKarindo));
+                    $('#TargetLainlain').append('Target: '+ numberWithCommas(data.targetLainlain));
+                    $('#TargetLas').append('Target: '+ numberWithCommas(data.targetLas));
+                    $('#TargetMecNR').append('Target: '+ numberWithCommas(data.targetMecNR));
+                    $('#TargetMecOTC').append('Target: '+ numberWithCommas(data.targetMecOTC));
+                    $('#TargetMecReg').append('Target: '+ numberWithCommas(data.targetMecReg));
+                    $('#TargetMersi').append('Target: '+ numberWithCommas(data.targetMersi));
+                    $('#TargetNova').append('Target: '+ numberWithCommas(data.targetNova));
+                    $('#TargetNutrindo').append('Target: '+ numberWithCommas(data.targetNutrindo));
+                    $('#TargetPyridam').append('Target: '+ numberWithCommas(data.targetPyridam));
+                    $('#Targetsdm_').append('Target: '+ numberWithCommas(data.targetsdm_));
+                    $('#TargetSdmEth').append('Target: '+ numberWithCommas(data.targetSdmEth));
+                    $('#TargetSdmOTC').append('Target: '+ numberWithCommas(data.targetSdmOTC));
+                    $('#TargetSdmOth').append('Target: '+ numberWithCommas(data.targetSdmOth));
+                    $('#TargetSdmPck').append('Target: '+ numberWithCommas(data.targetSdmPck));
+                    $('#TargetSeles').append('Target: '+ numberWithCommas(data.targetSeles));
+                    $('#TargetSolasNR').append('Target: '+ numberWithCommas(data.targetSolasNR));
+                    $('#TargetSolasReg').append('Target: '+ numberWithCommas(data.targetSolasReg));
+                    $('#TargetSpartaX').append('Target: '+ numberWithCommas(data.targetSpartaX));
+                    $('#TargetSunthi').append('Target: '+ numberWithCommas(data.targetSunthi));
+                    $('#TargetSutraFiesta').append('Target: '+ numberWithCommas(data.targetSutraFiesta));
+                    $('#TargetTpNREG').append('Target: '+ numberWithCommas(data.targetTpNREG));
+                    $('#TargetTpOBH').append('Target: '+ numberWithCommas(data.targetTpOBH));
+                    $('#TargetTpReg').append('Target: '+ numberWithCommas(data.targetTpReg));
+                    $('#TargetTrifa').append('Target: '+ numberWithCommas(data.targetTrifa));
+                    $('#TargetZenith').append('Target: '+ numberWithCommas(data.targetZenith));
+
+                    $('#SalesAdi').append('Sales: '+ numberWithCommas(data.SalesAdi));
+                    $('#SalesAlkes').append('Sales: '+ numberWithCommas(data.SalesAlkes));
+                    $('#SalesAltamed').append('Sales: '+ numberWithCommas(data.SalesAlta));
+                    $('#SalesAndalan').append('Sales: '+ numberWithCommas(data.SalesAndalan));
+                    $('#SalesArmoxindo').append('Sales: '+ numberWithCommas(data.SalesArmoxindo));
+                    $('#SalesAxion').append('Sales: '+ numberWithCommas(data.SalesAxion));
+                    $('#SalesBintangKK').append('Sales: '+ numberWithCommas(data.SalesBintangKK));
+                    $('#SalesCalumika').append('Sales: '+ numberWithCommas(data.SalesCalumika));
+                    $('#SalesCendo').append('Sales: '+ numberWithCommas(data.SalesCendo));
+                    $('#SalesCoronet').append('Sales: '+ numberWithCommas(data.SalesCoronet));
+                    $('#SalesCorsa').append('Sales: '+ numberWithCommas(data.SalesCorsa));
+                    $('#SalesDipa').append('Sales: '+ numberWithCommas(data.SalesDipa));
+                    $('#SalesDipaOTC').append('Sales: '+ numberWithCommas(data.SalesDipaOTC));
+                    $('#SalesEKAT').append('Sales: '+ numberWithCommas(data.SalesEKAT));
+                    $('#SalesErella').append('Sales: '+ numberWithCommas(data.SalesErella));
+                    $('#SalesErlimpexNReg').append('Sales: '+ numberWithCommas(data.SalesErlimpexNReg));
+                    $('#SalesErlimpexReg').append('Sales: '+ numberWithCommas(data.SalesErlimpexReg));
+                    $('#SalesEscolab').append('Sales: '+ numberWithCommas(data.SalesEscolab));
+                    $('#SalesFhOTC').append('Sales: '+ numberWithCommas(data.SalesFhOTC));
+                    $('#SalesFirstmed').append('Sales: '+ numberWithCommas(data.SalesFirstmed));
+                    $('#SalesGmp').append('Sales: '+ numberWithCommas(data.SalesGmp));
+                    $('#SalesHermed').append('Sales: '+ numberWithCommas(data.SalesHermed));
+                    $('#SalesHoli').append('Sales: '+ numberWithCommas(data.SalesHoli));
+                    $('#SalesHufa').append('Sales: '+ numberWithCommas(data.SalesHufa));
+                    $('#SalesItra').append('Sales: '+ numberWithCommas(data.SalesItra));
+                    $('#SalesKarindo').append('Sales: '+ numberWithCommas(data.SalesKarindo));
+                    $('#SalesLainlain').append('Sales: '+ numberWithCommas(data.SalesLainlain));
+                    $('#SalesLas').append('Sales: '+ numberWithCommas(data.SalesLas));
+                    $('#SalesMecNR').append('Sales: '+ numberWithCommas(data.SalesMecNR));
+                    $('#SalesMecOTC').append('Sales: '+ numberWithCommas(data.SalesMecOTC));
+                    $('#SalesMecReg').append('Sales: '+ numberWithCommas(data.SalesMecReg));
+                    $('#SalesMersi').append('Sales: '+ numberWithCommas(data.SalesMersi));
+                    $('#SalesNova').append('Sales: '+ numberWithCommas(data.SalesNova));
+                    $('#SalesNutrindo').append('Sales: '+ numberWithCommas(data.SalesNutrindo));
+                    $('#SalesPyridam').append('Sales: '+ numberWithCommas(data.SalesPyridam));
+                    $('#Salessdm_').append('Sales: '+ numberWithCommas(data.Salessdm_));
+                    $('#SalesSdmEth').append('Sales: '+ numberWithCommas(data.SalesSdmEth));
+                    $('#SalesSdmOTC').append('Sales: '+ numberWithCommas(data.SalesSdmOTC));
+                    $('#SalesSdmOth').append('Sales: '+ numberWithCommas(data.SalesSdmOth));
+                    $('#SalesSdmPck').append('Sales: '+ numberWithCommas(data.SalesSdmPck));
+                    $('#SalesSeles').append('Sales: '+ numberWithCommas(data.SalesSeles));
+                    $('#SalesSolasNR').append('Sales: '+ numberWithCommas(data.SalesSolasNR));
+                    $('#SalesSolasReg').append('Sales: '+ numberWithCommas(data.SalesSolasReg));
+                    $('#SalesSpartaX').append('Sales: '+ numberWithCommas(data.SalesSpartaX));
+                    $('#SalesSunthi').append('Sales: '+ numberWithCommas(data.SalesSunthi));
+                    $('#SalesSutraFiesta').append('Sales: '+ numberWithCommas(data.SalesSutraFiesta));
+                    $('#SalesTpNREG').append('Sales: '+ numberWithCommas(data.SalesTpNREG));
+                    $('#SalesTpOBH').append('Sales: '+ numberWithCommas(data.SalesTpOBH));
+                    $('#SalesTpReg').append('Sales: '+ numberWithCommas(data.SalesTpReg));
+                    $('#SalesTrifa').append('Sales: '+ numberWithCommas(data.SalesTrifa));
+                    $('#SalesZenith').append('Sales: '+ numberWithCommas(data.SalesZenith));
+
+                    $('#SalesAdi').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAdi));
+                    $('#SalesAlkes').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAlkes));
+                    $('#SalesAltamed').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAlta));
+                    $('#SalesAndalan').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAndalan));
+                    $('#SalesArmoxindo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesArmoxindo));
+                    $('#SalesAxion').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAxion));
+                    $('#SalesBintangKK').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesBintangKK));
+                    $('#SalesCalumika').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCalumika));
+                    $('#SalesCendo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCendo));
+                    $('#SalesCoronet').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCoronet));
+                    $('#SalesCorsa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCorsa));
+                    $('#SalesDipa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesDipa));
+                    $('#SalesDipaOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesDipaOTC));
+                    $('#SalesEKAT').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesEKAT));
+                    $('#SalesErella').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesErella));
+                    $('#SalesErlimpexNReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesErlimpexNReg));
+                    $('#SalesErlimpexReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesErlimpexReg));
+                    $('#SalesEscolab').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesEscolab));
+                    $('#SalesFhOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesFhOTC));
+                    $('#SalesFirstmed').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesFirstmed));
+                    $('#SalesGmp').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesGmp));
+                    $('#SalesHermed').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesHermed));
+                    $('#SalesHoli').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesHoli));
+                    $('#SalesHufa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesHufa));
+                    $('#SalesItra').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesItra));
+                    $('#SalesKarindo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesKarindo));
+                    $('#SalesLainlain').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesLainlain));
+                    $('#SalesLas').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesLas));
+                    $('#SalesMecNR').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMecNR));
+                    $('#SalesMecOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMecOTC));
+                    $('#SalesMecReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMecReg));
+                    $('#SalesMersi').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMersi));
+                    $('#SalesNova').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesNova));
+                    $('#SalesNutrindo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesNutrindo));
+                    $('#SalesPyridam').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesPyridam));
+                    $('#Salessdm_').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalessdm_));
+                    $('#SalesSdmEth').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmEth));
+                    $('#SalesSdmOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmOTC));
+                    $('#SalesSdmOth').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmOth));
+                    $('#SalesSdmPck').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmPck));
+                    $('#SalesSeles').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSeles));
+                    $('#SalesSolasNR').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSolasNR));
+                    $('#SalesSolasReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSolasReg));
+                    $('#SalesSpartaX').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSpartaX));
+                    $('#SalesSunthi').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSunthi));
+                    $('#SalesSutraFiesta').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSutraFiesta));
+                    $('#SalesTpNREG').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTpNREG));
+                    $('#SalesTpOBH').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTpOBH));
+                    $('#SalesTpReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTpReg));
+                    $('#SalesTrifa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTrifa));
+                    $('#SalesZenith').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesZenith));
+
+                    $('#KomisiAdi').append(numberWithCommas(data.komSalesAdi));
+                    $('#KomisiAlkes').append(numberWithCommas(data.komSalesAlkes));
+                    $('#KomisiAltamed').append(numberWithCommas(data.komSalesAlta));
+                    $('#KomisiAndalan').append(numberWithCommas(data.komSalesAndalan));
+                    $('#KomisiArmoxindo').append(numberWithCommas(data.komSalesArmoxindo));
+                    $('#KomisiAxion').append(numberWithCommas(data.komSalesAxion));
+                    $('#KomisiBintangKK').append(numberWithCommas(data.komSalesBintangKK));
+                    $('#KomisiCalumika').append(numberWithCommas(data.komSalesCalumika));
+                    $('#KomisiCendo').append(numberWithCommas(data.komSalesCendo));
+                    $('#KomisiCoronet').append(numberWithCommas(data.komSalesCoronet));
+                    $('#KomisiCorsa').append(numberWithCommas(data.komSalesCorsa));
+                    $('#KomisiDipa').append(numberWithCommas(data.komSalesDipa));
+                    $('#KomisiDipaOTC').append(numberWithCommas(data.komSalesDipaOTC));
+                    $('#KomisiEKAT').append(numberWithCommas(data.komSalesEKAT));
+                    $('#KomisiErella').append(numberWithCommas(data.komSalesErella));
+                    $('#KomisiErlimpexNReg').append(numberWithCommas(data.komSalesErlimpexNReg));
+                    $('#KomisiErlimpexReg').append(numberWithCommas(data.komSalesErlimpexReg));
+                    $('#KomisiEscolab').append(numberWithCommas(data.komSalesEscolab));
+                    $('#KomisiFhOTC').append(numberWithCommas(data.komSalesFhOTC));
+                    $('#KomisiFirstmed').append(numberWithCommas(data.komSalesFirstmed));
+                    $('#KomisiGmp').append(numberWithCommas(data.komSalesGmp));
+                    $('#KomisiHermed').append(numberWithCommas(data.komSalesHermed));
+                    $('#KomisiHoli').append(numberWithCommas(data.komSalesHoli));
+                    $('#KomisiHufa').append(numberWithCommas(data.komSalesHufa));
+                    $('#KomisiItra').append(numberWithCommas(data.komSalesItra));
+                    $('#KomisiKarindo').append(numberWithCommas(data.komSalesKarindo));
+                    $('#KomisiLainlain').append(numberWithCommas(data.komSalesLainlain));
+                    $('#KomisiLas').append(numberWithCommas(data.komSalesLas));
+                    $('#KomisiMecNR').append(numberWithCommas(data.komSalesMecNR));
+                    $('#KomisiMecOTC').append(numberWithCommas(data.komSalesMecOTC));
+                    $('#KomisiMecReg').append(numberWithCommas(data.komSalesMecReg));
+                    $('#KomisiMersi').append(numberWithCommas(data.komSalesMersi));
+                    $('#KomisiNova').append(numberWithCommas(data.komSalesNova));
+                    $('#KomisiNutrindo').append(numberWithCommas(data.komSalesNutrindo));
+                    $('#KomisiPyridam').append(numberWithCommas(data.komSalesPyridam));
+                    $('#Komisisdm_').append(numberWithCommas(data.komSalessdm_));
+                    $('#KomisiSdmEth').append(numberWithCommas(data.komSalesSdmEth));
+                    $('#KomisiSdmOTC').append(numberWithCommas(data.komSalesSdmOTC));
+                    $('#KomisiSdmOth').append(numberWithCommas(data.komSalesSdmOth));
+                    $('#KomisiSdmPck').append(numberWithCommas(data.komSalesSdmPck));
+                    $('#KomisiSeles').append(numberWithCommas(data.komSalesSeles));
+                    $('#KomisiSolasNR').append(numberWithCommas(data.komSalesSolasNR));
+                    $('#KomisiSolasReg').append(numberWithCommas(data.komSalesSolasReg));
+                    $('#KomisiSpartaX').append(numberWithCommas(data.komSalesSpartaX));
+                    $('#KomisiSunthi').append(numberWithCommas(data.komSalesSunthi));
+                    $('#KomisiSutraFiesta').append(numberWithCommas(data.komSalesSutraFiesta));
+                    $('#KomisiTpNREG').append(numberWithCommas(data.komSalesTpNREG));
+                    $('#KomisiTpOBH').append(numberWithCommas(data.komSalesTpOBH));
+                    $('#KomisiTpReg').append(numberWithCommas(data.komSalesTpReg));
+                    $('#KomisiTrifa').append(numberWithCommas(data.komSalesTrifa));
+                    $('#KomisiZenith').append(numberWithCommas(data.komSalesZenith));
+                    
+                    $('#PersenAdi').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAdi)) + ' %');
+                    $('#PersenAlkes').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAlkes)) + ' %');
+                    $('#PersenAltamed').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAlta)) + ' %');
+                    $('#PersenAndalan').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAndalan)) + ' %');
+                    $('#PersenArmoxindo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomArmoxindo)) + ' %');
+                    $('#PersenAxion').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAxion) + ' %'));
+                    $('#PersenBintangKK').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomBintangKK) + ' %'));
+                    $('#PersenCalumika').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCalumika) + ' %'));
+                    $('#PersenCendo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCendo) + ' %'));
+                    $('#PersenCoronet').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCoronet) + ' %'));
+                    $('#PersenCorsa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCorsa) + ' %'));
+                    $('#PersenDipa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomDipa) + ' %'));
+                    $('#PersenDipaOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomDipaOTC) + ' %'));
+                    $('#PersenEKAT').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomEKAT) + ' %'));
+                    $('#PersenErella').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomErella) + ' %'));
+                    $('#PersenErlimpexNReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomErlimpexNReg) + ' %'));
+                    $('#PersenErlimpexReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomErlimpexReg) + ' %'));
+                    $('#PersenEscolab').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomEscolab) + ' %'));
+                    $('#PersenFhOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomFhOTC) + ' %'));
+                    $('#PersenFirstmed').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomFirstmed) + ' %'));
+                    $('#PersenGmp').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomGmp) + ' %'));
+                    $('#PersenHermed').append(' Persentase:'+ numberWithCommas(Math.floor(data.perkomHermed) + ' %'));
+                    $('#PersenHoli').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomHoli) + ' %'));
+                    $('#PersenHufa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomHufa) + ' %'));
+                    $('#PersenItra').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomItra) + ' %'));
+                    $('#PersenKarindo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomKarindo) + ' %'));
+                    $('#PersenLainlain').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomLainlain) + ' %'));
+                    $('#PersenLas').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomLas) + ' %'));
+                    $('#PersenMecNR').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMecNR) + ' %'));
+                    $('#PersenMecOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMecOTC) + ' %'));
+                    $('#PersenMecReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMecReg) + ' %'));
+                    $('#PersenMersi').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMersi) + ' %'));
+                    $('#PersenNova').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomNova) + ' %'));
+                    $('#PersenNutrindo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomNutrindo) + ' %'));
+                    $('#PersenPyridam').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomPyridam) + ' %'));
+                    $('#Persensdm_').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomsdm_) + ' %'));
+                    $('#PersenSdmEth').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmEth) + ' %'));
+                    $('#PersenSdmOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmOTC) + ' %'));
+                    $('#PersenSdmOth').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmOth) + ' %'));
+                    $('#PersenSdmPck').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmPck) + ' %'));
+                    $('#PersenSeles').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSeles) + ' %'));
+                    $('#PersenSolasNR').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSolasNR) + ' %'));
+                    $('#PersenSolasReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSolasReg) + ' %'));
+                    $('#PersenSpartaX').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSpartaX) + ' %'));
+                    $('#PersenSunthi').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSunthi) + ' %'));
+                    $('#PersenSutraFiesta').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSutraFiesta) + ' %'));
+                    $('#PersenTpNREG').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTpNREG) + ' %'));
+                    $('#PersenTpOBH').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTpOBH) + ' %'));
+                    $('#PersenTpReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTpReg) + ' %'));
+                    $('#PersenTrifa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTrifa) + ' %'));
+                    $('#PersenZenith').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomZenith) + ' %'));
+                    
+                    $("#ec1").append(ecpersen.toFixed(2)+'%');
+                    $("#target2").append('Total EC: '+ectot+' Target: '+ectarget +' Call: '+ data.eccall);
+                    $("#kerja1").append('Hari Kerja: '+echari) ;
+                    $("#val2").append(numberWithCommas(val2));
+
+                    $("#insentifCall").append('HITUNG MANUAL');
+
+                    $("#insentifNoo").append('Jumlah: '+data.noo);
+                    $("#komisiNoo").append('x 20,000.00');
+                    $("#val4").append(numberWithCommas(Math.floor(val4)));
+                    $("#tagihanA").append(numberWithCommas(tgh30));
+                    $("#tagihanB").append(numberWithCommas(tgh45));
+                    $("#tagihanC").append(numberWithCommas(tgh60));
+                    $("#tagihanD").append(numberWithCommas(tgh60x));
+                    $("#val5").append(numberWithCommas(Math.floor(val5)));
+                    $("#val6").append(numberWithCommas(Math.floor(val6)));
+                    $("#val7").append(numberWithCommas(Math.floor(val7)));
+                    $("#val8").append(numberWithCommas(Math.floor(val8)));
+                    $("#totalInsentif").append(numberWithCommas(Math.floor(total)));       
+                    
+                    $('#progressGIF').hide();         
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert("PERHATIAN! Tarik data insentif salesman GAGAL");
+                    $('#progressGIF').hide();    
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

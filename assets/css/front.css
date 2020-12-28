@@ -1,0 +1,42 @@
+.saptaColor
+{
+	color: #337AB7 !important;
+}
+.loginTitle
+{
+	font-size: 28px;
+	text-align: center;
+	font-weight: bold;
+	color: #337AB7;
+}
+.loginCopyright
+{
+	font-size: 12px;
+	text-align: center;
+	font-weight: bold;
+	color: #ccc;
+}
+#return-to-top 
+{
+    position: fixed;
+    bottom: 20px;
+    right: 5px;
+    display: none;
+}
+#notif{
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    z-index: 9999;
+    opacity: 0.9;
+    width: 325px;
+    font-size: 12px;
+    /*display: none;*/
+}
+.navbar-top-links li a{
+    font-size: 12px;
+    padding: 15px 5px 0px 5px !important;
+}
+#page-wrapper{
+	margin: 0 !important;
+}

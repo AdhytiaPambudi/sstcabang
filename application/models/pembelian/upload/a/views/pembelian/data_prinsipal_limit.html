@@ -1,0 +1,292 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">Data Limit Beli By Prinsipal</h3>
+        </div>
+        <!-- /.col-lg-12 --> 
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <!-- <button class="btn btn-success" onclick="addData()"><i class="fa fa-plus"></i> Add Prinsipal Limit</button> -->
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        <button class="btn btn-default" onclick="updateData()"><i class="fa fa-refresh"></i> Update Data</button>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Prinsipal Limit
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Cabang</th>
+                                        <th>Bulan</th>
+                                        <th>Prinsipal</th>
+                                        <th>Limit Beli</th>
+                                        <th>Limit Outstanding</th>
+                                        <th>Sisa Limit</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var saveMethod;
+    var tabel;
+    $(document).ready(function() {
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            "serverSide": true, //Feature control DataTables' server-side processing mode.
+            "order": [], //Initial no order.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listdataPrinsipalLimitbeli",
+                "type": "POST"
+            },
+                //Set column definition initialisation properties.
+            "columnDefs": [
+
+            { 
+                "targets": [ -1 ], //last column
+                "orderable": false, //set not orderable
+            }],
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData Limit Beli Prinsipal ',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6],
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.pageMargins = [40, 20, 10,10 ];
+                        doc.styles.tableHeader.fontSize = 10;
+                        doc.defaultStyle.fontSize = 10;
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+
+          
+        //datepicker
+    $('.datepicker').datepicker({
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        todayHighlight: true,
+        orientation: "top auto",
+        todayBtn: true,
+        todayHighlight: true,  
+    });
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+    function addData()
+    {
+        saveMethod = 'add';   
+        document.getElementById('id').value = '';     
+        $('#modal_form').modal('show'); // show bootstrap modal
+        $('.modal-title').text('Prinsipal Limit Form Input'); // Set Title to Bootstrap modal title
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+        $('.help-block').empty(); // clear error string
+        $('.form-group').removeClass('has-error'); // clear error class
+    }
+
+    function updateData()
+    {
+         $("#notif").empty();
+        var url = "{{ base_url }}updateDataLimitBeliPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function deleteData(id)
+    {
+        if(confirm('Are you sure delete this data?'))
+        {
+            // ajax delete data to database
+            $.ajax({
+                url : "{{ base_url }}deleteDataPrinsipalLimit/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    reloadTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert('Error deleting data');
+                }
+            });
+
+        }
+    }
+
+    function saveData()
+    {
+        $('#btnSave').text('Saving...'); //change button text
+        $('#btnSave').attr('disabled',true); //set button disable 
+        var url;
+
+        if(saveMethod == 'add') {
+            url = "{{ base_url }}addDataPrinsipalLimit";
+        } else {
+            url = "{{ base_url }}updateDataPrinsipalLimit";
+        }
+
+        // ajax adding data to database
+        $.ajax({
+            url : url,
+            type: "POST",
+            data: $('#myForm').serialize(),
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status) //if success close modal and reload ajax table
+                {
+                    $('#modal_form').modal('hide');
+                    reloadTable();
+                }
+                else
+                {
+                for (var i = 0; i < data.inputerror.length; i++) 
+                    {
+                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
+                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+                    }
+                }
+
+                $('#btnSave').text('save'); //change button text
+                $('#btnSave').attr('disabled',false); //set button enable 
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                
+                $('#btnSave').text('save'); //change button text
+                $('#btnSave').attr('disabled',false); //set button enable 
+
+            }
+        });
+    }
+
+    var prinsipalSource = [];
+    function getPrinsipal() {
+        var i = 0;
+        $('#Prinsipal').typeahead('destroy');
+        prinsipalSource.length = 0;
+        // var tipe = document.getElementById('tipe').value;
+            // if (tipe == 'Usulan Beli') {
+                {% for prinsipal in prinsipal %}
+                    {% if prinsipal.Prinsipal != 'E-KAT'%}
+                        prinsipalSource[i] = '{{prinsipal.Prinsipal}}~{{prinsipal.Supplier}}';                
+                        i++;
+                    {% endif %}      
+                {% endfor %}      
+            // }
+            // else{
+            //         prinsipalSource[0] = 'E-KAT~';
+            //         // loadProduk();
+            //  }
+        $('#Prinsipal').typeahead({
+                    source: prinsipalSource
+                });
+    }
+
+    var supplierSource = [];
+    function getLimit() {
+        var data = document.getElementById('Prinsipal').value;
+        var split = data.split("~");
+        var prinsipal = split[0];
+
+        $.ajax({
+                url : "{{ base_url }}getprinsipalLimit",
+                type: "POST",
+                data:{prinsipal:prinsipal},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    $('#Limit').val(numberWithCommas(data.limit));
+                    $('#Limit_Outstanding').val(numberWithCommas(data.outstanding));
+                    $('#Limit_Sisa').val(numberWithCommas(data.limit - data.outstanding));
+                    // setNo();
+                    // hitung();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+    }
+
+</script>
+    {% endblock %}

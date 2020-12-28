@@ -1,0 +1,326 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+            <div>
+                <table>
+                <tr>
+                    <td style="padding-left:10px">Tanggal Server </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px"><input class="form-control input-sm" type="date" name="tgl1" id="tgl1"></td>
+                    <td style="padding-left:10px">Tanggal Closing </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px"><input class="form-control input-sm" type="date" name="tgl2"  id="tgl2"></td>
+                    <td style="padding-left:10px">Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" style="width:130px;text-align:center" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses Upload</span></i></a> </td>
+                    <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_import_data();return false;" title="Proses" class="btn btn-primary" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses Import Data</span></i></a> </td>
+                </tr>
+                </table>
+               <!-- </b> -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    $(document).ready(function() {
+    
+    });
+
+    function f_get_data(){
+        var tgl1 = $('[name=tgl1]').val();
+        var tgl2 = $('[name=tgl2]').val();
+        if(tgl1 == "" || tgl2 == ""){
+            notif("warning", "<h4>Mohon isi periode</h4> <br> karena bila load semua data tanpa periode akan memakan waktu  lama");
+            $('[name=tgl1]').focus();
+            return;
+        }
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}getuploadcabang",
+            type: "POST",
+            data:{tgl1:tgl1,tgl2:tgl2},
+            dataType: "JSON",
+            success: function(data)
+            {
+                console.log(data);
+                if (data.status == false) {
+                    notif('warning', 'PERHATIAN! Tidak dapat Closing');
+                    // reloadTable();
+                }else if(data.status== true){
+                    notif('success', 'Closing Sukses !!!');
+                }
+                $('#progressGIF').hide();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Server Error');
+                $('#progressGIF').hide();
+            }
+        });       
+
+    }//end f_getdata_detail
+
+    function f_import_data(){
+        $.ajax({
+            url : "{{ base_url }}getimportdata",
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    notif('warning', 'PERHATIAN! Tidak dapat Closing');
+                    // reloadTable();
+                }else if(data.status== true){
+                    notif('success', 'Closing Sukses !!!');
+                }
+                $('#progressGIF').hide();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Server Error');
+                $('#progressGIF').hide();
+            }
+        });       
+
+    }//end f_getdata_detail
+         function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },500);
+        }
+      
+</script>
+    {% endblock %}

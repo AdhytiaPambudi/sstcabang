@@ -1,0 +1,2821 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+        <style type="text/css">
+        .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+}
+blink {
+  -webkit-animation: 2s linear infinite condemned_blink_effect; // for Safari 4.0 - 8.0
+  animation: 2s linear infinite condemned_blink_effect;
+  color: red;
+}
+@-webkit-keyframes condemned_blink_effect { // for Safari 4.0 - 8.0
+  0% {
+    visibility: hidden;
+  }
+  50% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
+}
+@keyframes condemned_blink_effect {
+  0% {
+    visibility: hidden;
+  }
+  50% {
+    visibility: hidden;
+  }
+  100% {
+    visibility: visible;
+  }
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>                       
+<form role="form" method="post" id="myForm">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Order</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <!-- <span>Ket: F1(Tambah Baris), F2(Save Data), F4(Hapus Baris)</span> -->
+            <marquee width = "70%"><b>Info terbaru:</b> Untuk Produk dari Prinsipal <span style="color: red;">( NUTRINDO, CORSA , MERSI, SUNTI, ALTAWRAP )</span> harus melakukan usulan diskon dimenu penjualan -> Usulan -> Buat Usulan Diskon Prinsipal  jika hendak mengisi diskon prinsipal</marquee>
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading" style="min-height: 35px">
+                    <div style="width:10%;float:left;">
+                        <b>Order</b>  
+                    </div>
+                    <div style="width:50%;float:center;" id="infoSO"></div>
+                    <div style="width:50%;float:right;" class="form-group-sm">
+                        <table align="right">
+                            <tr>
+                                <td><b>Tipe Faktur : </b></td>
+                                <td>
+                                    <select class="form-control" name="tipefaktur" id="tipefaktur" onchange="setTipeFaktur()">
+                                        <option>Rutin</option>
+                                        <option>ID Paket</option>
+                                        <option>Tender</option>
+                                    </select>
+                                </td>
+                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td><b id="titletipefaktur" style="display: none;"></b></td>
+                                <td><input type="text" class="form-control" name="idpaket" id="idpaket" placeholder="No ID Paket" style="display: none;"></td>
+                                <td><input type="text" class="form-control" name="kettender" id="kettender" placeholder="Keterangan Tender" style="display: none;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body"> 
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">No SO</label>
+                            <input class="form-control" type="hidden" name="tipeso" id="tipeso" value="Salesman" readonly="">
+                            <input class="form-control" type="text" name="noorder" id="noorder" value="{{noOrder}}" readonly="">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Tanggal</label>
+                            <input class="form-control" type="text" name="tgl" id="tgl" value="{{tgl}}" readonly="">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px; width: 200px;">
+                        <div class="form-group-sm">
+                            <label class="control-label">Pilih No Order</label>
+                            <!-- <input class="form-control" type="text" name="pr" id="pr" onchange="PRPO()" style="text-transform: uppercase;" autocomplete="off"> -->
+                            <select class="form-control selectpicker" id="no_Order" name="no_Order" data-live-search="true" onchange="setNo_Order()">
+                                <option value="">--- Silahkan Pilih No Order ---</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" style="padding-right: 0px; padding-left: 10px"> 
+                        <div class="form-group-sm">
+                            <label class="control-label">Pelanggan</label>
+                            <table width="100%">
+                                <tr>
+                                    <td width="10%" align="left"><button type="button" class="btn-sm btn-info" onclick="showModal()">Info</button></td>
+                                    <td width="90%"><input class="form-control" name="pelangganMask" readonly="true" id="pelangganMask"></td>
+                                </tr>
+                            </table>
+                            <input class="form-control" type="hidden" name="pelanggan" id="pelanggan">
+                            <input class="form-control" type="hidden" name="tipePelanggan" id="tipePelanggan">
+                            <input class="form-control" type="hidden" name="prins_onf" id="prins_onf">
+                            <input class="form-control" type="hidden" name="flag_ppn" id="flag_ppn">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                            <table width="100%">
+                                <tr>  
+                                    <th width="5%" align="left"><label class="control-label">TOP</label></th>
+                                    <th width="10%" align="left"><input class="form-control" name="flag_top" id="flag_top" readonly=""></th> 
+                                    <th><input class="form-control" name="flag_topori" id="flag_topori" type="hidden" ></th>  
+                                    <th width="2%" align="left"><label class="control-label"> </label></th>
+                                    <th width="5%" align="left"><label class="control-label">Umur</label></th>
+                                    <th width="10%" align="left"><input class="form-control" name="flag_umur" id="flag_umur" readonly=""></th> 
+                                    <th><input class="form-control" name="flag_umurori" id="flag_umurori" type="hidden" ></th> 
+                                    <th width="2%" align="left"><label class="control-label"> </label></th>
+                                    <th width="5%" align="left"><label class="control-label"> Limit</label></th>
+                                    <th width="20%" align="left"><input class="form-control" name="flag_limit" id="flag_limit" readonly="" ></th> 
+                                    <th><input class="form-control" name="flag_limitori" id="flag_limitori" type="hidden" ></th> 
+                                    <th width="2%" align="left"><label class="control-label"> </label></th>
+                                    <th width="5%" align="left"><label class="control-label"> Piutang</label></th>
+                                    <th width="20%" align="left"><input class="form-control" name="flag_piutang" id="flag_piutang" readonly="" ></th> 
+                                    <th><input class="form-control" name="flag_piutangori" id="flag_piutangori" type="hidden" ></th> 
+                                    <th width="2%" align="left"><label class="control-label"> </label></th>
+                                    <th width="5%" align="left"><label class="control-label"> Buka Top</label></th>
+                                    <th width="7%" align="left"><input class="form-control" name="flag_buka_top" id="flag_buka_top" readonly="" ></th> 
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Salesman</label>
+                            <input class="form-control" name="salesmanMask" id="salesmanMask">
+                            <input class="form-control" type="hidden" name="salesman" id="salesman">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Acu</label>
+                            <input class="form-control" type="text" name="acu" id="acu">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">No SP</label>
+                            <input class="form-control" type="text" name="nosp" readonly="true" id="nosp">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Cara Bayar</label>
+                            <select class="form-control" name="carabayar" id="carabayar" onchange="cashDiskon()">
+                                {% for caraBayar in caraBayar %}                                    
+                                    <option value="{{caraBayar.Cara_Bayar}}" {% if caraBayar.Cara_Bayar == "Kredit"%} selected=""{% endif %}>{{caraBayar.Cara_Bayar}}</option>
+                                {% endfor%}
+                            </select>
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm" id="divCashDiskon" style="display: none;">
+                            <label class="control-label">Cash Diskon</label>
+                            <input class="form-control" type="text" name="cashdiskon" id="cashdiskon" onkeyup="hitung()" onchange="hitung()">
+                            <input class="form-control" type="hidden" name="valuecashdiskon" id="valuecashdiskon">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm" id="divacu2" style="display: none;">
+                            <label class="control-label">Acu 2</label>
+                            <input class="form-control" type="text" name="acu2" id="acu2" >
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="progress">
+                <div class="progress-bar progress-bar-success myprogress" role="progressbar" style="width:0%">0%</div>
+                <!-- <div class="msg"></div> -->
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>Produk</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">  
+                    <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table class="table" id="table-total">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Bruto</th>
+                                        <th>Potongan</th>
+                                        <th>Netto</th>
+                                        <th>Cash Diskon</th>
+                                        <th>PPN</th>
+                                        <th>Materai</th>
+                                        <th>Ongkos Kirim</th>
+                                        <th>Total Tagihan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <input type="text" name="grosirmask" id="grosirmask" class="form-control" readonly="">
+                                            <input type="hidden" name="grosir" id="grosir" class="form-control" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="potonganmask" id="potonganmask" class="form-control" readonly="">
+                                            <input type="hidden" name="potongan" id="potongan" class="form-control" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="valuemask" id="valuemask" class="form-control" readonly="">
+                                            <input type="hidden" name="value" id="value" class="form-control" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="cashdiskontotalmask" id="cashdiskontotalmask" class="form-control" readonly="">
+                                            <input type="hidden" name="cashdiskontotal" id="cashdiskontotal" class="form-control" readonly="" onkeyup="hitung()" onchange="hitung()">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="ppnmask" id="ppnmask" class="form-control" readonly="">
+                                            <input type="hidden" name="ppn" id="ppn" class="form-control" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="materai" id="materai" class="form-control" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="ongkir" id="ongkir" class="form-control"  onkeyup="hitung()" onchange="hitung()">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="totalmask" id="totalmask" class="form-control" readonly="">
+                                            <input type="hidden" name="total" id="total" class="form-control" readonly="">
+                                            <input type="hidden" name="totalCogsFmask" id="totalCogsFmask" class="form-control" readonly="">
+                                            <input type="hidden" name="totalCogsF" id="totalCogsF" class="form-control" readonly="">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table class="table" id="table-produk">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nama Barang</th>
+                                        <th>QTY</th>
+                                        <th>Cek Stok</th>
+                                        <th>Stok</th>
+                                        <th>UOM</th>
+                                        <th>Harga</th>
+                                        <th>Dsc Cab 1</th>
+                                        <th>Dsc Cab 2</th>
+                                        <th>Dsc Prins 1</th>
+                                        <th>Dsc Prins 2</th>
+                                        <th>Bns Cab</th>
+                                        <!-- <th>Bns Prins</th> -->
+                                        <th>Total Value</th>
+                                        <th>Exp Date Dekat</th>
+                                    </tr>
+                                </thead>
+                                <tbody><!-- 
+                                    <tr id="itemRow0">
+                                        <td>1</td>
+                                        <td>
+                                            <input type="text" name="produk[0]" id="produk0" style="width: 300px" class="delRow"  onkeyup="cariKode(0)" onchange="getProduk(0)" autocomplete="off">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="jumlah[0]" id="jumlah0" style="width: 70px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" title="Proses" onclick="cekstok(0)"><i class="fa fa-trash"></i>Stok</button>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="stok[0]" id="stok0" style="width: 70px" readonly="" onkeyup="hitung()" onchange="hitung()">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="uom[0]" id="uom0" style="width: 100px" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="hargamask[0]" id="hargamask0" onchange="setHarga(0)" style="width: 100px" readonly="">
+                                            <input type="hidden" name="hargareal[0]" id="hargareal0" readonly="">
+                                            <input type="hidden" name="harga[0]" id="harga0" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="maksdsccab_onf[0]" id="maksdsccab_onf0" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="total_onf[0]" id="total_onf0" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="text" name="dsccab_onf[0]" id="dsccab_onf0" style="width: 70px" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="valuedsccab_onf[0]" id="valuedsccab_onf0" onkeyup="hitung()" onchange="hitung()">
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="maksdsccab[0]" id="maksdsccab0" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="text" name="dsccab[0]" id="dsccab0" style="width: 70px" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="valuedsccab[0]" id="valuedsccab0" onkeyup="hitung()" onchange="hitung()">
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="maksdscprins[0]" id="maksdscprins0" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="maksdscprins1[0]" id="maksdscprins10" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="text" name="dscprins1[0]" id="dscprins10" style="width: 70px" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="valuedscprins1[0]" id="valuedscprins10" class="form-control">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="dscprins2[0]" id="dscprins20" style="width: 70px" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="valuedscprins2[0]" id="valuedscprins20" class="form-control">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="bnscab[0]" id="bnscab0" style="width: 70px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)">
+                                            <input type="hidden" name="valuebnscab[0]" id="valuebnscab0" onkeyup="hitung()" onchange="hitung()">
+                                        </td>
+                                            <input type="hidden" name="bnsprins[0]" id="bnsprins0" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="valuebnsprins[0]" id="valuebnsprins0" onkeyup="hitung()" onchange="hitung()">
+                                        <td>
+                                            <input type="text" name="totalvaluemask[0]" id="totalvaluemask0" style="width: 100px" class="newRow" readonly="" onkeyup="hitung()" onchange="hitung()">
+                                            <input type="hidden" name="totalvalue[0]" id="totalvalue0" class="newRow" readonly="">
+                                            <input type="hidden" name="cogsvalmask[0]" id="cogsvalmask0" class="newRow" readonly="">
+                                            <input type="hidden" name="cogsvalTotmask[0]" id="cogsvalTotmask0" class="newRow" readonly="">
+                                            <input type="hidden" name="cogsval[0]" id="cogsval0" class="newRow" readonly="">
+                                            <input type="hidden" name="cogsvalTot[0]" id="cogsvalTot0" class="newRow" readonly="">
+                                            <input type="hidden" name="disprins_trans[0]" id="disprins_trans0" class="newRow" readonly="">
+                                            <input type="hidden" name="disprins_qty1[0]" id="disprins_qty10" class="newRow" readonly="">
+                                            <input type="hidden" name="disprins_qty2[0]" id="disprins_qty20" class="newRow" readonly="">
+                                            <input type="hidden" name="NoUsulanDisc[0]" id="NoUsulanDisc0" class="newRow" readonly="">
+                                            <input type="hidden" name="Prinsipal[0]" id="Prinsipal0" class="newRow" readonly="">
+                                            <input type="hidden" name="usulandscprins1[0]" id="usulandscprins10"><input type="hidden" name="usulandscprins2[0]" id="usulandscprins20">
+                                            <input type="hidden" name="statuspelangganprins[0]" id="statuspelangganprins0">
+                                            <input type="hidden" name="kodepelangganprins[0]" id="kodepelangganprins0">
+                                        </td>
+                                        <td><input type="text" name="expdate[0]" id="expdate0" style="width: 100px" class="newRow" readonly=""></td>
+                                    </tr> -->
+                                </tbody>
+                            </table>   
+                            <input type="hidden" name="bucket" id="bucket" value="0">   
+                        </div>
+                    </div>                    
+                    <div class="form-group" align="center">
+                        <!-- <button type="button" id="btnAdd" onclick="addRow()" class="btn btn-success">Add</button> -->
+                        <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                        <button type="button" id="btnUsulanEDSIPA" onclick="usulanEDSIPA()" class="btn btn-primary" style="opacity: 0; display: none;">Usulan</button>
+                        <button type="button" class="btn btn-danger" >Cancel</button>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->   
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Info Pelanggan</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <table class="table" id="table-total">
+                            <thead>
+                                <tr>
+                                    <th>Limit</th>
+                                    <th>Piutang</th>
+                                    <th>SO Open</th> 
+                                    <th>DO Open</th> 
+                                    <th>Umur</th> 
+                                    <th>TOP</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> 
+                                        <input type="text" name="limitmask" id="limitmask" class="form-control" readonly=""> 
+                                        <input type="hidden" name="limit" id="limit" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="piutangmask" id="piutangmask" class="form-control" readonly=""> 
+                                        <input type="hidden" name="piutang" id="piutang" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="orderOpmask" id="orderOpmask" class="form-control" readonly=""> 
+                                        <input type="hidden" name="orderOp" id="orderOp" class="form-control" readonly=""> 
+                                    </td>                                     
+                                    <td> 
+                                        <input type="text" name="dlvOrdermask" id="dlvOrdermask" class="form-control" readonly=""> 
+                                        <input type="hidden" name="dlvOrder" id="dlvOrder" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="umurmask" id="umurmask" class="form-control" readonly=""> 
+                                        <input type="hidden" name="umur" id="umur" class="form-control" readonly=""> 
+                                    </td>
+                                    <td> 
+                                        <input type="text" name="topmask" id="topmask" class="form-control" readonly=""> 
+                                        <input type="hidden" name="top" id="top" class="form-control" readonly=""> 
+                                    </td>
+                                    <!-- <input type="hidden" name="top" id="top" class="form-control" readonly="">  -->
+                                    <input type="hidden" name="sto" id="sto" class="form-control" readonly=""> 
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table width="100%" class="table2 table-striped table-bordered table-hover" id="datapiutang">
+                        <thead style="line-height: 2">
+                            <tr>
+                                <th>No Faktur</th>
+                                <th>Tgl Faktur</th>
+                                <th>Tipe Dokumen</th>
+                                <th>JtoFaktur</th>
+                                <th>Pelanggan</th>
+                                <th>Cara Bayar</th>
+                                <th>Umur faktur</th>
+                                <th>Total</th>
+                                <th>Saldo</th>
+                                <th>Pelunasan</th>
+                                <th>No giro</th>
+                                <th>Tgl Giro</th>
+                                <th>tglJTO</th>
+                                <th>Bayar giro</th>
+                            </tr>                    
+                        </thead>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="modal_stok" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Info Stok Batch</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <table width="100%" class="table2 table-striped table-bordered table-hover" id="datastok">
+                        <thead style="line-height: 2">
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama Produk</th>
+                                <th>Unit Stok</th>
+                                <th>Batch</th>
+                                <th>Expire Date</th>
+                                <th>Dokumen Batch</th>
+                            </tr>                    
+                        </thead>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- End Bootstrap modal -->
+</form>
+<div class="modal fade" role="dialog"  id="example-cetak" role="dialog">
+    <div class="modal-content">
+    <div class="modal-body form">
+    <div id ="print_out">
+    <table border="0" cellspacing="0">
+        <tr>
+            <td height="80px" width="80px" valign="top">
+                <div id="logo"><img src="{{base_url}}assets/logo/1489135837049.jpg"></div>
+            </td>
+            <td width="270px" valign="top">
+                PT. SAPTA SARITAMA<br>
+                Jl. Caringin No. 254 A BABAKAN, BANDUNG
+            </td>
+            <td rowspan="3" valign="top">
+                <table cellspacing="0">
+                    <tr>
+                        <td>No.DO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="NoDO"></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TglDO"></td>
+                    </tr>
+                    <tr>
+                        <td>Cabang &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Cabang"></td>
+                    </tr>
+                    <tr>
+                        <td>Pengirim &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="NamaPengirim"></td>
+                    </tr>
+                    <tr>
+                        <td>Tipe Pelanggan &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TipePelanggan"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Cara Bayar &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="CaraBayar"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>TOP &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TOP"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Tipe Faktur &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TipeFaktur"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Status &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Status"></td>  
+                    </tr>
+                    <tr>
+                        <td>Status Pusat &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="statusPusat"></td>  
+                    </tr>
+                </table>
+            </td>
+            <td valign="top">
+                    <H5>Delivery Order</H5>
+            </td>
+            <!-- <td valign="top" width="150px">Barcode</td> -->
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>Pelanggan</td>
+                        <td>: <span v-html='Pelanggan'></span> - <span v-html='NamaPelanggan'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Alamat</td>
+                        <td>: <span v-html='AlamatKirim'></td>
+                    </tr>
+                    <tr>
+                        <td>NPWP</td>
+                        <td>: <span v-html='NPWPPelanggan'></td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <table cellspacing="0" class="report-container">
+    <thead class="report-header">
+        <tr class="detail atas" align="center">
+            <td rowspan="2" width="20" class="awal">No.</td>
+            <td rowspan="2" width="80">ID PRODUK</td>
+            <td rowspan="2" width="220">NAMA PRODUK</td>
+            <td colspan="5">DATA</td>
+            <td colspan="2" width="80">BONUS</td>
+            <td colspan="3" width="80">DISKON</td>
+            <td rowspan="2" width="80">GROSS</td>
+            <td rowspan="2" width="80">POTONGAN</td>
+            <td rowspan="2" width="80">VALUE</td>
+        </tr>
+        <tr class="detail" align="center">
+            <td width="40">Qty</td>
+            <td width="30">Satuan</td>
+            <td width="30">Batch</td>
+            <td width="80">Exp Date</td>
+            <td width="50">Harga</td>
+            <td width="30">Qty</td>
+            <td width="30">Value</td>
+            <td width="40">Cabang</td>
+            <td width="40">Prinsipal 1</td>
+            <td width="40">Prinsipal 2</td>
+        </tr>
+    </thead>
+    <tbody class="report-body">
+        <tr v-for = "(index,datas) in data_detail" class="detail-item" style="font-size: 11px; page-break-after: always;" >
+            <td v-html='index + 1' class='awal'> {{ index }}</td>
+            <td v-html='datas.KodeProduk' style='padding-left:5px;'></td>
+            <td v-html='datas.NamaProduk' style='padding-left:2px;'></td>
+            <td v-html='datas.QtyDO | currencyDisplay' style='padding-right:2px;' align='right'> </td>
+            <td v-html='datas.UOM' style='padding-left:2px;'></td>
+            <td v-html='datas.BatchNo' style='padding-left:2px;'></td>
+            <td v-html='datas.ExpDate' style='padding-left:2px;font-size:11px'></td>
+            <td v-html='datas.Harga | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Bonus | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueBonus | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueDiscCab | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueDiscPrins1 | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueDiscPrins2 | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Gross_detail | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Potongan_detail | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Value_detail | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+        </tr>
+    </tbody>
+     <!-- <tr class="page-break"> -->
+    <tr v-if="data_detail.length <= 10 ">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;" ></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 10 && data_detail.length <= 20">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 20 && data_detail.length < 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length >= 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <!-- <tfoot class="report-footer"> -->
+        <tr class="detail atas" style="font-size: 11px;">
+            <td class='awal' colspan="3" valign="top">Jumlah</td>
+            <td align='right' v-html='total_qty | currencyDisplay' style='padding-right:2px;'></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td align='right' v-html='total_Harga | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Bonus | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueBonus | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueDiscCab | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueDiscPrins1 | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueDiscPrins2 | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='Gross | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='Potongan | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='Value | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail atas">
+            <td style='padding-left:5px;' colspan="13" rowspan='4' valign="top" class="awal">Terbilang : <br> <span id ="terbilang_value"></span></td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Pembulatan / Uang Muka / Ongkir</td>
+            <td align='right' v-html='OngkosKirim | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Materai</td>
+            <td align='right' v-html='Materai | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPN</td>
+            <td align='right' v-html='Ppn | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="3" rowspan="4" class="awal"></td>
+            <td colspan="5" rowspan="4"></td>
+            <td colspan="5" rowspan="4"></td>
+            <td colspan="2">Jumlah Tagihan</td>
+            <td align='right' v-html='Total | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Dasar Pengenaan Pajak</td>
+            <td></td>
+        </tr>
+    <!-- </tfoot> -->
+    </table>
+    <table width="840px;">
+        <tr>
+            <td>
+                Pembayaran harap di transfer ke rekening {....................} BCA cabang {---------------------} A/C : {-----------};
+                Pembayaran dengan cek dan giro dianggap sah setelah diuangkan <br>
+                * Sesuai PER. DJP /16/PJ/2014 e-faktur Pajak tidak perlu di cek hard copy. Jika diperlukan e-faktur Pajak dapat
+                dicetak sendiri dengan memindai kode QRCODE dikiri bawah dokumen ini.
+            </td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    var tipe2 = "";
+
+$(document).on('keydown', '.newRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (keyCode == 9 && e.shiftKey == false) { 
+    addRow();
+    // call custom function here
+  } 
+});
+
+$(document).on('keydown', '.delRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (e.shiftKey && keyCode === 9) { 
+    removeRow();
+    // call custom function here
+  } 
+});
+
+/*document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+            $('#produk'+b).focus();
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }*/
+
+var produkSource = [];
+var pelangganSource = [];
+var salesmanSource = [];
+var pelanggan2Source =[];
+
+
+$(document).ready(function() {  
+    vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                jml_halaman : 1,
+                TglDO: '',
+                NoDO: '',
+                NamaPengirim:'',
+                TipePelanggan: '',
+                Pelanggan: '',
+                NamaPelanggan: '',
+                AlamatKirim: '',
+                Cabang: '',
+                NPWPPelanggan: '',
+                CaraBayar: '',
+                TOP: '',
+                Status: '',
+                statusPusat: '',
+                TipeFaktur: '',
+                Gross: '',
+                Value: '',
+                Potongan: '',
+                Ppn: '',
+                Materai: '',
+                OngkosKirim: '',
+                Total: '',
+                total_qty : 0,
+                total_Harga : 0,
+                total_Bonus : 0,
+                total_ValueBonus : 0,
+                total_ValueDiscCab : 0,
+                total_ValueDiscPrins1 : 0,
+                total_ValueDiscPrins2 : 0,
+                data_detail : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.QtyDO);
+                    });
+                    return gross;
+                },
+                total_Harga:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga);
+                    });
+                    return gross;
+                },
+                total_Bonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Bonus);
+                    });
+                    return gross;
+                },
+                total_ValueBonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueBonus);
+                    });
+                    return gross;
+                },
+                total_ValueDiscCab:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscCab);
+                    });
+                    return gross;
+                },
+                total_ValueDiscPrins1:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscPrins1);
+                    });
+                    return gross;
+                },
+                total_ValueDiscPrins1:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscPrins2);
+                    });
+                    return gross;
+                },
+            }
+        });
+        Vue.filter('currencyDisplay',{
+                read: function(val){
+                    return accounting.formatNumber(val);
+                },
+                write: function(val,oldVal){
+                    return accounting.unformat(val,",")
+                }
+        });    
+    // START AUTOCOMPLETE PELANGGAN
+        $.ajax({
+            url : "{{ base_url }}listPelangganSP",
+            type: "GET",
+            // dataType: "JSON",
+            success: function(data)
+            {
+                // var data = data.substr(1);
+                var data = JSON.parse(data);
+
+                for (var i in data) {
+                    pelangganSource[i] = data[i].Kode+"-"+data[i].Nama_Faktur+"-"+data[i].Alamat+"-"+data[i].Cara_Bayar+"-"+data[i].flag_ppn+"-"+data[i].Tipe_2;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data pelanggan');
+            }
+        });   
+
+        $('#pelangganMask').typeahead({
+                    source: pelangganSource,
+                });
+    // FINISH AUTOCOMPLETE PELANGGAN
+
+    // START AUTOCOMPLETE SALESMAN
+        $.ajax({
+            url : "{{ base_url }}listSales",
+            type: "GET",
+            // dataType: "JSON",
+            success: function(data)
+            {
+                // var data = data.substr(1);
+                var data = JSON.parse(data);
+                for (var i in data) {
+                    salesmanSource[i] = data[i].Kode + "-" + data[i].Nama + "-" + data[i].Jabatan;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data salesman');
+            }
+        });   
+
+        $('#salesmanMask').typeahead({
+                    source: salesmanSource
+                });
+    // FINISH AUTOCOMPLETE SALESMAN
+         var POSource = [];
+         nmPelanggan_a = [];
+         sp_a = [];
+         nmMitra_a = [];
+
+        {% for no_Order in no_Order %}
+
+            POSource.push("{{ no_Order.NoOrder }}");
+            sp_a.push("{{ no_Order.NoSP }}");
+            nmPelanggan_a.push("{{ no_Order.NamaPelanggan }}");
+            nmMitra_a.push("{{ no_Order.mitra }}");
+
+        {% endfor %}
+
+        for (var i = 0; i < POSource.length; i++) {
+            aa = nmPelanggan_a[i].split("-");
+            nmPelanggan_a_new = nmMitra_a[i]+"-"+aa[1]+"-"+aa[2]+"-"+aa[3]+"-"+aa[4]+"-Y";
+            sp_a_new = sp_a[i];
+
+            $('#no_Order').append("<option class='optP' nm-SP='"+sp_a_new+"' nm-pelanggan='"+nmPelanggan_a_new+"'  value='"+POSource[i]+"'>"+POSource[i]+"</option>");
+        }
+
+    // START AUTOCOMPLETE Produk
+
+        // $.ajax({
+        //     url : "{{ base_url }}listProduk",
+        //     type: "GET",
+        //     // dataType: "JSON",
+        //     success: function(data)
+        //     {
+        //         // var data = data.substr(1);
+        //         var data = JSON.parse(data);
+        //         for (var i in data) {
+        //             produkSource[i] = data[i].Kode_Produk + "~" + data[i].Produk;
+        //         }
+
+        //     },
+        //     error: function (jqXHR, textStatus, errorThrown)
+        //     {
+        //         notif('warning', 'PERHATIAN! Gagal tarik data produk');
+        //     }
+        // });   
+    // FINISH AUTOCOMPLETE SALESMAN
+});
+
+let varLimit = true;
+let varTop = true;
+let varBukaTop = 0;
+// START LOAD DATA PELANGGAN
+$('#pelangganMask').unbind();
+var xx = 0;
+$('#pelangganMask').on('change', function() {
+    var split = this.value.split("-");
+    var Kode = split[0];
+    var carabayar = split[3];
+    cekEDSIPA(Kode);
+    $.ajax({
+        url : "{{ base_url }}dataPelanggan/" + Kode,
+        type: "GET",
+        // dataType: "JSON",
+        success: function(data)
+        {   
+            removeRowAll();
+            // reloadTable();
+            // var data = data.substr(1);
+            var data = JSON.parse(data);
+            if (data) {
+                $("#carabayar").val(data.data.Cara_Bayar);
+                cashDiskon();
+                acubidan();
+                
+                if(data.data.Limit_Kredit == null || data.data.Limit_Kredit == ""){
+                 data.data.Limit_Kredit = 0;
+                }  
+                if(data.detail.header[0].Umur_faktur == null || data.detail.header[0].Umur_faktur == ""){
+                 data.detail.header[0].Umur_faktur = 0;
+                }  
+
+                $('#flag_limit').val(numberWithCommas(data.data.Limit_Kredit));
+                $('#flag_limitori').val(data.data.Limit_Kredit);
+                $('#flag_top').val(data.detail.header[0].top);
+                $('#flag_topori').val(data.detail.header[0].top);
+                $('#flag_umur').val(data.detail.header[0].Umur_faktur);
+                $('#flag_umurori').val(data.detail.header[0].Umur_faktur); 
+                $('#flag_buka_top').val(data.data.Buka_Top); 
+                varBukaTop = data.data.Buka_Top;
+
+                if(data.data.saldoorder == null ||data.data.saldoorder == ''){
+                    data.data.saldoorder = 0;
+                }
+                $piutang = parseInt(data.data.saldoorder) + parseInt(data.data.saldopiutang);
+
+                $('#flag_piutang').val(numberWithCommas($piutang));
+                $('#flag_piutangori').val($piutang); 
+
+                if(parseInt(data.detail.header[0].top) < parseInt(data.detail.header[0].Umur_faktur)){
+                    $('#flag_top').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varTop = true;
+                }else{
+                    $('#flag_top').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varTop = false;
+                    console.log(varTop)
+                } 
+
+                if(parseInt($piutang) > parseInt(data.data.Limit_Kredit)){
+                    $('#flag_piutang').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varLimit = true;
+                }else{
+                    $('#flag_piutang').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varLimit = false;
+                } 
+
+                $('#limitmask').val(numberWithCommas(data.data.Limit_Kredit));
+                $('#limit').val(data.data.Limit_Kredit);
+                $('#piutangmask').val(numberWithCommas(data.data.saldopiutang));
+                $('#piutang').val(data.data.saldopiutang);
+                $('#orderOpmask').val(numberWithCommas(data.data.saldoorder)); 
+                $('#orderOp').val(data.data.saldoorder); 
+                $('#dlvOrdermask').val(numberWithCommas(data.data.saldoDlvorder)); 
+                $('#dlvOrder').val(data.data.saldoDlvorder); 
+                $('#top').val(data.detail.header[0].top);
+                $('#topmask').val(data.detail.header[0].top);
+                $('#umur').val(data.detail.header[0].Umur_faktur);
+                $('#umurmask').val(data.detail.header[0].Umur_faktur);
+                $('#pelanggan').val(Kode);
+                $('#tipepelanggan').val(data.data.Tipe_Pelanggan);
+                $('#prins_onf').val(data.data.Prins_Onf);
+                $("#flag_ppn").val(data.data.flag_ppn);
+                listprodukorder(data.data.Tipe_Pelanggan);
+                /*var detail = data.detail.query;
+                if(xx == 0){
+                    for (var i in detail) {
+                        $('#datapiutang').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td>'+detail[i].NoFaktur+'</td><td>'+detail[i].TglFaktur+'</td><td>'+detail[i].TipeDokumen+'</td><td>'+detail[i].TglJtoFaktur+'</td><td>'+detail[i].Pelanggan+'</td><td>'+detail[i].CaraBayar+'</td><td>'+detail[i].Umur_faktur+'</td><td align="right">'+numberWithCommas(detail[i].Total)+'</td><td align="right">'+numberWithCommas(detail[i].Saldo)+'</td><td align="right">'+numberWithCommas(detail[i].pelunasan)+'</td><td>'+detail[i].Nogiro+'</td><td>'+detail[i].TglGiro+'</td><td>'+detail[i].tglJTO+'</td><td align="right">'+numberWithCommas(detail[i].bayargiro)+'</td></tr>'));
+                            i++;
+                    }
+                }  
+                if(detail != ""){
+                    xx = 1;
+                }      */          
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            
+        }
+    });
+    /*
+    $.ajax({
+        url : "{{ base_url }}dataPelangganData/" + Kode,
+        type: "GET",
+        dataType: "JSON",
+        success: function(data)
+        {   
+            if (data) {
+                $('#flag_limit').val(numberWithCommas(data.d1.limit_kredit));
+                $('#flag_limitori').val(data.d1.limit_kredit);
+                $('#flag_top').val(data.d1.top);
+                $('#flag_topori').val(data.d1.top);
+                $('#flag_umur').val(data.d1.Umur_faktur);
+                $('#flag_umurori').val(data.d1.Umur_faktur);  
+                $('#flag_piutang').val(numberWithCommas(parseInt(data.d2.saldopiutang)));
+                $('#flag_piutangori').val(data.d2.saldopiutang); 
+                if(data.d1.top < data.d1.Umur_faktur){
+                    $('#flag_top').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varTOP = true;
+                }else{
+                    $('#flag_top').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        
+                    varTOP = false;
+                } 
+                if(data.d1.limit_kredit == null || data.d1.limit_kredit == ""){
+                 data.di.limit_kredit = 0;
+                }  
+                if(data.d2.saldopiutang > data.d1.limit_kredit){
+                    $('#flag_piutang').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varLimit = true;
+                }else{
+                    $('#flag_piutang').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                    varLimit = false;
+                }          
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            
+        }
+    }); */
+});
+// $('#pelangganMask').unbind();
+// FINISH LOAD DATA PELANGGAN
+
+// START LOAD DATA Salesman
+$('#salesmanMask').on('change', function() {
+    var split = this.value.split("-");
+    var Kode = split[0];
+    $('#salesman').val(Kode);
+});
+// FINISH LOAD DATA Salesman
+
+function listprodukorder(tipe){
+
+    $.ajax({
+            url : "{{ base_url }}listprodukorder",
+            type: "POST",
+            dataType: "JSON",
+            data:{tipe:tipe},
+            success: function(data)
+            {
+                // var data = data.substr(1);
+                // var data = JSON.parse(data);
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk + "~" + data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data produk');
+            }
+        });   
+
+}
+// clear row
+function clearRowDisc(e) 
+    {
+        $('#dsccab'+e).val("");
+        $('#valuedsccab'+e).val("");
+        $('#dscprins1'+e).val("");
+        $('#valuedscprins1'+e).val("");
+        $('#dscprins2'+e).val("");
+        $('#valuedscprins2'+e).val("");
+        hitung();
+    }
+// END CLEAR ROW
+
+function cashDiskon() {
+    var carabayar = document.getElementById('carabayar').value;
+    hitung();
+    if (carabayar == 'Cash' || carabayar == 'COD') {
+        $('#divCashDiskon').show();
+    }
+    else{
+        $('#divCashDiskon').hide();   
+    }
+}
+
+
+function cariKode(e){  
+    // $('#produk'+e).typeahead("destroy");  
+    $('#produk'+e).typeahead({
+            source: produkSource
+        });
+}
+
+function showModal() {
+
+    var xxx = 0 ;
+     var split = $("#pelangganMask").val().split("-");
+    var Kode = split[0];
+    var carabayar = split[3];
+
+    $.ajax({
+        url : "{{ base_url }}dataPelanggan_detail/" + Kode,
+        type: "GET",
+        // dataType: "JSON",
+        success: function(data)
+        {   
+            removeRowAll();
+            // reloadTable();
+            // var data = data.substr(1);
+            var data = JSON.parse(data);
+            if (data) {
+                
+                var detail = data.detail.query;
+                if(xxx == 0){
+                    for (var i in detail) {
+                        $('#datapiutang').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td>'+detail[i].NoFaktur+'</td><td>'+detail[i].TglFaktur+'</td><td>'+detail[i].TipeDokumen+'</td><td>'+detail[i].TglJtoFaktur+'</td><td>'+detail[i].Pelanggan+'</td><td>'+detail[i].CaraBayar+'</td><td>'+detail[i].Umur_faktur+'</td><td align="right">'+numberWithCommas(detail[i].Total)+'</td><td align="right">'+numberWithCommas(detail[i].Saldo)+'</td><td align="right">'+numberWithCommas(detail[i].pelunasan)+'</td><td>'+detail[i].Nogiro+'</td><td>'+detail[i].TglGiro+'</td><td>'+detail[i].tglJTO+'</td><td align="right">'+numberWithCommas(detail[i].bayargiro)+'</td></tr>'));
+                            i++;
+                    }
+                }  
+                if(detail != ""){
+                    xxx = 1;
+                }                
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            
+        }
+    });
+
+    $('#modal_form').modal('show');
+}
+
+function emptyRow(e){    
+    $('#produk'+e).val("").attr('readonly', false);
+    $('#jumlah'+e).val("").attr('readonly', false);
+    $('#batch'+e).val("").attr('readonly', false);
+    $('#dsccab'+e).val("").attr('readonly', false);
+    $('#dscprins1'+e).val("").attr('readonly', false);
+    $('#dscprins2'+e).val("").attr('readonly', false);
+    $('#bnscab'+e).val("").attr('readonly', false);
+    $('#bnsprins'+e).val("").attr('readonly', false);
+}
+
+function getBatch(e) {
+    var val = document.getElementById('produk'+e).value;
+    var split = val.split("~");
+    var Kode = split[0];
+    var jml = document.getElementById('jumlah'+e).value;
+    var dsccab = document.getElementById('dsccab'+e).value;
+    var dscprins1 = document.getElementById('dscprins1'+e).value;
+    var dscprins2 = document.getElementById('dscprins2'+e).value;
+    var bnscab = document.getElementById('bnscab'+e).value;
+    var bnsprins = document.getElementById('bnsprins'+e).value;
+
+    if (jml > 0) {
+        $.ajax({
+            url : "{{ base_url }}getBatch/" + Kode,
+            type: "GET",
+            // dataType: "JSON",
+            success: function(data)
+            {   
+                 // var data = data.substr(1);
+                var data = JSON.parse(data);
+                 for (var i in data) {
+                    var n = parseInt(e)+parseInt(i);
+                    if (e != n) {
+                        $('#produk'+n).attr('readonly', true);
+                        $('#jumlah'+n).attr('readonly', true);
+                        $('#batch'+n).attr('readonly', true);
+                        $('#dsccab'+n).attr('readonly', true);
+                        $('#dscprins1'+n).attr('readonly', true);
+                        $('#dscprins2'+n).attr('readonly', true);
+                        $('#bnscab'+n).attr('readonly', true);
+                        $('#bnsprins'+n).attr('readonly', true);
+                    }            
+                    $('#produk'+n).val(val);
+                    $('#dsccab'+n).val(dsccab);
+                    $('#dscprins1'+n).val(dscprins1);
+                    $('#dscprins2'+n).val(dscprins2);
+                    $('#bnscab'+n).val(bnscab);
+                    $('#bnsprins'+n).val(bnsprins);                    
+                    $('#batch'+n).val(data[i].BatchNo);
+                    if (parseInt(jml) < parseInt(data[i].UnitStok)) {
+                        $('#jumlah'+n).val(jml);
+                        break;
+                    }
+                    else{                                     
+                        $('#jumlah'+n).val(data[i].UnitStok);
+                        jml = jml - data[i].UnitStok;
+                    }
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                
+            }
+        });
+    }
+}
+
+var rowNum = 0;
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        
+        if(b == -1){
+            b = 0;
+            rowNum = 0;
+        }
+        var s = document.getElementById('jumlah'+b).value;
+        if (s) {
+            $('#removeRow').show();
+            rowNum ++;
+            var x = rowNum + 1;
+            $('#table-produk').append('<tr id="itemRow'+rowNum+'"><td>'+x+'</td><td><input type="text" name="produk['+rowNum+']" id="produk'+rowNum+'" style="width: 300px" class="delRow"  onkeyup="cariKode('+rowNum+')" onchange="getProduk('+rowNum+')" autocomplete="off"></td><td><input type="text" name="jumlah['+rowNum+']" id="jumlah'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)"></td><td><button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" title="Proses" onclick="cekstok('+rowNum+')"><i class="fa fa-trash"></i>Stok</button></td><td><input type="text" readonly="" name="stok['+rowNum+']" id="stok'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()"></td><td><input type="text" name="uom['+rowNum+']" id="uom'+rowNum+'" style="width: 100px" readonly=""></td><td><input type="text" name="hargamask['+rowNum+']" id="hargamask'+rowNum+'" style="width: 100px" readonly="" onchange="setHarga('+rowNum+')" ><input type="hidden" name="hargareal['+rowNum+']" id="hargareal'+rowNum+'" readonly=""><input type="hidden" name="harga['+rowNum+']" id="harga'+rowNum+'" readonly=""></td><td><input type="hidden" name="maksdsccab_onf['+rowNum+']" id="maksdsccab_onf'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><input type="hidden" name="total_onf['+rowNum+']" id="total_onf'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><input type="text" name="dsccab_onf['+rowNum+']" id="dsccab_onf'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()"><input type="hidden" name="valuedsccab_onf['+rowNum+']" id="valuedsccab_onf'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="hidden" name="maksdsccab['+rowNum+']" id="maksdsccab'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><input type="text" name="dsccab['+rowNum+']" id="dsccab'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()"><input type="hidden" name="valuedsccab['+rowNum+']" id="valuedsccab'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="hidden" name="maksdscprins['+rowNum+']" id="maksdscprins'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><input type="hidden" name="maksdscprins1['+rowNum+']" id="maksdscprins1'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><input type="text" name="dscprins1['+rowNum+']" id="dscprins1'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()"><input type="hidden" name="valuedscprins1['+rowNum+']" id="valuedscprins1'+rowNum+'" class="form-control"></td><td><input type="text" name="dscprins2['+rowNum+']" id="dscprins2'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()" ><input type="hidden" name="valuedscprins2['+rowNum+']" id="valuedscprins2'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="text" name="bnscab['+rowNum+']" id="bnscab'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)"><input type="hidden" name="valuebnscab['+rowNum+']" id="valuebnscab'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><input type="hidden" name="bnsprins['+rowNum+']" id="bnsprins'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><input type="hidden" name="valuebnsprins['+rowNum+']" id="valuebnsprins'+rowNum+'" onkeyup="hitung()" onchange="hitung()"><td><input type="text" name="totalvaluemask['+rowNum+']" id="totalvaluemask'+rowNum+'" style="width: 100px" class="newRow" readonly=""><input type="hidden" name="totalvalue['+rowNum+']" id="totalvalue'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="cogsvalmask['+rowNum+']" id="cogsvalmask'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="cogsvalTotmask['+rowNum+']" id="cogsvalTotmask'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="cogsval['+rowNum+']" id="cogsval'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="cogsvalTot['+rowNum+']" id="cogsvalTot'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="disprins_trans['+rowNum+']" id="disprins_trans'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="disprins_qty1['+rowNum+']" id="disprins_qty1'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="disprins_qty2['+rowNum+']" id="disprins_qty2'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="NoUsulanDisc['+rowNum+']" id="NoUsulanDisc'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="Prinsipal['+rowNum+']" id="Prinsipal'+rowNum+'" class="newRow" readonly=""><input type="hidden" name="usulandscprins1['+rowNum+']" id="usulandscprins1'+rowNum+'"><input type="hidden" name="usulandscprins2['+rowNum+']" id="usulandscprins2'+rowNum+'"><input type="hidden" name="statuspelangganprins['+rowNum+']" id="statuspelangganprins'+rowNum+'"><input type="hidden" name="kodepelangganprins['+rowNum+']" id="kodepelangganprins'+rowNum+'"></td><td><input type="text" name="expdate['+rowNum+']" id="expdate'+rowNum+'" style="width: 100px" class="newRow" readonly=""></td></tr>)');
+
+
+            $('#bucket').val(rowNum);
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning', 'PERHATIAN! Isi form diatas terlebih dahulu');
+        }
+    } 
+
+    function clearRow() 
+    {
+        var bucket = document.getElementById('bucket').value;
+        // alert(bucket);
+        for (var e = bucket; e >= 0; e--) {            
+            jQuery('#itemRow'+e).remove();            
+            rowNum--;
+            // alert(e);
+        }
+
+        $('#removeRow').hide();
+        $('#bucket').val(rowNum);
+    }  
+
+    function removeRow() 
+    {        
+        if (rowNum>0) {
+            jQuery('#itemRow'+rowNum).remove();
+            rowNum--;
+        }
+        else{
+
+            notif('warning', 'PERHATIAN! Baris pertama tidak bisa dihapus');
+        }
+        $('#bucket').val(rowNum);
+    }
+
+    function removeRowAll() 
+    {        
+        if (rowNum>0) {
+            var bucket = document.getElementById('bucket').value;
+            for (var e = bucket; e > 0; e--) {            
+                jQuery('#itemRow'+e).remove();            
+                rowNum--;
+            }
+            // function emptyRow(e){    
+            $('#produk'+0).val("").attr('readonly', false);
+            $('#jumlah'+0).val("").attr('readonly', false);
+            $('#stok'+0).val("").attr('readonly', false);
+            $('#uom'+0).val("").attr('readonly', false);
+            $('#hargamask'+0).val("").attr('readonly', false);
+            $('#batch'+0).val("").attr('readonly', false);
+            $('#dsccab'+0).val("").attr('readonly', false);
+            $('#dscprins1'+0).val("").attr('readonly', false);
+            $('#dscprins2'+0).val("").attr('readonly', false);
+            $('#bnscab'+0).val("").attr('readonly', false);
+            $('#bnsprins'+0).val("").attr('readonly', false);
+            hitung();
+            // }
+            // jQuery('#itemRow'+rowNum).remove();
+            rowNum--;
+        }
+        else{
+             clearRow();
+            // notif('warning', 'PERHATIAN! Baris pertama tidak bisa dihapus');
+        }
+        if(rowNum == -1){
+            rowNum = 0;
+        }
+        $('#bucket').val(rowNum);
+    }
+
+    var diskon = [];
+    function getProduk(e){
+        var pelanggan =document.getElementById('pelangganMask').value; 
+        var splitpel = pelanggan.split("-");
+        var Kodepel = splitpel[0];
+        var bucket =document.getElementById('bucket').value; 
+        var tipe =document.getElementById('tipefaktur').value; 
+        var Value = document.getElementById('produk'+e).value;
+        var prinsOnf = document.getElementById('prins_onf').value;
+        var split = Value.split("~");
+        var Kode = split[0];
+        var Status = true;
+        if (bucket > 0) {
+            for (var i = 0; i < bucket; i++) {
+                if (e != i) {
+                    var Value2 = document.getElementById('produk'+i).value;
+                    var split2 = Value2.split("-");
+                    var Kode2 = split2[0];
+                    if (Kode === Kode2) 
+                    { 
+                        Status = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (Status == true) {
+            $.ajax({
+                url : "{{ base_url }}getProdukBuatOrder",
+                type: "POST",
+                data:{Kode:Kode,Kodepel:Kodepel},
+                // dataType: "JSON",
+                success: function(data)
+                {   
+                    // var data = data.substr(1);
+                    //console.log(data);
+                    var data = JSON.parse(data);
+                    if (data) {      
+
+                        $('#uom'+e).val(data.Satuan);
+                        $('#stok'+e).val(data.UnitStok);
+                        $('#hargamask'+e).val(numberWithCommas(parseInt(data.HNA)));
+                        $('#harga'+e).val(parseInt(data.HNA));
+                        $('#hargareal'+e).val(parseInt(data.HNA));
+                        $('#Prinsipal'+e).val(data.Prinsipal);
+                        if(data.Prinsipal == 'NUTRINDO' || data.Prinsipal.substr(0,5) == 'CORSA' || data.Prinsipal.substr(0,6) == 'CORSA' || data.Prinsipal == 'MERSI' || data.Prinsipal == 'ALTA WRAP' /*|| data.Prinsipal == 'ALTAMED'*/){
+                            if(data.NoUsulanDisc != ""){
+                                $('#NoUsulanDisc'+e).val(data.NoUsulanDisc);
+                                $('#disprins_trans'+e).val(data.Tipe_trans);
+                                $('#disprins_qty1'+e).val(parseInt(data.qty1));
+                                $('#disprins_qty2'+e).val(parseInt(data.qty2));
+                                $('#dscprins1'+e).val(parseFloat(data.disc_prins1));
+                                $('#dscprins2'+e).val(parseFloat(data.disc_prins2));
+                                $('#usulandscprins1'+e).val(parseFloat(data.disc_prins1));
+                                $('#usulandscprins2'+e).val(parseFloat(data.disc_prins2));
+                                $('#statuspelangganprins'+e).val(data.status_pelanggan);
+                                $('#kodepelangganprins'+e).val(data.KodePelanggan);
+                                // console.log('1');
+                            }else{
+                                $('#NoUsulanDisc'+e).val('');
+                                $('#disprins_trans'+e).val('');
+                                $('#disprins_qty1'+e).val(0);
+                                $('#disprins_qty2'+e).val(0);
+                                $('#dscprins1'+e).val(0);
+                                $('#dscprins2'+e).val(0);
+                                $('#usulandscprins1'+e).val(0);
+                                $('#usulandscprins2'+e).val(0);
+                                $('#statuspelangganprins'+e).val('');
+                                $('#kodepelangganprins'+e).val('');
+                                //console.log('2');
+                            }   
+                        }else if(data.Prinsipal.substr(0,6) == 'SUNTHI'){
+                            // Penambahan Diskon Usulan Diskon Sunthi, ditambahkan diskon cabang
+                            // UJ 09 Agustus 2019
+                            if(data.NoUsulanDisc != ""){
+                                $('#NoUsulanDisc'+e).val(data.NoUsulanDisc);
+                                $('#disprins_trans'+e).val(data.Tipe_trans);
+                                $('#disprins_qty1'+e).val(parseInt(data.qty1));
+                                $('#disprins_qty2'+e).val(parseInt(data.qty2));
+                                $('#dscprins1'+e).val(parseFloat(data.disc_prins1));
+                                $('#dscprins2'+e).val(parseFloat(data.disc_prins2));
+                                $('#usulandscprins1'+e).val(parseFloat(data.disc_prins1));
+                                $('#usulandscprins2'+e).val(parseFloat(data.disc_prins2));
+                                $('#dsccab'+e).val(parseFloat(data.Dsc_Cab));
+                                $('#statuspelangganprins'+e).val(data.status_pelanggan);
+                                $('#kodepelangganprins'+e).val(data.KodePelanggan);
+                                // console.log('1');
+                            }else{
+                                $('#NoUsulanDisc'+e).val('');
+                                $('#disprins_trans'+e).val('');
+                                $('#disprins_qty1'+e).val(0);
+                                $('#disprins_qty2'+e).val(0);
+                                $('#dscprins1'+e).val(0);
+                                $('#dscprins2'+e).val(0);
+                                $('#usulandscprins1'+e).val(0);
+                                $('#usulandscprins2'+e).val(0);
+                                $('#dsccab'+e).val(0);
+                                $('#statuspelangganprins'+e).val('');
+                                $('#kodepelangganprins'+e).val('');
+                                //console.log('2');
+                            }   
+                        }else if(data.Prinsipal == 'ETICA'){
+                            console.log(data.NoUsulanDiscCab);
+                            if(data.NoUsulanDiscCab != null){
+                                $('#NoUsulanDisc'+e).val(data.NoUsulanDiscCab);
+                                $('#disprins_trans'+e).val(data.Tipe_trans);
+                                $('#dsccab'+e).val(parseFloat(data.Dsc_Cab));
+                                $('#dsccab'+e).attr('readonly', true);
+                                $('#hargamask'+e).attr('readonly', true);
+                                $('#kodepelangganprins'+e).val(data.KodePelanggan);
+                                $('#dscprins1'+e).val(0);
+                                $('#dscprins2'+e).val(0);
+                                $('#usulandscprins1'+e).val(0);
+                                $('#usulandscprins2'+e).val(0);
+                                console.log('etica');
+                            }else{
+                                $('#NoUsulanDisc'+e).val('');
+                                $('#disprins_trans'+e).val('');
+                                $('#dsccab'+e).val(0);
+                                $('#dsccab'+e).attr('readonly', false);
+                                $('#kodepelangganprins'+e).val('');
+                                $('#dscprins1'+e).val(0);
+                                $('#dscprins2'+e).val(0);
+                                $('#usulandscprins1'+e).val(0);
+                                $('#usulandscprins2'+e).val(0);
+                                console.log('ETICA else');
+                            }   
+                        }/*else if(data.Prinsipal == 'ANDALAN'){
+                            console.log(data.NoUsulanDiscCab);
+                            if(data.NoUsulanDiscCab != null){
+                                $('#NoUsulanDisc'+e).val(data.NoUsulanDiscCab);
+                                $('#disprins_trans'+e).val(data.Tipe_trans);
+                                $('#maksdsccab'+e).val(parseFloat(data.Dsc_Cab));
+                                $('#dsccab'+e).val(parseFloat(data.Dsc_Cab));
+                                $('#dsccab'+e).attr('readonly', true);
+                                $('#hargamask'+e).attr('readonly', true);
+                                $('#kodepelangganprins'+e).val(data.KodePelanggan);
+                                $('#dscprins1'+e).val(0);
+                                $('#dscprins2'+e).val(0);
+                                $('#usulandscprins1'+e).val(0);
+                                $('#usulandscprins2'+e).val(0);
+                                console.log('ANDALAN');
+                            }else{
+                                $('#NoUsulanDisc'+e).val('');
+                                $('#disprins_trans'+e).val('');
+                                $('#dsccab'+e).val(0);
+                                $('#dsccab'+e).attr('readonly', false);
+                                $('#kodepelangganprins'+e).val('');
+                                $('#dscprins1'+e).val(0);
+                                $('#dscprins2'+e).val(0);
+                                $('#usulandscprins1'+e).val(0);
+                                $('#usulandscprins2'+e).val(0);
+                                console.log('ANDALAN Else');
+                            }   
+                        }*/else{
+                            $('#dscprins1'+e).val(0);
+                            // $('#dscprins2'+e).val(0);
+                            $('#usulandscprins1'+e).val(0);
+                            $('#usulandscprins2'+e).val(0);
+                            //console.log('3');
+                        }
+
+                        if (tipe2 == "Y") {
+                            /*prins2 = $('#dscprins2'+e).val();
+
+                            if (parseFloat(prins2) > 0) {
+                                prins2 = parseFloat(prins2) - parseFloat(data.Prins_onf);
+                                max = $('#dscprins2'+e).val()
+                                if (prins2 < 0) {
+                                    prins2 = 0;
+                                }
+
+                                $('#dscprins2'+e).val(prins2);    
+
+                                $("#maksdscprinsY"+e).val(max);  
+                                // alert($("#maksdscprinsY"+e).val());
+                                // alert(e)
+                            }else{
+                                $("#maksdscprinsY"+e).val("99.99");
+                            }*/
+
+                            $("#dsccab_onf"+e).val(data.Cab_onf);
+                            $("#valuedsccab_onf"+e).val(data.Cab_onf);
+                            $("#maksdsccab_onf"+e).val(data.Cab_onf);
+                            $("#total_onf"+e).val(data.Total_onf);
+
+                            $("#dscprins1"+e).val(data.Prins_onf);
+                            $("#valuedscprins1"+e).val(data.Prins_onf);
+                            $("#maksdscprins1"+e).val(data.Prins_onf);
+                            $("#dsccab_onf"+e).prop("readonly",false);
+                        }else{
+                            $("#dsccab_onf"+e).val(0);
+                            $("#valuedsccab_onf"+e).val(0);
+                            $("#dsccab_onf"+e).prop("readonly",true);
+
+                            /*$("#dscprins1"+e).val(0);
+                            $("#valuedscprins1"+e).val(0);
+                            $("#maksdscprins1"+e).val(0);
+                            $("#dscprins1"+e).prop("readonly",true);*/
+                        }
+
+                        if(data.Dsc_Cab == '' || data.Dsc_Cab == null){
+                            var discmaxcab = '99.99';
+                        }else{
+                            var discmaxcab = data.Dsc_Cab;
+                        }
+                        if(data.Dsc_Pri == '' || data.Dsc_Pri == null){
+                            var discmaxpri = '99.99';
+                        }else{
+                            var discmaxpri = data.Dsc_Pri;
+                        }
+                        $('#maksdsccab'+e).val(discmaxcab);
+                        $('#maksdscprins'+e).val(discmaxpri);
+                        $('#cogsval'+e).val(data.uCogs);
+                        // $('#dscprins1'+e).val(prinsOnf);
+                        $('#cogsvalmask'+e).val(numberWithCommas(parseInt(data.uCogs)));
+                        if (tipe == 'ID Paket' || tipe == 'Tender')
+                            $('#hargamask'+e).attr('readonly', false);
+                        else
+                            $('#hargamask'+e).attr('readonly', true);
+                    }
+                    else{                           
+                        $('#uom'+e).val(""); 
+                        $('#stok'+e).val(""); 
+                        $('#hargamask'+e).val("");
+                        $('#harga'+e).val("");
+                        $('#hargareal'+e).val("");
+                        $('#maksdsccab'+e).val(0);
+                        $('#maksdscprins'+e).val(0);
+                        $('#cogsval'+e).val(0);
+                        $('#cogsvalmask'+e).val("");
+                        $('#dscprins1'+e).val(0);
+                        $('#dscprins2'+e).val(0);
+                        $('#dsccab'+e).val(0);
+                        $('#usulandscprins1'+e).val(0);
+                        $('#usulandscprins2'+e).val(0);
+                        $('#disprins_trans'+e).val("");
+                        $('#disprins_qty1'+e).val(0);
+                        $('#disprins_qty2'+e).val(0);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    
+                }
+            });
+            $.ajax({
+                url : "{{ base_url }}cekstokorder",
+                type: "POST",
+                data:{produk:Kode},
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    var today = new Date().getTime();
+                    var tgled = new Date(data[0].ExpDate).getTime();
+                    var hasil = tgled - today;
+                    var hari = Math.floor(hasil / (1000 * 60 * 60 * 24));
+                    $('#expdate'+e).val(data[0].ExpDate);
+                    if(hari <= 365){
+                        $('#expdate'+e).css({'color': '#FFFFFF', 'background-color': '#FF0000'});
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                }
+            });
+
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning','Duplikat Produk');
+            $('#produk'+e).val("");
+        }
+    }
+
+    function setHarga(e) {        
+        var hargamask =document.getElementById('hargamask'+e).value; 
+        var harga =document.getElementById('harga'+e).value; 
+        var real =document.getElementById('hargareal'+e).value; 
+        if(Math.floor(hargamask) == hargamask && $.isNumeric(hargamask) && parseInt(real)<parseInt(hargamask)){
+                $('#hargamask'+e).val(numberWithCommas(hargamask));   
+                $('#harga'+e).val(hargamask);   
+        }
+        else{
+            $("#notif").empty();
+            if(tipe != 'Tender'){
+                notif("warning", "PERHATIAN! Harap isi kolom harga dengan angka & harga tidak boleh lebih dari harga awal");
+            }              
+            $('#hargamask'+e).val(numberWithCommas(real));   
+            $('#harga'+e).val(real);   
+        }
+    }
+
+    function setTipeFaktur() {
+        var tipe = document.getElementById('tipefaktur').value;
+        clearRow();
+        $('#myForm')[0].reset(); 
+        $('#tipefaktur').val(tipe);
+        if (tipe == 'ID Paket') {
+            $('#idpaket').css("display", "block");
+            $('#kettender').css("display", "none");   
+        }
+        else if (tipe == 'Tender') {
+            $('#idpaket').css("display", "none");
+            $('#kettender').css("display", "block");      
+        }        
+        else {
+            $('#idpaket').css("display", "none");
+            $('#kettender').css("display", "none");
+        }
+    }
+
+    function reloadTable()
+    {
+        // $("#table-produk").empty();
+        $("##table-produk").find("tr:not(:first)").remove();
+        // var rowCount = table-produk.rows.length;
+        // for (var i = rowCount - 1; i > 0; i--) {
+        //     table-produk.deleteRow(i);
+        // }
+    }
+
+     function hitung() {
+        $("#notif").empty();
+        var gross = 0;
+        var totgross = 0;
+        var potongan = 0;
+        var totpotongan = 0;
+        var value = 0;
+        var totvalue = 0;
+        var ppn = 0;
+        var totppn = 0;
+        var summary = 0;
+        var totCogs = 0;
+        var stotCogs = 0;
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        var ongkir = ((document.getElementById('ongkir').value) ? document.getElementById('ongkir').value : 0);
+        var typeCash = ((document.getElementById('carabayar').value) ? document.getElementById('carabayar').value : '');
+        var statusppn = ((document.getElementById('flag_ppn').value) ? document.getElementById('flag_ppn').value : '');
+        if(typeCash=='Cash')
+        {
+            var cashdiskon = ((document.getElementById('cashdiskon').value) ? document.getElementById('cashdiskon').value : 0);
+
+            if (parseInt(cashdiskon) > 2) {
+                notif('warning', 'PERHATIAN! Cash Diskon Tidak Boleh melebihi dari 2 '); 
+                $("#cashdiskon").val("2");
+                return;
+            }else if (parseInt(cashdiskon) < 0) {
+                notif('warning', 'PERHATIAN! Cash Diskon Tidak Boleh Kurang dari 0 '); 
+                $("#cashdiskon").val("0");
+                return;
+            }else{
+                $("#notif").empty();
+            }
+        }else
+        {
+            var cashdiskon = 0;
+        }
+
+       var totcashdiskon = 0;
+        for (var e = 0; e <= bucket; e++) {
+
+            var jml = parseInt((document.getElementById('jumlah'+e).value) ? document.getElementById('jumlah'+e).value : 0);
+            var bnscab = parseInt((document.getElementById('bnscab'+e).value) ? document.getElementById('bnscab'+e).value : 0);
+            var dsccab_onf = ((document.getElementById('dsccab_onf'+e).value) ? document.getElementById('dsccab_onf'+e).value : 0);
+            var total_onf = ((document.getElementById('total_onf'+e).value) ? document.getElementById('total_onf'+e).value : 0);
+
+            var bnsprins = parseInt((document.getElementById('bnsprins'+e).value) ? document.getElementById('bnsprins'+e).value : 0);
+
+            var harga = ((document.getElementById('harga'+e).value) ? document.getElementById('harga'+e).value : 0);
+            var dsccab = ((document.getElementById('dsccab'+e).value) ? document.getElementById('dsccab'+e).value : 0);
+            var dscprins1 = ((document.getElementById('dscprins1'+e).value) ? document.getElementById('dscprins1'+e).value : 0);
+            var dscprins2 = ((document.getElementById('dscprins2'+e).value) ? document.getElementById('dscprins2'+e).value : 0);
+
+            var unCogs = ((document.getElementById('cogsval'+e).value) ? document.getElementById('cogsval'+e).value : 0);
+
+            var dsccabmax = ((document.getElementById('maksdsccab'+e).value) ? document.getElementById('maksdsccab'+e).value : 0);
+            var dsccabmax_onf = ((document.getElementById('maksdsccab_onf'+e).value) ? document.getElementById('maksdsccab_onf'+e).value : 0);
+            var dscprinsmax = ((document.getElementById('maksdscprins'+e).value) ? document.getElementById('maksdscprins'+e).value : 0);
+            var dscprinsmaxY = ((document.getElementById('maksdscprinsY'+e).value) ? document.getElementById('maksdscprinsY'+e).value : 0);
+            var dscprins1max = ((document.getElementById('maksdscprins1'+e).value) ? document.getElementById('maksdscprins1'+e).value : 0);
+            var dscprins2max = ((document.getElementById('maksdscprins2'+e).value) ? document.getElementById('maksdscprins2'+e).value : 0);
+            var NoUsulanDisc = document.getElementById('NoUsulanDisc'+e).value ? document.getElementById('NoUsulanDisc'+e).value : "";
+
+            if( (parseFloat(dsccab) + parseFloat(dscprins1) + parseFloat(dscprins2) ) > 99.99999 )
+            {
+                notif('warning', 'PERHATIAN! Diskon tidak boleh melebihi 100% '); 
+                clearRowDisc(e);
+            }
+
+            if(parseFloat(dsccab) > parseFloat(dsccabmax)){
+                notif('warning', 'PERHATIAN! Diskon Cabang tidak boleh melebihi Diskon Maksimal Cabang '); 
+                // clearRowDisc(e);
+            }
+
+            if (tipe2 == "Y") {
+                if((parseFloat(dscprins1) + parseFloat(dsccab_onf)) > parseFloat(total_onf)){
+                    notif('warning', 'PERHATIAN! Diskon Cabang Fee tidak boleh melebihi ' + total_onf + "%"); 
+                    $('#dsccab_onf'+e).val(dsccabmax_onf);
+                    $('#dscprins1'+e).val(dscprins1max);
+                }
+
+                /*if (parseFloat(dscprins2) > 0 ) {
+                    if((parseFloat(dscprins1) + parseFloat(dscprins2)) > (parseFloat(dscprinsmaxY) )){
+                        notif('danger', 'PERHATIAN! Diskon Prinsipal tidak boleh melebihi '+ dscprinsmaxY + '%'); 
+                        
+                        a = parseFloat(dscprinsmaxY) - parseFloat(dscprins1);
+                        if (a < 0 ) {
+                            a = 0;
+                        }
+                        $('#dscprins2'+e).val(a);
+                    }
+                }*/
+            }
+
+            if(NoUsulanDisc == ""){
+                if((parseFloat(dscprins1) + parseFloat(dscprins2)) > (parseFloat(dscprinsmax) + parseFloat(dscprins2max))){
+                    notif('warning', 'PERHATIAN! Diskon Prinsipal tidak boleh melebihi Diskon Maksimal Prinsipal '); 
+                    // clearRowDisc(e);
+                }
+            }
+            
+
+            //notif('warning',  dsccab + '-' + dscprins1 + '-' + dscprins2);
+
+            gross = (jml  + (bnscab + bnsprins)) * harga;
+            stotCogs = (jml  + (bnscab + bnsprins)) * unCogs;     
+            var diskoncab = parseFloat(dsccab)/100;
+            var diskoncab_onf = parseFloat(dsccab_onf)/100;
+
+            var dsccab = (harga * parseInt(jml)) * (parseFloat(diskoncab)); 
+            var dsccab_onf = (harga * parseInt(jml)) * (parseFloat(diskoncab_onf));
+            var boncab = (bnscab * harga);
+
+            var diskonprins1 = parseFloat(dscprins1)/100;
+            var diskonprins2 = parseFloat(dscprins2)/100;
+            var diskonprins = diskonprins1 + diskonprins2;
+            var dscprins1 = (harga * parseInt(jml)) * (parseFloat(diskonprins1));
+            var dscprins2 = (harga * parseInt(jml)) * (parseFloat(diskonprins2));
+            var dscprins = parseFloat(dscprins1) + parseFloat(dscprins2);
+            var bonprins = (parseInt(bnsprins) * parseFloat(harga));
+
+            var dscTot = Math.ceil(dsccab) + Math.ceil(dsccab_onf) + Math.ceil(dscprins);
+            var bnsTot = Math.ceil(boncab) + Math.ceil(bonprins);
+            
+            var potongan = Math.ceil(dscTot) + Math.ceil(bnsTot);
+            var cod =  Math.ceil((Math.ceil(gross) - Math.ceil(potongan)) * (cashdiskon/100));    
+            var value = Math.ceil(gross - potongan - cod);
+            // if(statusppn == 'Y'){
+                var ppn = Math.floor(value * 0.1);
+            /*}else{
+                var ppn = 0;
+            }*/
+            
+            var TotValuePpn = value + ppn; 
+
+            $('#totalvaluemask'+e).val(numberWithCommas(TotValuePpn));
+            $('#totalvalue'+e).val(TotValuePpn);
+            $('#valuedsccab'+e).val(dsccab);
+            $('#valuedsccab_onf'+e).val(dsccab_onf);
+            $('#valuedscprins1'+e).val(dscprins1);
+            $('#valuedscprins2'+e).val(dscprins2);
+            $('#valuebnscab'+e).val(boncab);
+            $('#valuebnsprins'+e).val(bonprins);
+            $('#cogsvalTot'+e).val(stotCogs);
+            $('#cogsvalTotmask'+e).val(numberWithCommas(stotCogs));
+            totgross = totgross + gross;
+            totpotongan = totpotongan + potongan;
+            totvalue = totvalue + value;
+            totppn = totppn + ppn;
+            summary = summary + TotValuePpn;
+            totCogs = totCogs + stotCogs;
+            totcashdiskon = totcashdiskon + cod;
+        }
+        if (summary <= 250000) {
+            var materai = 0;
+        }
+        else if (summary <= 1000000) {
+            var materai = 0;
+        }
+        else{
+            var materai = 0;
+        }
+        //totcashdiskon = totvalue * cashdiskon/100;
+        summary = totvalue + totppn + parseInt(materai) + parseInt(ongkir);
+        $('#grosirmask').val(numberWithCommas(totgross));
+        $('#potonganmask').val(numberWithCommas(totpotongan));
+        $('#valuemask').val(numberWithCommas(totvalue));
+        $('#cashdiskontotalmask').val(numberWithCommas(totcashdiskon));
+        $('#ppnmask').val(numberWithCommas(totppn));
+        $('#totalmask').val(numberWithCommas(summary));
+        $('#grosir').val(totgross);
+        $('#potongan').val(totpotongan);
+        $('#value').val(totvalue);
+        $('#cashdiskontotal').val(totcashdiskon);
+        $('#ppn').val(totppn);
+        $('#materai').val(materai);
+        $('#total').val(summary);
+        $('#totalCogsF').val(totCogs);
+        $('#totalCogsFmask').val(numberWithCommas((totCogs)));
+    }
+
+    function saveData()
+    {
+        $("#notif").empty();
+        hitung();
+        $('.myprogress').css('width', '0');
+        // $('.msg').text('');
+        var pelanggan =document.getElementById('pelangganMask').value; 
+        var salesman =document.getElementById('salesmanMask').value; 
+        var kodesales =document.getElementById('salesman').value; 
+        var tipe =document.getElementById('tipefaktur').value; 
+        var bucket = document.getElementById('bucket').value;
+        var status = true;
+        var split = pelanggan.split("-");
+        var Kode = split[0];
+        $("#flag_ppn").val('Y');
+        
+        cekEDSIPA(Kode);
+
+        if(varLimit == true){
+            if(parseInt(varBukaTop) == 0){    
+                notif('warning', 'PERHATIAN! Limit Tidak Mencukupi');
+                //status = false;
+            }
+        }
+        console.log(varTop);
+        if(varTop  == true){
+            if(parseInt(varBukaTop) == 0){ 
+                notif('warning', 'PERHATIAN! Pelanggan Lewat TOP ');
+                //status = false;
+            }
+        }
+
+        if ($.inArray(salesman, salesmanSource) == -1) {
+            notif('warning', 'PERHATIAN! Nama Salesman tidak sesuai dengan list');
+            status = false;
+        }
+
+        if(salesman == ""){
+            notif('warning', 'PERHATIAN! Kolom Salesman Wajib Di Isi');
+            status = false;
+        }
+        if(kodesales == ""){
+            notif('warning', 'PERHATIAN! Kolom Salesman Wajib Di Isi');
+            status = false;
+        }
+
+        if (tipe == "ID Paket" ){            
+            var idpaket =document.getElementById('idpaket').value; 
+            if (idpaket == ""){
+                notif('warning', 'PERHATIAN! ID Paket masih kosong, harap diisi');
+                status = false;
+            }
+        }
+        else if(tipe == "Tender") {
+            var kettender =document.getElementById('kettender').value;  
+            if (kettender == ""){
+                notif('warning', 'PERHATIAN! Keterangan Tender masih kosong, harap diisi');
+                status = false;
+            }  
+        }
+
+        if (pelanggan.split('-').pop() == 'Y') {
+            acu2 = $("#acu2").val();
+
+            if (acu2 == "") {
+                notif('warning', 'PERHATIAN! Acu2 masih kosong, harap diisi');
+                status = false;
+            }
+
+            if ($.inArray(acu2, pelanggan2Source) == -1) {
+                notif('warning', 'PERHATIAN! Acu2 tidak sesuai dengan list');
+                status = false;
+            }
+        }
+        
+        var arr_batch=[];
+        for (var e = 0; e <= bucket; e++) {
+            n = parseInt(e) + 1;
+            var produk = document.getElementById('produk'+e).value;
+            // var qty = document.getElementById('jumlah'+e).value;
+            var qty = parseInt((document.getElementById('jumlah'+e).value) ? document.getElementById('jumlah'+e).value : 0);
+            // var bnscab = document.getElementById('bnscab'+e).value;
+            var bnscab = parseInt((document.getElementById('bnscab'+e).value) ? document.getElementById('bnscab'+e).value : 0);
+            var harga = document.getElementById('harga'+e).value;
+            var totvalue = document.getElementById('totalvalue'+e).value; 
+            var Prinsipal = document.getElementById('Prinsipal'+e).value; 
+            var dscprins1 = document.getElementById('dscprins1'+e).value; 
+            var dscprins2 = document.getElementById('dscprins2'+e).value; 
+            var dscqty1 = parseInt(document.getElementById('disprins_qty1'+e).value); 
+            var dscqty2 = parseInt(document.getElementById('disprins_qty2'+e).value);
+            var dscprins = parseFloat(dscprins1) + parseFloat(dscprins2);
+            var usulandscprins1 = document.getElementById('usulandscprins1'+e).value; 
+            var usulandscprins2 = document.getElementById('usulandscprins2'+e).value;
+            var usulandscprins = parseFloat(usulandscprins1) + parseFloat(usulandscprins2);
+            var NoUsulanDisc = document.getElementById('NoUsulanDisc'+e).value;
+            var maksdscprins = document.getElementById('maksdscprins'+e).value;
+            var statuspelangganprins = document.getElementById('statuspelangganprins'+e).value;
+            var kodepelangganprins = document.getElementById('kodepelangganprins'+e).value;
+            var total_qty = parseInt(qty) + parseInt(bnscab);
+            if(Prinsipal == 'NUTRINDO' || Prinsipal.substr(0,5) == 'CORSA' || Prinsipal == 'MERSI' || Prinsipal == 'ALTA WRAP'){
+                if(NoUsulanDisc != ''){
+                    if((total_qty >= dscqty1) && (total_qty <= dscqty2)){
+                        if(dscprins > usulandscprins){
+                            notif('danger', 'PERHATIAN! Diskon Prinsipal pada baris ke-'+n+' tidak boleh melebihi Disc Usulan');
+                            status = false;
+                        }else{
+                            status = true;
+                        }
+                    }else{
+                        notif('warning', 'PERHATIAN! Qty SO tidak berada dalam range Usulan Diskon pada baris ke-'+n+' ');
+                         status = false;
+                    }
+                    if(statuspelangganprins == 'satu'){
+                        if(kodepelangganprins != Kode){
+                            notif('warning', 'PERHATIAN! Pelanggan order tidak sama dengan usulan diskon prinsipal  pada baris ke-'+n+' ');
+                            status = false;
+                        }
+                    }
+                    if(statuspelangganprins == 'All'){
+                        if(kodepelangganprins != ''){
+                           if(kodepelangganprins != Kode){
+                                notif('warning', 'PERHATIAN! Pelanggan order tidak sama dengan usulan diskon prinsipal  pada baris ke-'+n+' ');
+                                status = false;
+                            } 
+                        }
+                    }
+                }else{
+                    if(maksdscprins < dscprins){
+                        notif('warning', 'PERHATIAN! Diskon Prinsipal pada baris ke-'+n+' tidak boleh melebihi Disc Usulan');
+                        status = false;
+                    }else{
+                        status = true;
+                    }
+                }
+            } 
+
+            /*if((qty <= 0 || qty == "") && (bnscab <= 0 || bnscab == "") ){
+                notif('warning', 'PERHATIAN! Jumlah Barang / jumlah Bonus pada baris ke-'+n+' tidak boleh kosong atau lebih kecil dari 0');
+                status = false;
+            }*/
+
+            if(qty > 0 && (totvalue == 0 || totvalue == "")){
+               notif('warning', 'PERHATIAN! ada value yg Nol pada baris ke-'+n+' sedangkan Qty SO lebih dari 0');
+                status = false; 
+            }
+
+            // if (total_qty <= 0 || total_qty == "") {
+            //     notif('warning', 'PERHATIAN! Jumlah Barang / jumlah Bonus pada baris ke-'+n+' tidak boleh kosong atau lebih kecil dari 0');
+            //     status = false;
+            // }
+
+            if (harga <= 0 || harga == "") {
+                notif('warning', 'PERHATIAN! Harga Barang pada baris ke-'+n+' tidak boleh kosong atau lebih kecil dari 0');
+                ocument.getElementById('harga'+e).value = 0;
+                status = false;
+            }
+
+            var xx = arr_batch.findIndex(x => x.produk==produk);
+            if (xx === -1){
+                arr_batch.push({
+                    produk : produk
+                });
+            }
+            else {
+               var jj = arr_batch.findIndex(x => x.produk==produk);
+               if(jj === -1){
+                    arr_batch.push({
+                        produk : produk
+                    });
+               }else{
+                    notif("warning","PERHATIAN! Ada Pemilihan Produk yg sama.");
+                    status = false;
+               }
+           }
+        }
+        /*var progress = $(".loading-progress").progressTimer({
+                            timeLimit: 10,
+                            onFinish:function () {
+                                notif('success', '100 % Completed');
+                            }
+                        });*/
+        if (status == true) {
+            $('#progressGIF').show();
+            $.ajax({
+                url : "{{ base_url }}saveDataOrder/",
+                type: "POST",
+                data: $('#myForm').serialize(),
+                dataType: "JSON",
+                // contentType: false,
+                // processData: false,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = parseInt(percentComplete * 100);
+                            $('.myprogress').text(percentComplete + '%');
+                            $('.myprogress').css('width', percentComplete + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(data)
+                {           
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil disimpan');
+                        // if(data.NoDO != ""){
+                        //     cetak(data.NoDO);
+                        // }  
+                        $('#myForm')[0].reset(); 
+                    }
+                    $('#progressGIF').hide();
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                   $('#progressGIF').hide();
+                   location.reload();
+                }
+            }).error(function(){
+              progress.progressTimer('error', {
+              errorText:'ERROR!',
+              onFinish:function(){
+                alert('There was an error processing your information!');
+              }
+            });
+            }).done(function(){
+              progress.progressTimer('complete');
+            });
+        }        
+    }
+    function cetak(no){
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}printdataDO",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {
+                vue_cetak.TglDO             = data[0].TglDO;
+                vue_cetak.NoDO              = data[0].NoDO;
+                vue_cetak.TipePelanggan     = data[0].TipePelanggan;
+                vue_cetak.NamaPengirim      = data[0].NamaPengirim;
+                vue_cetak.Pelanggan         = data[0].Pelanggan;
+                vue_cetak.NamaPelanggan     = data[0].NamaPelanggan;
+                vue_cetak.AlamatKirim       = data[0].AlamatKirim;
+                vue_cetak.Cabang            = data[0].Cabang;
+                vue_cetak.NPWPPelanggan     = data[0].NPWPPelanggan;
+                vue_cetak.CaraBayar         = data[0].CaraBayar;
+                vue_cetak.TOP               = data[0].TOP;
+                vue_cetak.Status            = data[0].Status;
+                vue_cetak.statusPusat       = data[0].statusPusat;
+                vue_cetak.TipeFaktur        = data[0].TipeFaktur;
+                vue_cetak.Gross             = data[0].Gross;
+                vue_cetak.Value             = data[0].Value;
+                vue_cetak.Potongan          = data[0].Potongan;
+                vue_cetak.Ppn               = data[0].Ppn;
+                vue_cetak.Materai           = data[0].Materai;
+                vue_cetak.OngkosKirim       = data[0].OngkosKirim;
+                vue_cetak.Total             = data[0].Total;
+                vue_cetak.data_detail       = data;
+                var total_value = Math.round(data[0].Total);
+                document.getElementById("terbilang_value").innerHTML = terbilang(total_value);
+                setTimeout(function(){
+                    $('#print_out').print();
+                },1000);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'print DO tidak bisa dilakukan');
+            }
+        });
+       
+    }
+    function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+
+    function acubidan() {
+        var pelanggan =document.getElementById('pelangganMask').value; 
+        var split = pelanggan.split("-");
+        // tipe2 = split[5];
+        tipe2 = pelanggan.split('-').pop();
+        if (tipe2 == 'Y') {
+            $('#divacu2').show();
+            $.ajax({
+                url : "{{ base_url }}listPelanggan2",
+                type: "GET",
+                // dataType: "JSON",
+                success: function(data)
+                {
+                    var data = JSON.parse(data);
+                    for (var i in data) {
+                        pelanggan2Source[i] = data[i].Kode+"- Y";
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data pelanggan');
+                }
+            });   
+            $('#acu2').typeahead({
+                    source: pelanggan2Source,
+                });
+        }
+        else{
+            $('#divacu2').hide(); 
+            $('#acu2').val('');  
+        }
+    }
+
+    $('#acu2').on('change', function() {
+        // Kode = $("#acu2").split("-")[0];
+        $('#progressGIF').show();
+        Kode = $("#acu2").val().split("-")[0];
+        $.ajax({
+            url : "{{ base_url }}dataPelanggan_acu2/"+Kode,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {       
+               if(data != null){
+
+                    $('#flag_limit').val(numberWithCommas(data.data.limit_kredit));
+                    $('#flag_limitori').val(data.data.limit_kredit);
+                    $('#flag_top').val(data.detail.header[0].top);
+                    $('#flag_topori').val(data.detail.header[0].top);
+                    $('#flag_umur').val(data.detail.header[0].Umur_faktur);
+                    $('#flag_umurori').val(data.detail.header[0].Umur_faktur); 
+                    $('#flag_buka_top').val(data.data.Buka_Top); 
+                    varBukaTop = data.data.Buka_Top;
+
+                    if(data.data.saldoorder == null ||data.data.saldoorder == ''){
+                        data.data.saldoorder = 0;
+                    }
+                    $piutang = parseInt(data.data.saldoorder) + parseInt(data.data.saldopiutang);
+
+                    $('#flag_piutang').val(numberWithCommas($piutang));
+                    $('#flag_piutangori').val($piutang); 
+
+                    if(parseInt($('#flag_top').val()) < parseInt($('#flag_umur').val())){
+                        $('#flag_top').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varTop = true;
+                    }else{
+                        $('#flag_top').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varTop = false;
+                        console.log(varTop)
+                    } 
+
+                    if(parseInt($piutang) > parseInt(data.data.limit_kredit)){
+                        $('#flag_piutang').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varLimit = true;
+                    }else{
+                        $('#flag_piutang').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varLimit = false;
+                    } 
+
+             
+               }
+               $('#progressGIF').hide();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $('#progressGIF').hide();
+                notif('error', 'PERHATIAN! Gagal tarik data LIMIT TOP retail');
+                $('#flag_limit').val(numberWithCommas(0));
+                $('#flag_limitori').val(0);
+
+                $('#flag_top').val(numberWithCommas(0));
+                $('#flag_topori').val(0);
+            }
+        });
+    });
+
+    function cekEDSIPA(Kode){
+
+    infoSO.innerHTML = '';
+    $.ajax({
+            url : "{{ base_url }}cekEDSIPA/"+Kode,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+
+            var edsipa = new Date(data.dataedsipa.EDSIPA).getTime();
+            var tglnow = new Date(data.dataedsipa.DAYSERVER).getTime();
+            var hasil = edsipa - tglnow;
+            var hari = Math.floor(hasil / (1000 * 60 * 60 * 24));
+            var btnsave = document.getElementById('btnSave');
+            var btnadd = document.getElementById('btnAdd');
+            var infoEDSO = document.getElementById('infoSO');
+            
+            
+            var btnusulan = document.getElementById('btnUsulanEDSIPA');
+
+
+            if(data.dataedsipa.CekSIPA == "Y"){
+                
+                    
+                    if(hari <= 30){
+                             notif('warning', 'PERHATIAN! ED SIPA Habis dalam '+hari+' hari lagi');
+
+                             infoSO.innerHTML = '<blink>PERHATIAN! STATUS ED SIPA HABIS : '+hari+' HARI</blink>';
+
+                            btnsave.style = null;
+                            btnadd.style = null;
+                            btnusulan.style = "opacity: 0; display: none;";
+
+                            // console.log(data.dataaprove[0].buka);
+                            
+
+                            if(data.dataaprove[0].buka == 0){
+                                
+                                 if(hari <= data.dataedsipa.HariEDKunci){
+                                    
+                                         if(data.dataedsipa.KunciTrans1 == "Y"){
+                                            notif('warning', 'Silahkan Usulan');
+                                            infoSO.innerHTML = '<blink>PERHATIAN! ED SIPA AKAN HABIS '+hari+' HARI LAGI SILAHKAN USULAN</blink>';
+                                            btnsave.style = "opacity: 0; display: none;";
+                                            btnadd.style = "opacity: 0; display: none;";
+                                           
+                                            btnusulan.style = null;
+                                            removeRowAll();
+                                            
+                                         }
+                                         if(hari <= 0){
+                                                 notif('warning', 'PERHATIAN! ED SIPA Sudah Habis');
+                                                 infoSO.innerHTML = '<blink>PERHATIAN! STATUS ED SIPA HABIS SIPA ED '+data.dataedsipa.EDSIPA+'</blink>';
+                                                 if(data.dataedsipa.KunciTrans2 == "Y"){
+                                                    btnsave.style = "opacity: 0; display: none;";
+                                                    btnadd.style = "opacity: 0; display: none;";
+                                                    btnusulan.style = "opacity: 0; display: none;";
+                                                    removeRowAll();
+                                                 }
+
+                                            }
+
+                                    }
+                               
+                            } 
+                            
+                    }
+                   
+            }else{
+                    btnsave.style = null;
+                    btnadd.style = null;
+                    btnusulan.style = "opacity: 0; display: none;";
+                 }
+             // console.log(hari);
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data produk');
+            }
+        });   
+            
+            
+        }
+
+        function usulanEDSIPA(){
+        var pelanggan =document.getElementById('pelangganMask').value; 
+        
+        var status = false;
+        var split = pelanggan.split("-");
+        var Kode = split[0];
+        if(pelanggan == ""){
+            notif('warning', 'PERHATIAN! Pelanggan Tidak Boleh Kosong');
+        }else{status=true;}
+
+         if (status == true) {
+            $('#progressGIF').show();
+            $.ajax({
+                url : "{{ base_url }}saveUsulanEDSIPA/",
+                type: "POST",
+                data: $('#myForm').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {           
+                    
+                        notif('success', 'SUKSES! Data berhasil disimpan ' + data.status);
+                        // if(data.NoDO != ""){
+                        //     cetak(data.NoDO);
+                        // }  
+                        $('#myForm')[0].reset(); 
+                    
+                    $('#progressGIF').hide();
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                   $('#progressGIF').hide();
+                   location.reload();
+                }
+            });
+        }        
+
+    }
+
+    function cekstok(e){
+        $('#modal_stok').modal('show');
+        var list =  document.getElementById('produk'+e).value;
+        var produk = list.split("~")[0];
+        $('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}cekstokorder/",
+            type: "POST",
+            data:{produk:produk},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                for (var i in data) {
+                    $('#datastok').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td>'+data[i].KodeProduk+'</td><td>'+data[i].NamaProduk+'</td><td>'+numberWithCommas(data[i].UnitStok)+'</td><td>'+data[i].BatchNo+'</td><td>'+data[i].ExpDate+'</td><td>'+data[i].NoDokumen+'</td></tr>'));
+                    i++;
+                }         
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+            }
+        });
+    }
+
+    
+    function setNo_Order(){
+        var nm_pelanggan = $('#no_Order option:selected').attr('nm-pelanggan');
+        var sp = $('#no_Order option:selected').attr('nm-SP');
+        split_plg = nm_pelanggan.split("-");
+        KodePelanggan =split_plg[0];
+        $("#flag_ppn").val('Y');
+        $("#nosp").val(sp);
+
+        $("#pelangganMask").val(nm_pelanggan);
+
+        $("#pelanggan").val(KodePelanggan);
+        acubidan();
+        no = $('#no_Order option:selected').val();
+
+        // produkSource.length = 0;
+            // START CEK BPB
+            $.ajax({
+                    url : "{{ base_url }}getOrderSalesman",
+                    type: "POST",
+                    data:{no:sp,KodePelanggan:KodePelanggan},
+                    dataType: "JSON",
+                    success: function(data)
+                    {
+                        // console.log(data.prins1);
+                       clearRow(); 
+                        var b = document.getElementById('bucket').value;
+                
+                            rowNum = 0;
+                            ii = 1;
+                        for(i in data.data){
+                            var total_onf = parseFloat(data.Cab_onf)+ parseFloat(data.prins1);
+                            $('#table-produk').append(
+                                '<tr id="itemRow'+rowNum+'">'+
+                                    '<td>'+ii+'</td>'+
+                            
+                                    '<td>'+
+                                        '<input type="text" name="produk['+rowNum+']" id="produk'+rowNum+'" style="width: 300px" class="delRow"  onkeyup="cariKode('+rowNum+')" value="'+data.data[i].KodeprodukPecah+'~'+data.data[i].NamaProduk+'"  readonly="true" autocomplete="off">'+
+                                        /*'<input type="text" name="produk['+rowNum+']" id="produk'+rowNum+'"  value="'+data.data[i].Produk1+'" readonly="true" style="width: 300px" class="delRow"   autocomplete="off">'+*/
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" name="jumlah['+rowNum+']" id="jumlah'+rowNum+'" value="'+data.data[i].Qty2+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" title="Proses" onclick="cekstok('+rowNum+')"><i class="fa fa-trash"></i>Stok</button>'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" readonly="" name="stok['+rowNum+']" id="stok'+rowNum+'" value="'+data.data[i].UnitStok+'" readonly="true" style="width: 70px" onkeyup="hitung()" onchange="hitung()">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" name="uom['+rowNum+']" id="uom'+rowNum+'"  value="'+data.data[i].Satuan+'" readonly="true" readonly="">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" name="hargamask['+rowNum+']" id="hargamask'+rowNum+'" value="'+number_format(data.data[i].Harga)+'" readonly="true" style="width: 100px" readonly="" onchange="setHarga('+rowNum+')" >'+
+                                        '<input type="hidden" name="hargareal['+rowNum+']" id="hargareal'+rowNum+'" readonly="">'+
+                                        '<input type="hidden" name="harga['+rowNum+']" id="harga'+rowNum+'" value="'+data.data[i].Harga+'" readonly="">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="hidden" name="maksdsccab_onf['+rowNum+']" id="maksdsccab_onf'+rowNum+'" value="'+data.Cab_onf+'" onkeyup="hitung()" onchange="hitung()">'+
+                                        '<input type="hidden" name="total_onf['+rowNum+']" id="total_onf'+rowNum+'" value="'+total_onf+'" onkeyup="hitung()" onchange="hitung()">'+
+                                        '<input type="text" name="dsccab_onf['+rowNum+']" id="dsccab_onf'+rowNum+'" value="'+data.Cab_onf+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()">'+
+                                        '<input type="hidden" name="valuedsccab_onf['+rowNum+']" id="valuedsccab_onf'+rowNum+'" value="'+data.Cab_onf+'" onkeyup="hitung()" onchange="hitung()">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="hidden" name="maksdsccab['+rowNum+']" id="maksdsccab'+rowNum+'" onkeyup="hitung()" onchange="hitung()">'+
+                                        '<input type="text" name="dsccab['+rowNum+']" id="dsccab'+rowNum+'" value="'+data.data[i].Diskon2+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()">'+
+                                        '<input type="hidden" name="valuedsccab['+rowNum+']" id="valuedsccab'+rowNum+'" value="'+data.data[i].Diskon2+'" onkeyup="hitung()" onchange="hitung()">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="hidden" name="maksdscprins['+rowNum+']" id="maksdscprins'+rowNum+'"  value="'+data.prins1+'" onkeyup="hitung()" onchange="hitung()" value="0">'+
+                                        '<input type="hidden" name="maksdscprinsY['+rowNum+']" id="maksdscprinsY'+rowNum+'"  value="'+data.prins1+'" onkeyup="hitung()" onchange="hitung()" >'+
+                                        '<input type="hidden" name="maksdscprins1['+rowNum+']" id="maksdscprins1'+rowNum+'"  value="'+data.prins1+'" onkeyup="hitung()" onchange="hitung()" value="0">'+
+                                        '<input type="text" name="dscprins1['+rowNum+']" id="dscprins1'+rowNum+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()" value="'+data.prins1+'">'+
+                                        '<input type="hidden" name="valuedscprins1['+rowNum+']"  value="0"id="valuedscprins1'+rowNum+'" class="form-control">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" name="dscprins2['+rowNum+']" id="dscprins2'+rowNum+'" value="'+data.data[i].Diskon1+'"  style="width: 70px" onkeyup="hitung()" onchange="hitung()" >'+
+                                        '<input type="hidden" name="maksdscprins2['+rowNum+']" id="maksdscprins2'+rowNum+'"  value="'+data.data[i].Diskon1+'" onkeyup="hitung()" onchange="hitung()" >'+
+                                        '<input type="hidden" name="valuedscprins2['+rowNum+']" id="valuedscprins2'+rowNum+'" value="'+data.data[i].Diskon1+'"  onkeyup="hitung()" onchange="hitung()">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" name="bnscab['+rowNum+']" id="bnscab'+rowNum+'"  value="'+data.data[i].Bonus+'" style="width: 70px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)">'+
+                                        '<input type="hidden" name="valuebnscab['+rowNum+']" id="valuebnscab'+rowNum+'" onkeyup="hitung()" onchange="hitung()">'+
+                                    '</td>'+
+                                        '<input type="hidden" name="bnsprins['+rowNum+']" id="bnsprins'+rowNum+'" onkeyup="hitung()" onchange="hitung()">'+
+                                        '<input type="hidden" name="valuebnsprins['+rowNum+']" id="valuebnsprins'+rowNum+'" onkeyup="hitung()" onchange="hitung()">'+
+                                    '<td>'+
+                                        '<input type="text" name="totalvaluemask['+rowNum+']" id="totalvaluemask'+rowNum+'" style="width: 100px" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="totalvalue['+rowNum+']" id="totalvalue'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="cogsvalmask['+rowNum+']" id="cogsvalmask'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="cogsvalTotmask['+rowNum+']" id="cogsvalTotmask'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="cogsval['+rowNum+']" id="cogsval'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="cogsvalTot['+rowNum+']" id="cogsvalTot'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="disprins_trans['+rowNum+']" id="disprins_trans'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="disprins_qty1['+rowNum+']" id="disprins_qty1'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="disprins_qty2['+rowNum+']" id="disprins_qty2'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="NoUsulanDisc['+rowNum+']" id="NoUsulanDisc'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="Prinsipal['+rowNum+']" id="Prinsipal'+rowNum+'" class="newRow" readonly="">'+
+                                        '<input type="hidden" name="usulandscprins1['+rowNum+']" id="usulandscprins1'+rowNum+'">'+
+                                        '<input type="hidden" name="usulandscprins2['+rowNum+']" id="usulandscprins2'+rowNum+'">'+
+                                        '<input type="hidden" name="statuspelangganprins['+rowNum+']" id="statuspelangganprins'+rowNum+'">'+
+                                        '<input type="hidden" name="kodepelangganprins['+rowNum+']" id="kodepelangganprins'+rowNum+'">'+
+                                    '</td>'+
+                                    '<td>'+
+                                        '<input type="text" name="expdate['+rowNum+']" id="expdate'+rowNum+'" style="width: 100px" class="newRow" readonly="">'+
+                                    '</td>'+
+                                '</tr>)');
+
+                            // alert(rowNum);
+                            $('#bucket').val(rowNum);
+                            getProduk(rowNum);
+                            rowNum++;
+                            ii++;
+                            hitung();
+                            // listprodukorder(data[i].Produk1);
+                            
+                        }
+                                            
+
+                        // cek_top_limit(nm_pelanggan);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        $("#notif").empty();
+                        notif('danger','Error get list data from ajax');
+                    }
+                });
+        
+        // alert(nm_pelangan);
+    }
+
+    function number_format(nStr)
+    {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+
+    function limit_top(Kode){
+        $('#progressGIF').show();
+
+        $.ajax({
+            url : "{{ base_url }}dataPelanggan/" + Kode,
+            type: "GET",
+            // dataType: "JSON",
+            success: function(data)
+            {   
+                // removeRowAll();
+                // reloadTable();
+                // var data = data.substr(1);
+                var data = JSON.parse(data);
+                if (data) {
+                    $("#carabayar").val(data.data.Cara_Bayar);
+                    cashDiskon();
+                    
+                    if(data.data.Limit_Kredit == null || data.data.Limit_Kredit == ""){
+                     data.data.Limit_Kredit = 0;
+                    }  
+                    if(data.detail.header[0].Umur_faktur == null || data.detail.header[0].Umur_faktur == ""){
+                     data.detail.header[0].Umur_faktur = 0;
+                    }  
+
+                    $('#flag_limit').val(numberWithCommas(data.data.Limit_Kredit));
+                    $('#flag_limitori').val(data.data.Limit_Kredit);
+                    $('#flag_top').val(data.detail.header[0].top);
+                    $('#flag_topori').val(data.detail.header[0].top);
+                    $('#flag_umur').val(data.detail.header[0].Umur_faktur);
+                    $('#flag_umurori').val(data.detail.header[0].Umur_faktur); 
+                    $('#flag_buka_top').val(data.data.Buka_Top); 
+                    varBukaTop = data.data.Buka_Top;
+
+                    if(data.data.saldoorder == null ||data.data.saldoorder == ''){
+                        data.data.saldoorder = 0;
+                    }
+                    $piutang = parseInt(data.data.saldoorder) + parseInt(data.data.saldopiutang);
+
+                    $('#flag_piutang').val(numberWithCommas($piutang));
+                    $('#flag_piutangori').val($piutang); 
+
+                    if(parseInt(data.detail.header[0].top) < parseInt(data.detail.header[0].Umur_faktur)){
+                        $('#flag_top').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varTop = true;
+                    }else{
+                        $('#flag_top').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varTop = false;
+                        console.log(varTop)
+                    } 
+
+                    if(parseInt($piutang) > parseInt(data.data.Limit_Kredit)){
+                        $('#flag_piutang').css({'color': '#FFFFFF', 'background-color': '#FF0000', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varLimit = true;
+                    }else{
+                        $('#flag_piutang').css({'color': '#000000', 'background-color': '#B2B2B2', 'font-family': 'Verdana', 'font-weight': 'bold'});
+                        varLimit = false;
+                    } 
+
+                    $('#limitmask').val(numberWithCommas(data.data.Limit_Kredit));
+                    $('#limit').val(data.data.Limit_Kredit);
+                    $('#piutangmask').val(numberWithCommas(data.data.saldopiutang));
+                    $('#piutang').val(data.data.saldopiutang);
+                    $('#orderOpmask').val(numberWithCommas(data.data.saldoorder)); 
+                    $('#orderOp').val(data.data.saldoorder); 
+                    $('#dlvOrdermask').val(numberWithCommas(data.data.saldoDlvorder)); 
+                    $('#dlvOrder').val(data.data.saldoDlvorder); 
+                    $('#top').val(data.detail.header[0].top);
+                    $('#topmask').val(data.detail.header[0].top);
+                    $('#umur').val(data.detail.header[0].Umur_faktur);
+                    $('#umurmask').val(data.detail.header[0].Umur_faktur);
+                    $('#pelanggan').val(Kode);
+                    $('#tipepelanggan').val(data.data.Tipe_Pelanggan);
+                    $('#prins_onf').val(data.data.Prins_Onf);
+                    $("#flag_ppn").val(data.data.flag_ppn);
+                    $('#progressGIF').hide();
+                             
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $('#progressGIF').hide();
+            }
+        });
+    }
+</script>
+
+{% endblock %}

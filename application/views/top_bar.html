@@ -1,0 +1,2212 @@
+<!-- /.navbar-header -->
+<ul class="nav navbar-top-links navbar-right">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="#"><i class="fa fa-user fa-fw"></i> username : {{ logs.username }}</a></li>
+            <li><a href="#"><i class="fa fa-user fa-fw"></i> mail : {{ logs.emailx }}</a></li>
+            <li><a href="#"><i class="fa fa-user fa-fw"></i> group : {{ logs.userGroup }}</a></li>
+            <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}auth/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+            </li>
+        </ul>
+    </li>
+</ul>
+{% if logs.userGroup == 'Cabang' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}listlaphna">Harga</a></li>
+            <li><a href="{{ base_url }}editpelanggan">Edit Data Pelanggan</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+            <li><a href="{{ base_url }}Karyawan">Karyawan</a></li>
+
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown-submenu">
+                <a href="#">Usulan Beli</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ base_url }}usulanbeli">Buat Usulan Beli</a></li>
+                    <li><a href="{{ base_url }}usulanbeliprinsipal">Buat Usulan Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanBeliBonusPrinsipal">Buat Usulan Beli Bonus by Prinsipal</a></li>
+                    <li class="divider"></li>                   
+                    <li><a href="{{ base_url }}usulanlimitbeliprinsipal">Buat Usulan Limit Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanlimitbelicabang">Buat Usulan Limit Beli by Cabang</a></li>
+                    <li class="divider"></li>                   
+                    <li><a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a></li>   
+                    <li><a href="{{ base_url }}laporanUsulanBelidetail">Data Usulan Beli Detail</a></li>
+                    <li class="divider"></li>    
+                    <li><a href="{{ base_url }}datalimitbeliprinsipal">Data Usulan Limit Beli By Prinsipal</a></li> 
+                    <li><a href="{{ base_url }}datalimitbelicabang">Data Usulan Limit Beli By Cabang</a></li> 
+                    <li class="divider"></li>  
+                    <li><a href="{{ base_url }}datapr">Data PR</a></li>                  
+                    <li><a href="{{ base_url }}dataprpo">Data PO</a></li>
+                    <li><a href="{{ base_url }}laporanpodetail">Data PO Detail</a></li>
+                    <li><a href="{{ base_url }}datadopusat">Data DO Pusat</a></li>      
+                    <li><a href="{{ base_url }}laporandobelidetail">Data DO Detail Pusat</a></li>       
+                </ul>
+            </li>
+            <li><a href="{{ base_url }}dataprpoclosed">Close PO</a></li>
+            <li><a href="{{ base_url }}buatbpb" title="Untuk penerimaan barang kiriman dari pusat">Buat BPB</a></li>   
+            <li><a href="{{ base_url }}buatbpb_cabang" title="Untuk penerimaan barang kiriman dari prinsipal langsung ke cabang">Buat BPB Cabang</a></li>   
+            <li><a href="{{ base_url }}databpb">Data BPB</a></li>
+            <li><a href="{{ base_url }}laporanbpbheader">Data BPB Header v.2</a></li>
+            <li><a href="{{ base_url }}laporanbpbdetail">Data BPB Detail</a></li>
+            <li><a href="{{ base_url }}revisi_bpb">Revisi BPB</a></li>
+            <li><a href="{{ base_url }}laporanmutasiprpo">List Data Usulan -> PR -> PO</a></li>
+            <li><a href="{{ base_url }}databkb">Data BKB</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}usulanreturbeli">Buat Usulan Retur Beli</a></li>
+            <li><a href="{{ base_url }}datareturbeli">Data Usulan Retur Beli</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Relokasi</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}buatkirimanrelokasi">Buat Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasikiriman">Data Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}dataterimarelokasi">Data Terima Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasireject">Data Reject Relokasi</a></li> 
+                        <li><a href="{{ base_url }}datarelokasikirimanPusat">Data Kiriman Relokasi Pusat</a></li> 
+                        <li><a href="{{ base_url }}laporanrelokasiheader">Data Relokasi Header</a></li> 
+                        <li><a href="{{ base_url }}laporanrelokasidetail">Data Relokasi Detail</a></li> 
+                    </ul>
+                </li>
+            </li> 
+            <li><a href="{{ base_url }}datacndnbelicabang">Data CN/DN Beli</a></li>   
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Usulan </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}pelanggan">Buat Usulan Pelanggan</a></li>
+                      
+                        <li><a href="{{ base_url }}datausulanpelanggan">Data Usulan Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}buatusulandiskonprinsipal">Buat Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}datausulandiskonprinsipal">Data Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}limittop_buatusulan">Buat Limit Top</a></li>
+                        <li><a href="{{ base_url }}datausulanlimittop">Data Usulan Limit Top Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}dataretail">Data Retail</a></li>
+                        <li><a href="{{ base_url }}dataUsulanEDSIPA">Data Usulan ED SIPA</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Order </a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}buatorder">Buat Order</a></li>  
+                        <li><a href="{{ base_url }}buatorderulang">Buat Order Ulang</a></li>
+                        <!-- <li><a href="{{ base_url }}buatordersalesman">Buat Order Salesman</a></li>  -->
+                        <li><a href="{{ base_url }}buatorderKhusus">Buat Order Khusus</a></li>  
+                        <li><a href="{{ base_url }}buatorderSPSalesman">Buat Order SP Salesman</a></li>  
+                        <li><a href="{{ base_url }}RegisterFaktur">Register Faktur</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data SO </a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}dataso">Data SO</a></li> 
+                        <!-- <li><a href="{{ base_url }}datasoSalesman">Data SO Salesman</a></li> -->
+                        <li><a href="{{ base_url }}datasoKhusus">Data SO Khusus</a></li>
+                        <li><a href="{{ base_url }}DataRegisterFaktur">Data Register Faktur</a></li>
+                    </ul>
+                </li>
+            </li>
+           
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Kiriman</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}buatkiriman">Buat Kiriman</a></li>  
+                         <li><a href="{{ base_url }}buatkirimanKhusus">Buat Kiriman Khusus</a></li> 
+                    </ul>
+                </li>
+            </li>   
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Terima Kiriman</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}terimakiriman">Terima Kiriman</a></li>   
+                         <li><a href="{{ base_url }}terimakirimanKhusus">Terima Kiriman Khusus</a></li>     
+                    </ul>
+                </li>
+            </li> 
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Tools</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}FixCOGS">Fix COGS</a></li>      
+                    </ul>
+                </li>
+            </li>          
+            <li><a href="{{ base_url }}buatpickinglist">Picking List</a></li> 
+            <li class="divider"></li>          
+            
+                  
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>  
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li> 
+            <!-- <li><a href="{{ base_url }}datacekkiriman">Cek Gagal Terima Kiriman</a></li> -->
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}validasiDOFaktur">Validasi Faktur Menjadi Komersil</a></li>
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}dataoutstandingdo">Data Faktur Outstanding</a></li>     
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>  
+            <li><a href="{{ base_url }}listprintfaktur2">List Print Data Faktur Komersil</a></li> 
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datafakturreginkaso">Data Faktur Register Inkaso</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatretur">Buat Retur</a></li>          
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatcndn">Buat CN/DN</a></li>          
+            <li><a href="{{ base_url }}laporancndnH">Data CN/DN</a></li>  
+            <li><a href="{{ base_url }}datacndn">Data CN/DN Detail</a></li> 
+            <li><a href="{{ base_url }}Register_SP_Pelanggan">Register Faktur Pelanggan</a></li>   
+            
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datafaktur">Register Inkaso</a></li>            
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatdih">Buat DIH</a></li>
+            <li><a href="{{ base_url }}buatdih2">Buat DIH New</a></li>             
+            <li><a href="{{ base_url }}datadih">Data DIH</a></li>   
+            <li><a href="{{ base_url }}datadihdetail">Data DIH Detail </a></li>                 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatpelunasan">Buat Pelunasan</a></li>                         
+            <li><a href="{{ base_url }}buatpelunasanparsial">Buat Pelunasan Parsial</a></li> 
+            <li><a href="{{ base_url }}Over_top">Buat Alasan Piutang Terlambat</a></li>                         
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>
+            <li><a href="{{ base_url }}dataalasanpiutangterlambat">Data Alasan Piutang Terlambat</a></li>                                         
+            <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+            <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+            <!-- <li><a href="{{ base_url }}Over_top">Over TOP</a></li>   -->   
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li>           
+            <li><a href="{{ base_url }}MutasiPiutang">Data Mutasi Piutang</a></li>          
+            <li><a href="{{ base_url }}LapAgingPiutang">Laporan Aging Piutang</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li>
+            <li><a href="{{ base_url }}datainvdet">Inventori Detail</a></li>
+            <li><a href="{{ base_url }}datainvhis">Inventori History</a></li>   
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+            <li><a href="{{ base_url }}kartustokbatch">Kartu Stok Batch</a></li>
+            <li><a href="{{ base_url }}kartustokdaily">Kartu Stok Harian</a></li> 
+            <li><a href="{{ base_url }}mutasistok">Mutasi Stok</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">SOBH / SOBB</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}sobh">Create SOBH</a></li>
+                        <li><a href="{{ base_url }}uploadsobh">Upload SOBH</a></li>
+                        <li><a href="{{ base_url }}datasobhperiode">Data SOBH</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobhdetail">Create SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobhdetail">Upload SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}datasobhdetailperiode">Data SOBH Detail</a></li>
+                        <!-- <li class="divider"></li>
+                        <li><a href="{{ base_url }}sobb">Create SOBB</a></li>
+                        <li><a href="{{ base_url }}uploadsobb">Upload SOBB</a></li>
+                        <li><a href="{{ base_url }}datasobbperiode">Data SOBB</a></li> -->
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobbdetail">Create SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobbdetail">Upload SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}datasobbdetailperiode">Data SOBB Detail</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Mutasi</a>
+                    <ul class="dropdown-menu">
+                        <!-- <li><a href="{{ base_url }}mutasikoreksi">Mutasi Koreksi Stok</a></li> -->
+                        <li><a href="{{ base_url }}mutasibatch">Mutasi Batch</a></li>
+                        <li><a href="{{ base_url }}mutasigudang">Mutasi Gudang</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li><a href="{{ base_url }}datamutasikoreksi">Data Koreksi & Adjustment</a></li>  
+            <li><a href="{{ base_url }}datamutasibatch">Data Mutasi Batch</a></li>  
+            <li><a href="{{ base_url }}datamutasigudang">Data Mutasi Gudang</a></li>  
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>  
+            <li><a href="{{ base_url }}datastok_day">Data Stok Harian</a></li>  
+            <li><a href="{{ base_url }}dataFixSAwal">Fix Saldo Awal Stok Detail</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datalimitTOP">Approval Sales All</a></li>
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datadc">Approval Disc Cabang</a></li> 
+            <li><a href="{{ base_url }}datadp">Approval Disc Prinsipal</a></li> 
+            <li><a href="{{ base_url }}datacn">Approval Usulan CN</a></li>
+            <li><a href="{{ base_url }}approvalreturDO">Approval Retur Faktur</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+            <li><a href="{{ base_url }}datalimitcabangbeli">Approval Usulan Limit Beli Cabang</a></li> 
+            <li><a href="{{ base_url }}datakirimrelokasi">Approval Kirim Relokasi</a></li> 
+            <li><a href="{{ base_url }}datakirimrelokasiPusat">Approval Kirim Relokasi Pusat</a></li>
+
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatKas">Kas</a></li>
+            <li><a href="{{ base_url }}dataKas">Data Kas</a></li>
+            <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatBank">Bank</a></li>
+            <li><a href="{{ base_url }}dataBank">Data Bank</a></li>
+            <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+            <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+            <li><a href="{{ base_url }}datamutasikas">Mutasi Kas</a></li>
+            <li><a href="{{ base_url }}datamutasibank">Mutasi Bank</a></li>
+            <li><a href="{{ base_url }}buatkasopname">Opname Kas</a></li>
+            <li><a href="{{ base_url }}dataOpnameKas">Data Opname Kas</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatbukugiro">Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+            <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+        </ul>
+    </li>          
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Insentif</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}insentif">Laporan Insentif Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman">Laporan Target Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman_Pivot">Laporan Target Salesman (Pivot)</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventaris Kantor</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}entry_data_inventaris">Entri Data Inventaris</a></li>
+            <li><a href="{{ base_url }}data_inventaris">Data Inventaris</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Sales Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li>
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo2">Laporan Detail Faktur & DO Ver.2</a></li>
+            <!-- <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li> -->
+            <!-- <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li> -->
+            <li><a href="{{ base_url }}databpbfaktur">Laporan BPB to Faktur</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT New</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+            <li><a href="{{ base_url }}laporanpl">laporan PL</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lapenapza">Laporan ENAPZA</a></li>
+            <li><a href="{{ base_url }}laptriwulan">Laporan TRIWULAN</a></li>    
+        </ul>
+    </li>
+   <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}settlement">Settlement Inventory</a></li>   
+            <!-- <li><a href="{{ base_url }}settlementKas">Settlement Kas/Bank</a></li>    -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>   
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>   
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataDOPending">Proses DO</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}uploaddatacabang">Upload Data Cabang</a></li>  
+            <!-- <li class="divider"></li>  
+            <li><a href="{{ base_url }}db_download">Download Data Awal</a></li>   -->
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+{% elseif logs.userGroup == 'Accounting' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}listlaphna">Harga</a></li>
+            <li><a href="{{ base_url }}editpelanggan">Edit Data Pelanggan</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+            <li><a href="{{ base_url }}Karyawan">Karyawan</a></li>
+
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown-submenu">
+                <a href="#">Usulan Beli</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ base_url }}usulanbeli">Buat Usulan Beli</a></li>
+                    <li><a href="{{ base_url }}usulanbeliprinsipal">Buat Usulan Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanBeliBonusPrinsipal">Buat Usulan Beli Bonus by Prinsipal</a></li>
+                    <li class="divider"></li>                   
+                    <li><a href="{{ base_url }}usulanlimitbeliprinsipal">Buat Usulan Limit Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanlimitbelicabang">Buat Usulan Limit Beli by Cabang</a></li>
+                    <li class="divider"></li>                   
+                    <li><a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a></li>   
+                    <li><a href="{{ base_url }}laporanUsulanBelidetail">Data Usulan Beli Detail</a></li>
+                    <li class="divider"></li>    
+                    <li><a href="{{ base_url }}datalimitbeliprinsipal">Data Usulan Limit Beli By Prinsipal</a></li> 
+                    <li><a href="{{ base_url }}datalimitbelicabang">Data Usulan Limit Beli By Cabang</a></li> 
+                    <li class="divider"></li>  
+                    <li><a href="{{ base_url }}datapr">Data PR</a></li>                  
+                    <li><a href="{{ base_url }}dataprpo">Data PO</a></li>
+                    <li><a href="{{ base_url }}laporanpodetail">Data PO Detail</a></li>
+                    <li><a href="{{ base_url }}datadopusat">Data DO Pusat</a></li>      
+                    <li><a href="{{ base_url }}laporandobelidetail">Data DO Detail Pusat</a></li>       
+                </ul>
+            </li>
+            <li><a href="{{ base_url }}dataprpoclosed">Close PO</a></li>
+            <li><a href="{{ base_url }}buatbpb" title="Untuk penerimaan barang kiriman dari pusat">Buat BPB</a></li>   
+            <li><a href="{{ base_url }}buatbpb_cabang" title="Untuk penerimaan barang kiriman dari prinsipal langsung ke cabang">Buat BPB Cabang</a></li>   
+            <li><a href="{{ base_url }}databpb">Data BPB</a></li>
+            <li><a href="{{ base_url }}laporanbpbheader">Data BPB Header v.2</a></li>
+            <li><a href="{{ base_url }}laporanbpbdetail">Data BPB Detail</a></li>
+            <li><a href="{{ base_url }}revisi_bpb">Revisi BPB</a></li>
+            <li><a href="{{ base_url }}laporanmutasiprpo">List Data Usulan -> PR -> PO</a></li>
+            <li><a href="{{ base_url }}databkb">Data BKB</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}usulanreturbeli">Buat Usulan Retur Beli</a></li>
+            <li><a href="{{ base_url }}datareturbeli">Data Usulan Retur Beli</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Relokasi</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}buatkirimanrelokasi">Buat Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasikiriman">Data Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}dataterimarelokasi">Data Terima Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasireject">Data Reject Relokasi</a></li> 
+                        <li><a href="{{ base_url }}laporanrelokasiheader">Data Relokasi Header</a></li>  
+                        <li><a href="{{ base_url }}laporanrelokasidetail">Data Relokasi Detail</a></li> 
+                    </ul>
+                </li>
+            </li> 
+            <li><a href="{{ base_url }}datacndnbelicabang">Data CN/DN Beli</a></li>   
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Usulan </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}pelanggan">Buat Usulan Pelanggan</a></li>
+                      
+                        <li><a href="{{ base_url }}datausulanpelanggan">Data Usulan Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}buatusulandiskonprinsipal">Buat Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}datausulandiskonprinsipal">Data Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}limittop_buatusulan">Buat Limit Top</a></li>
+                        <li><a href="{{ base_url }}datausulanlimittop">Data Usulan Limit Top Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}dataretail">Data Retail</a></li>
+                        <li><a href="{{ base_url }}dataUsulanEDSIPA">Data Usulan ED SIPA</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Order </a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}buatorder">Buat Order</a></li>  
+                        <li><a href="{{ base_url }}buatorderulang">Buat Order Ulang</a></li>
+                        <!-- <li><a href="{{ base_url }}buatordersalesman">Buat Order Salesman</a></li>  -->
+                        <li><a href="{{ base_url }}buatorderKhusus">Buat Order Khusus</a></li>  
+                        <li><a href="{{ base_url }}buatorderSPSalesman">Buat Order SP Salesman</a></li>  
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data SO </a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}dataso">Data SO</a></li> 
+                        <!-- <li><a href="{{ base_url }}datasoSalesman">Data SO Salesman</a></li> -->
+                        <li><a href="{{ base_url }}datasoKhusus">Data SO Khusus</a></li>
+                    </ul>
+                </li>
+            </li>
+           
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Kiriman</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}buatkiriman">Buat Kiriman</a></li>  
+                         <li><a href="{{ base_url }}buatkirimanKhusus">Buat Kiriman Khusus</a></li> 
+                    </ul>
+                </li>
+            </li>   
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Terima Kiriman</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}terimakiriman">Terima Kiriman</a></li>   
+                         <li><a href="{{ base_url }}terimakirimanKhusus">Terima Kiriman Khusus</a></li>     
+                    </ul>
+                </li>
+            </li>         
+            <li><a href="{{ base_url }}buatpickinglist">Picking List</a></li> 
+            <li class="divider"></li>          
+            
+                  
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>  
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li> 
+            <!-- <li><a href="{{ base_url }}datacekkiriman">Cek Gagal Terima Kiriman</a></li> -->
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}validasiDOFaktur">Validasi Faktur Menjadi Komersil</a></li>
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}dataoutstandingdo">Data Faktur Outstanding</a></li>     
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>  
+            <li><a href="{{ base_url }}listprintfaktur2">List Print Data Faktur Komersil</a></li> 
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li class="divider"></li>
+            <!-- <li><a href="{{ base_url }}laporanpdufaktur">Laporan PDU Faktur</a></li>  -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatretur">Buat Retur</a></li>          
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatcndn">Buat CN/DN</a></li>          
+            <li><a href="{{ base_url }}laporancndnH">Data CN/DN</a></li>  
+            <li><a href="{{ base_url }}datacndn">Data CN/DN Detail</a></li> 
+            <li><a href="{{ base_url }}Register_SP_Pelanggan">Register Faktur Pelanggan</a></li>   
+            
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datafaktur">Register Inkaso</a></li>            
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatdih">Buat DIH</a></li>
+            <li><a href="{{ base_url }}buatdih2">Buat DIH New</a></li>             
+            <li><a href="{{ base_url }}datadih">Data DIH</a></li>   
+            <li><a href="{{ base_url }}datadihdetail">Data DIH Detail </a></li>                 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatpelunasan">Buat Pelunasan</a></li>                         
+            <li><a href="{{ base_url }}buatpelunasanparsial">Buat Pelunasan Parsial</a></li>                         
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>                                     
+            <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+            <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+            <!-- <li><a href="{{ base_url }}Over_top">Over TOP</a></li>   -->  
+            <li class="divider"></li>                      
+            <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li>    
+            <li><a href="{{ base_url }}MutasiPiutang">Data Mutasi Piutang</a></li>  
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li>
+            <li><a href="{{ base_url }}datainvdet">Inventori Detail</a></li>
+            <li><a href="{{ base_url }}datainvhis">Inventori History</a></li>   
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+            <li><a href="{{ base_url }}kartustokbatch">Kartu Stok Batch</a></li>
+            <li><a href="{{ base_url }}kartustokdaily">Kartu Stok Harian</a></li> 
+            <li><a href="{{ base_url }}mutasistok">Mutasi Stok</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">SOBH / SOBB</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}sobh">Create SOBH</a></li>
+                        <li><a href="{{ base_url }}uploadsobh">Upload SOBH</a></li>
+                        <li><a href="{{ base_url }}datasobhperiode">Data SOBH</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobhdetail">Create SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobhdetail">Upload SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}datasobhdetailperiode">Data SOBH Detail</a></li>
+                        <!-- <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobb">Create SOBB</a></li>
+                        <li><a href="{{ base_url }}uploadsobb">Upload SOBB</a></li>
+                        <li><a href="{{ base_url }}datasobbperiode">Data SOBB</a></li> -->
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobbdetail">Create SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobbdetail">Upload SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}datasobbdetailperiode">Data SOBB Detail</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Mutasi</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}mutasikoreksi">Mutasi Koreksi Stok</a></li>
+                        <li><a href="{{ base_url }}mutasibatch">Mutasi Batch</a></li>
+                        <li><a href="{{ base_url }}mutasigudang">Mutasi Gudang</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li><a href="{{ base_url }}datamutasikoreksi">Data Koreksi & Adjustment</a></li>  
+            <li><a href="{{ base_url }}datamutasibatch">Data Mutasi Batch</a></li>  
+            <li><a href="{{ base_url }}datamutasigudang">Data Mutasi Gudang</a></li>  
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>  
+            <li><a href="{{ base_url }}dataFixSAwal">Fix Saldo Awal Stok Detail</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datalimitTOP">Approval Sales All</a></li>
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datadc">Approval Disc Cabang</a></li> 
+            <li><a href="{{ base_url }}datadp">Approval Disc Prinsipal</a></li> 
+            <li><a href="{{ base_url }}datacn">Approval Usulan CN</a></li>
+            <li><a href="{{ base_url }}approvalreturDO">Approval Retur Faktur</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+            <li><a href="{{ base_url }}datalimitcabangbeli">Approval Usulan Limit Beli Cabang</a></li> 
+            <li><a href="{{ base_url }}datakirimrelokasi">Approval Kirim Relokasi</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatKas">Kas</a></li>
+            <li><a href="{{ base_url }}dataKas">Data Kas</a></li>
+            <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatBank">Bank</a></li>
+            <li><a href="{{ base_url }}dataBank">Data Bank</a></li>
+            <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+            <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+            <li><a href="{{ base_url }}datamutasikas">Mutasi Kas</a></li>
+            <li><a href="{{ base_url }}datamutasibank">Mutasi Bank</a></li>
+            <li><a href="{{ base_url }}buatkasopname">Opname Kas</a></li>
+            <li><a href="{{ base_url }}dataOpnameKas">Data Opname Kas</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatbukugiro">Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+            <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+        </ul>
+    </li>          
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Insentif</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}insentif">Laporan Insentif Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman">Laporan Target Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman_Pivot">Laporan Target Salesman (Pivot)</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventaris Kantor</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}entry_data_inventaris">Entri Data Inventaris</a></li>
+            <li><a href="{{ base_url }}data_inventaris">Data Inventaris</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Sales Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo2">Laporan Detail Faktur & DO Ver.2</a></li>
+           <!--  <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li> -->
+            <li><a href="{{ base_url }}databpbfaktur">Laporan BPB to Faktur</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT New</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+            <li><a href="{{ base_url }}laporanpl">laporan PL</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lapenapza">Laporan ENAPZA</a></li>
+            <li><a href="{{ base_url }}laptriwulan">Laporan TRIWULAN</a></li>
+
+        </ul>
+    </li>
+   <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}settlement">Settlement Inventory</a></li>   
+            <!-- <li><a href="{{ base_url }}settlementKas">Settlement Kas/Bank</a></li>    -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>   
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>   
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataDOPending">Proses DO</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}uploaddatacabang">Upload Data Cabang</a></li>  
+            <!-- <li class="divider"></li>  
+            <li><a href="{{ base_url }}db_download">Download Data Awal</a></li>   -->
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+{% elseif logs.userGroup == 'Audit' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}listlaphna">Harga</a></li>
+            <li><a href="{{ base_url }}editpelanggan">Edit Data Pelanggan</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+            <li><a href="{{ base_url }}Karyawan">Karyawan</a></li>
+
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown-submenu">
+                <a href="#">Usulan Beli</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ base_url }}usulanbeli">Buat Usulan Beli</a></li>
+                    <li><a href="{{ base_url }}usulanbeliprinsipal">Buat Usulan Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanBeliBonusPrinsipal">Buat Usulan Beli Bonus by Prinsipal</a></li>
+                    <li class="divider"></li>                   
+                    <li><a href="{{ base_url }}usulanlimitbeliprinsipal">Buat Usulan Limit Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanlimitbelicabang">Buat Usulan Limit Beli by Cabang</a></li>
+                    <li class="divider"></li>                   
+                    <li><a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a></li>   
+                    <li><a href="{{ base_url }}laporanUsulanBelidetail">Data Usulan Beli Detail</a></li>
+                    <li class="divider"></li>    
+                    <li><a href="{{ base_url }}datalimitbeliprinsipal">Data Usulan Limit Beli By Prinsipal</a></li> 
+                    <li><a href="{{ base_url }}datalimitbelicabang">Data Usulan Limit Beli By Cabang</a></li> 
+                    <li class="divider"></li>  
+                    <li><a href="{{ base_url }}datapr">Data PR</a></li>                  
+                    <li><a href="{{ base_url }}dataprpo">Data PO</a></li>
+                    <li><a href="{{ base_url }}laporanpodetail">Data PO Detail</a></li>
+                    <li><a href="{{ base_url }}datadopusat">Data DO Pusat</a></li>      
+                    <li><a href="{{ base_url }}laporandobelidetail">Data DO Detail Pusat</a></li>       
+                </ul>
+            </li>
+            <li><a href="{{ base_url }}dataprpoclosed">Close PO</a></li>
+            <li><a href="{{ base_url }}buatbpb" title="Untuk penerimaan barang kiriman dari pusat">Buat BPB</a></li>   
+            <li><a href="{{ base_url }}buatbpb_cabang" title="Untuk penerimaan barang kiriman dari prinsipal langsung ke cabang">Buat BPB Cabang</a></li>   
+            <li><a href="{{ base_url }}databpb">Data BPB</a></li>
+            <li><a href="{{ base_url }}laporanbpbdetail">Data BPB Detail</a></li>
+            <li><a href="{{ base_url }}revisi_bpb">Revisi BPB</a></li>
+            <li><a href="{{ base_url }}laporanmutasiprpo">List Data Usulan -> PR -> PO</a></li>
+            <li><a href="{{ base_url }}databkb">Data BKB</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}usulanreturbeli">Buat Usulan Retur Beli</a></li>
+            <li><a href="{{ base_url }}datareturbeli">Data Usulan Retur Beli</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Relokasi</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}buatkirimanrelokasi">Buat Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasikiriman">Data Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}dataterimarelokasi">Data Terima Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasireject">Data Reject Relokasi</a></li> 
+                    </ul>
+                </li>
+            </li> 
+            <li><a href="{{ base_url }}datacndnbelicabang">Data CN/DN Beli</a></li>   
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Usulan </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}pelanggan">Buat Usulan Pelanggan</a></li>
+                      
+                        <li><a href="{{ base_url }}datausulanpelanggan">Data Usulan Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}buatusulandiskonprinsipal">Buat Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}datausulandiskonprinsipal">Data Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}limittop_buatusulan">Buat Limit Top</a></li>
+                        <li><a href="{{ base_url }}datausulanlimittop">Data Usulan Limit Top Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}dataretail">Data Retail</a></li>
+                        <li><a href="{{ base_url }}dataUsulanEDSIPA">Data Usulan ED SIPA</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Order </a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}buatorder">Buat Order</a></li>  
+                        <li><a href="{{ base_url }}buatorderulang">Buat Order Ulang</a></li>
+                        <!-- <li><a href="{{ base_url }}buatordersalesman">Buat Order Salesman</a></li>  -->
+                        <li><a href="{{ base_url }}buatorderKhusus">Buat Order Khusus</a></li> 
+                        <li><a href="{{ base_url }}buatorderSPSalesman">Buat Order SP Salesman</a></li>   
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data SO </a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}dataso">Data SO</a></li> 
+                        <!-- <li><a href="{{ base_url }}datasoSalesman">Data SO Salesman</a></li> -->
+                        <li><a href="{{ base_url }}datasoKhusus">Data SO Khusus</a></li>
+                    </ul>
+                </li>
+            </li>
+           
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Kiriman</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}buatkiriman">Buat Kiriman</a></li>  
+                         <li><a href="{{ base_url }}buatkirimanKhusus">Buat Kiriman Khusus</a></li> 
+                    </ul>
+                </li>
+            </li>   
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Terima Kiriman</a>
+                    <ul class="dropdown-menu">
+                         <li><a href="{{ base_url }}terimakiriman">Terima Kiriman</a></li>   
+                         <li><a href="{{ base_url }}terimakirimanKhusus">Terima Kiriman Khusus</a></li>     
+                    </ul>
+                </li>
+            </li>         
+            <li><a href="{{ base_url }}buatpickinglist">Picking List</a></li> 
+            <li class="divider"></li>          
+            
+                  
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>  
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li> 
+            <!-- <li><a href="{{ base_url }}datacekkiriman">Cek Gagal Terima Kiriman</a></li> -->
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}validasiDOFaktur">Validasi Faktur Menjadi Komersil</a></li>
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}dataoutstandingdo">Data Faktur Outstanding</a></li>     
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>  
+            <li><a href="{{ base_url }}listprintfaktur2">List Print Data Faktur Komersil</a></li> 
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li class="divider"></li>
+            <!-- <li><a href="{{ base_url }}laporanpdufaktur">Laporan PDU Faktur</a></li>  -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatretur">Buat Retur</a></li>          
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatcndn">Buat CN/DN</a></li>          
+            <li><a href="{{ base_url }}laporancndnH">Data CN/DN</a></li>  
+            <li><a href="{{ base_url }}datacndn">Data CN/DN Detail</a></li> 
+            <li><a href="{{ base_url }}Register_SP_Pelanggan">Register Faktur Pelanggan</a></li>   
+            
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datafaktur">Register Inkaso</a></li>            
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatdih">Buat DIH</a></li>
+            <li><a href="{{ base_url }}buatdih2">Buat DIH New</a></li>             
+            <li><a href="{{ base_url }}datadih">Data DIH</a></li>   
+            <li><a href="{{ base_url }}datadihdetail">Data DIH Detail </a></li>                 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatpelunasan">Buat Pelunasan</a></li>                         
+            <li><a href="{{ base_url }}buatpelunasanparsial">Buat Pelunasan Parsial</a></li>                         
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>                                     
+            <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+            <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+            <!-- <li><a href="{{ base_url }}Over_top">Over TOP</a></li>   --> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li>
+            <li><a href="{{ base_url }}datainvdet">Inventori Detail</a></li>
+            <li><a href="{{ base_url }}datainvhis">Inventori History</a></li>   
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+            <li><a href="{{ base_url }}kartustokbatch">Kartu Stok Batch</a></li>
+            <li><a href="{{ base_url }}kartustokdaily">Kartu Stok Harian</a></li> 
+            <li><a href="{{ base_url }}mutasistok">Mutasi Stok</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">SOBH / SOBB</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}sobh">Create SOBH</a></li>
+                        <li><a href="{{ base_url }}uploadsobh">Upload SOBH</a></li>
+                        <li><a href="{{ base_url }}datasobhperiode">Data SOBH</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobhdetail">Create SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobhdetail">Upload SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}datasobhdetailperiode">Data SOBH Detail</a></li>
+                        <!-- <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobb">Create SOBB</a></li>
+                        <li><a href="{{ base_url }}uploadsobb">Upload SOBB</a></li>
+                        <li><a href="{{ base_url }}datasobbperiode">Data SOBB</a></li> -->
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobbdetail">Create SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobbdetail">Upload SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}datasobbdetailperiode">Data SOBB Detail</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Mutasi</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}mutasikoreksi">Mutasi Koreksi Stok</a></li>
+                        <li><a href="{{ base_url }}mutasibatch">Mutasi Batch</a></li>
+                        <li><a href="{{ base_url }}mutasigudang">Mutasi Gudang</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li><a href="{{ base_url }}datamutasikoreksi">Data Koreksi & Adjustment</a></li>  
+            <li><a href="{{ base_url }}datamutasibatch">Data Mutasi Batch</a></li>  
+            <li><a href="{{ base_url }}datamutasigudang">Data Mutasi Gudang</a></li>  
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>  
+            <li><a href="{{ base_url }}dataFixSAwal">Fix Saldo Awal Stok Detail</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datalimitTOP">Approval Sales All</a></li>
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datadc">Approval Disc Cabang</a></li> 
+            <li><a href="{{ base_url }}datadp">Approval Disc Prinsipal</a></li> 
+            <li><a href="{{ base_url }}datacn">Approval Usulan CN</a></li>
+            <li><a href="{{ base_url }}approvalreturDO">Approval Retur Faktur</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+            <li><a href="{{ base_url }}datalimitcabangbeli">Approval Usulan Limit Beli Cabang</a></li> 
+            <li><a href="{{ base_url }}datakirimrelokasi">Approval Kirim Relokasi</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatKas">Kas</a></li>
+            <li><a href="{{ base_url }}dataKas">Data Kas</a></li>
+            <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatBank">Bank</a></li>
+            <li><a href="{{ base_url }}dataBank">Data Bank</a></li>
+            <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+            <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+            <li><a href="{{ base_url }}mutasikasbank">Mutasi Kas/Bank</a></li>
+            <li><a href="{{ base_url }}buatkasopname">Opname Kas</a></li>
+            <li><a href="{{ base_url }}dataOpnameKas">Data Opname Kas</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatbukugiro">Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+            <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+        </ul>
+    </li>          
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Insentif</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}insentif">Laporan Insentif Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman">Laporan Target Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman_Pivot">Laporan Target Salesman (Pivot)</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventaris Kantor</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}entry_data_inventaris">Entri Data Inventaris</a></li>
+            <li><a href="{{ base_url }}data_inventaris">Data Inventaris</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Sales Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo2">Laporan Detail Faktur & DO Ver.2</a></li>
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+            <li><a href="{{ base_url }}laporanpl">laporan PL</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lapenapza">Laporan ENAPZA</a></li>
+            <li><a href="{{ base_url }}laptriwulan">Laporan TRIWULAN</a></li>
+        </ul>
+    </li>
+   <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}settlement">Settlement Inventory</a></li>   
+            <!-- <li><a href="{{ base_url }}settlementKas">Settlement Kas/Bank</a></li>    -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>   
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>   
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataDOPending">Proses DO</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}uploaddatacabang">Upload Data Cabang</a></li>  
+            <!-- <li class="divider"></li>  
+            <li><a href="{{ base_url }}db_download">Download Data Awal</a></li>   -->
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+{% elseif logs.userGroup == 'BM' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}listlaphna">Harga</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+            <li><a href="{{ base_url }}Karyawan">Karyawan</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a></li>   
+            <li><a href="{{ base_url }}laporanUsulanBelidetail">Data Usulan Beli Detail</a></li>   
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datalimitbeliprinsipal">Data Usulan Limit Beli By Prinsipal</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datapr">Data PR</a></li>                  
+            <li><a href="{{ base_url }}dataprpo">Data PO</a></li>
+            <li><a href="{{ base_url }}laporanpodetail">Data PO Detail</a></li>
+            <li><a href="{{ base_url }}datadopusat">Data DO Pusat</a></li>  
+            <li><a href="{{ base_url }}laporandobelidetail">Data DO Detail Pusat</a></li>               
+            <li><a href="{{ base_url }}databpb">Data BPB</a></li>
+            <li><a href="{{ base_url }}laporanbpbdetail">Data BPB Detail</a></li>
+            <li><a href="{{ base_url }}laporanmutasiprpo">List Data Usulan -> PR -> PO</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datarelokasikiriman">Data Kiriman Relokasi</a></li>
+            <li><a href="{{ base_url }}datarelokasikirimanPusat">Data Kiriman Relokasi Pusat</a></li>
+            <li><a href="{{ base_url }}laporanrelokasiheader">Data Relokasi Header</a></li>  
+            <li><a href="{{ base_url }}laporanrelokasidetail">Data Relokasi Detail</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataso">Data SO</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li>   
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}dataoutstandingdo">Data Faktur Outstanding</a></li>     
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li>
+            <li><a href="{{ base_url }}validasiDOFaktur">Validasi Faktur Menjadi Komersil</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>  
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li class="divider"></li>
+            <!-- <li><a href="{{ base_url }}laporanpdufaktur">Laporan PDU Faktur</a></li>  -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datacndn">Data CN/DN</a></li>  
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datadih">Data DIH</a></li>                   
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>                                     
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li>
+            <li><a href="{{ base_url }}datainvdet">Inventori Detail</a></li>
+            <li><a href="{{ base_url }}datainvhis">Inventori History</a></li>   
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+            <li><a href="{{ base_url }}kartustokbatch">Kartu Stok Batch</a></li>
+            <!-- <li><a href="{{ base_url }}kartustokdaily">Kartu Stok Harian</a></li>  -->
+            <li><a href="{{ base_url }}mutasistok">Mutasi Stok</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">SOBH / SOBB</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}sobh">Create SOBH</a></li>
+                        <li><a href="{{ base_url }}uploadsobh">Upload SOBH</a></li>
+                        <li><a href="{{ base_url }}datasobhperiode">Data SOBH</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobhdetail">Create SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobhdetail">Upload SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}datasobhdetailperiode">Data SOBH Detail</a></li>
+                        <!-- <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobb">Create SOBB</a></li>
+                        <li><a href="{{ base_url }}uploadsobb">Upload SOBB</a></li>
+                        <li><a href="{{ base_url }}datasobbperiode">Data SOBB</a></li> -->
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobbdetail">Create SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobbdetail">Upload SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}datasobbdetailperiode">Data SOBB Detail</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li><a href="{{ base_url }}datamutasikoreksi">Data Koreksi & Adjustment</a></li>  
+            <li><a href="{{ base_url }}datamutasibatch">Data Mutasi Batch</a></li>  
+            <li><a href="{{ base_url }}datamutasigudang">Data Mutasi Gudang</a></li>      
+            <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li>  
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>  
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatKas">Kas</a></li>
+            <!-- <li><a href="{{ base_url }}dataKas">Data Kas</a></li> -->
+            <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatBank">Bank</a></li>
+            <!-- <li><a href="{{ base_url }}dataBank">Data Bank</a></li> -->
+            <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+            <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+            <li><a href="{{ base_url }}mutasikasbank">Mutasi Kas/Bank</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+        </ul>
+    </li>  
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <!-- <li><a href="{{ base_url }}approval">Approval Usulan Beli</a></li> -->
+            <li><a href="{{ base_url }}approval_retur_beli">Approval Retur Supplier</a></li>
+            <li><a href="{{ base_url }}approvalMutasiKoreksi">Approval Mutasi Koreksi</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}approvalOrderKhusus">Approval Order Khusus</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datalimitTOP">Approval Sales All</a></li>
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li><a href="{{ base_url }}datausulanlimittop">Approva Usulan Limit Top Pelanggan</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datadc">Approval Disc Cabang</a></li> 
+            <li><a href="{{ base_url }}datadp">Approval Disc Prinsipal</a></li> 
+            <li><a href="{{ base_url }}dataapprovaldiscprins">Approval Disc Prinsipal New</a></li>
+            <li><a href="{{ base_url }}approvalreturDO">Approval Retur Faktur</a></li>
+            <li class="divider"></li>
+        <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a> 
+            <li><a href="{{ base_url }}datacn">Approval Usulan CN</a></li> 
+            <li><a href="{{ base_url }}approvalReturPelanggan">Approval Retur Pelanggan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+            <li><a href="{{ base_url }}datalimitcabangbeli">Approval Usulan Limit Beli Cabang</a></li> 
+            <li><a href="{{ base_url }}datakirimrelokasi">Approval Kirim Relokasi</a></li>
+            <li><a href="{{ base_url }}datakirimrelokasiPusat">Approval Kirim Relokasi Pusat</a></li> 
+            <li><a href="{{ base_url }}dataterimarelokasi">Data Terima Relokasi</a></li> 
+
+        </ul>
+    </li>      
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Insentif</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}insentif">Laporan Insentif Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman">Laporan Target Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman_Pivot">Laporan Target Salesman (Pivot)</a></li>
+        </ul>
+    </li>    
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lapenapza">Laporan ENAPZA</a></li>
+            <li><a href="{{ base_url }}laptriwulan">Laporan TRIWULAN</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">               
+            <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>   
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>   
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+{% elseif logs.userGroup == 'CabangEDP' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}editpelanggan">Edit Data Pelanggan</a></li>
+             <li><a href="{{ base_url }}listlaphna">Harga</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+            <li><a href="{{ base_url }}Karyawan">Karyawan</a></li>
+
+
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown-submenu">
+                <a href="#">Usulan Beli</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a></li>   
+                    <li><a href="{{ base_url }}datalimitbeliprinsipal">Data Usulan Limit Beli By Prinsipal</a></li>  
+                    <li><a href="{{ base_url }}usulanBeliBonusPrinsipal">Buat Usulan Beli Bonus by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}datapr">Data PR</a></li>                  
+                    <li><a href="{{ base_url }}dataprpo">Data PO</a></li>
+                    <li><a href="{{ base_url }}datadopusat">Data DO Pusat</a></li>                       
+                </ul>
+            </li>
+            <li><a href="{{ base_url }}databpb">Data BPB</a></li>
+            <li><a href="{{ base_url }}laporanmutasiprpo">List Data Usulan -> PR -> PO</a></li>
+            <li class="divider"></li>                   
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Relokasi</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}datarelokasikiriman">Data Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}dataterimarelokasi">Data Terima Relokasi</a></li>
+                    </ul>
+                </li>
+            </li>    
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Usulan </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}pelanggan">Buat Usulan Pelanggan</a></li>
+                        <li><a href="{{ base_url }}datausulanpelanggan">Data Usulan Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}buatusulandiskonprinsipal">Buat Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}datausulandiskonprinsipal">Data Usulan Diskon Prinsipal</a></li>
+                        <li><a href="{{ base_url }}limittop_buatusulan">Buat Limit Top</a></li>
+                        <li><a href="{{ base_url }}datausulanlimittop">Data Usulan Limit Top Pelanggan</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{{ base_url }}dataretail">Data Retail</a></li>
+                        <li><a href="{{ base_url }}dataUsulanEDSIPA">Data Usulan ED SIPA</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Order </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}buatorder">Buat Order</a></li>   
+                        <li><a href="{{ base_url }}buatorderulang">Buat Order Ulang</a></li>
+                        <li><a href="{{ base_url }}buatorderKhusus">Buat Order Khusus</a></li>
+                        <li><a href="{{ base_url }}buatorderSPSalesman">Buat Order SP Salesman</a></li>  
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Data SO </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}dataso">Data SO</a></li> 
+                        <li><a href="{{ base_url }}datasoKhusus">Data SO Khusus</a></li>  
+                    </ul>
+                </li>
+            </li>
+            
+            
+            <li><a href="{{ base_url }}buatpickinglist">Picking List</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>   
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li> 
+            <!-- <li><a href="{{ base_url }}datacekkiriman">Cek Gagal Terima Kiriman</a></li> -->
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}validasiDOFaktur">Validasi Faktur Menjadi Komersil</a></li>
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}dataoutstandingdo">Data Faktur Outstanding</a></li>     
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>  
+            <li><a href="{{ base_url }}listprintfaktur2">List Print Data Faktur Komersil</a></li>
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <!-- <li class="divider"></li>    -->
+            <!-- <li><a href="{{ base_url }}laporanpdudo">Laporan Faktur Komersil Detail</a></li>  -->
+            <!-- <li class="divider"></li> -->
+            <!-- <li><a href="{{ base_url }}laporanpdufaktur">Laporan PDU Faktur Komersil</a></li>  -->
+            <li class="divider"></li>                    
+            <li><a href="{{ base_url }}buatretur">Buat Retur</a></li>          
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datacn">List Usulan CN</a></li>                 
+            <li><a href="{{ base_url }}buatcndn">Buat CN/DN</a></li>          
+            <li><a href="{{ base_url }}datacndn">Data CN/DN</a></li>  
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datadih">Data DIH</a></li>                   
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>                                     
+            <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+            <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li>
+            <li><a href="{{ base_url }}datainvdet">Inventori Detail</a></li>
+            <li><a href="{{ base_url }}datainvhis">Inventori History</a></li>   
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+            <li><a href="{{ base_url }}kartustokdaily">Kartu Stok Harian</a></li> 
+            <li><a href="{{ base_url }}mutasistok">Mutasi Stok</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">SOBH / SOBB</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}sobh">Create SOBH</a></li>
+                        <li><a href="{{ base_url }}uploadsobh">Upload SOBH</a></li>
+                        <li><a href="{{ base_url }}datasobhperiode">Data SOBH</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobhdetail">Create SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobhdetail">Upload SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}datasobhdetailperiode">Data SOBH Detail</a></li>
+                        <!-- <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobb">Create SOBB</a></li>
+                        <li><a href="{{ base_url }}uploadsobb">Upload SOBB</a></li>
+                        <li><a href="{{ base_url }}datasobbperiode">Data SOBB</a></li> -->
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobbdetail">Create SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobbdetail">Upload SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}datasobbdetailperiode">Data SOBB Detail</a></li>
+                    </ul>
+                </li>
+            </li>
+            <li><a href="{{ base_url }}datamutasikoreksi">Data Koreksi & Adjustment</a></li>  
+            <li><a href="{{ base_url }}datamutasibatch">Data Mutasi Batch</a></li>  
+            <li><a href="{{ base_url }}datamutasigudang">Data Mutasi Gudang</a></li>  
+            <li><a href="{{ base_url }}MutasiPiutang">Data Mutasi Piutang</a></li>      
+            <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li> 
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datadc">Approval Disc Cabang</a></li> 
+            <li><a href="{{ base_url }}datadp">Approval Disc Prinsipal</a></li> 
+            <li><a href="{{ base_url }}dataapprovaldiscprins">Approval Disc Prinsipal New</a></li>
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+            <li><a href="{{ base_url }}datakirimrelokasi">Approval Kirim Relokasi</a></li> 
+        </ul>
+    </li>    
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataKas">Data Kas</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataBank">Data Bank</a></li>
+        </ul>
+    </li>          
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Insentif</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}insentif">Laporan Insentif Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman">Laporan Target Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman_Pivot">Laporan Target Salesman (Pivot)</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventaris Kantor</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}entry_data_inventaris">Entri Data Inventaris</a></li>
+            <li><a href="{{ base_url }}data_inventaris">Data Inventaris</a></li>
+        </ul>
+    </li>
+   <!-- <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>  
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>
+        </ul>
+    </li> -->
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo2">Laporan Detail Faktur & DO Ver.2</a></li>
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+
+{% elseif logs.userGroup == 'Apotik' or logs.userGroup == 'CabangSPV' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li class="divider"></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatorder">Buat Order</a></li> 
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Faktur Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporanpdudo">Laporan Faktur Komersil Detail</a></li> 
+            <!-- <li><a href="{{ base_url }}laporanpdufaktur">Laporan PDU Faktur</a></li>  -->
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+        </ul>
+    </li>
+</ul>
+
+
+
+{% elseif logs.userGroup == 'Salesman' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <!-- <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li> -->
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <!-- <li><a href="{{ base_url }}buatorder">Buat Order</a></li>  -->
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Faktur Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li>
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Detail Faktur & DO</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+        </ul>
+    </li>
+</ul>
+
+
+
+{% elseif logs.userGroup == 'Apotik' or logs.userGroup == 'CabangApoteker'%}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+        </ul>
+    </li>
+     <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataUsulanEDSIPA">Data Usulan ED SIPA</a></li>
+            <li><a href="{{ base_url }}RegisterFaktur">Register Faktur</a></li>
+            <li><a href="{{ base_url }}DataRegisterFaktur">Data Register Faktur</a></li>
+            <li><a href="{{ base_url }}datafakturreginkaso">Data Faktur Register Inkaso</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">BPOM</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lapenapza">Laporan ENAPZA</a></li>
+            <li><a href="{{ base_url }}laptriwulan">Laporan TRIWULAN</a></li>
+        </ul>
+    </li>
+    <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li>
+</ul>
+
+{% elseif logs.userGroup == 'RBM' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <!-- <li><a href="{{ base_url }}approval">Approval Usulan Beli</a></li> -->
+            <li><a href="{{ base_url }}approvalMutasiKoreksi">Approval Mutasi Koreksi</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datadc">Approval Disc Cabang</a></li> 
+            <li><a href="{{ base_url }}datadp">Approval Disc Prinsipal</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datacn">Approval Usulan CN</a></li> 
+            <li><a href="{{ base_url }}approvalReturPelanggan">Approval Retur Pelanggan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+        </ul>
+    </li>      
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Insentif</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}insentif">Laporan Insentif Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman">Laporan Target Salesman</a></li>
+            <li><a href="{{ base_url }}LapTargetSalesman_Pivot">Laporan Target Salesman (Pivot)</a></li>
+        </ul>
+    </li>    
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+{% elseif logs.userGroup == 'KSA' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+            <li><a href="{{ base_url }}listlaphna">Harga</a></li>
+            <li><a href="{{ base_url }}TargetSalesman">Target Salesman</a></li>
+            <li><a href="{{ base_url }}Karyawan">Karyawan</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatorder">Buat Order</a></li>
+            <li><a href="{{ base_url }}dataso">Data SO</a></li>
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}dataoutstandingdo">Data Faktur Outstanding</a></li>     
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li>
+            <li><a href="{{ base_url }}validasiDOFaktur">Validasi Faktur Menjadi Komersil</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li> 
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datacndn">Data CN/DN</a></li>  
+            <li><a href="{{ base_url }}datacn">List Usulan CN</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            {% if logs.cabang != 'Lampung' %}
+
+                <li><a href="{{ base_url }}buatdih2">Buat DIH New</a></li> 
+                <li><a href="{{ base_url }}Over_top">Buat Alasan Piutang Terlambat</a></li> 
+                <li><a href="{{ base_url }}datadihdetail">Data DIH Detail </a></li>               
+                <li class="divider"></li>                   
+                <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>
+                <li><a href="{{ base_url }}dataalasanpiutangterlambat">Data Alasan Piutang Terlambat</a></li>                               
+                <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+                <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+                <!-- <li><a href="{{ base_url }}Over_top">Over TOP</a></li>   -->
+                <li class="divider"></li>                         
+                <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li> 
+                <li><a href="{{ base_url }}MutasiPiutang">Data Mutasi Piutang</a></li>         
+                <li><a href="{{ base_url }}LapAgingPiutang">Laporan Aging Piutang</a></li>
+
+            {% else %}
+
+                <li><a href="{{ base_url }}datafaktur">Register Inkaso</a></li>            
+                <li class="divider"></li>                   
+                <li><a href="{{ base_url }}buatdih">Buat DIH</a></li>
+                <li><a href="{{ base_url }}buatdih2">Buat DIH New</a></li>             
+                <li><a href="{{ base_url }}datadih">Data DIH</a></li>   
+                <li><a href="{{ base_url }}datadihdetail">Data DIH Detail </a></li>                 
+                <li class="divider"></li>                   
+                <li><a href="{{ base_url }}buatpelunasan">Buat Pelunasan</a></li>                         
+                <li><a href="{{ base_url }}buatpelunasanparsial">Buat Pelunasan Parsial</a></li>                         
+                <li class="divider"></li>                   
+                <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>                                          
+                <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+                <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+                <!-- <li><a href="{{ base_url }}Over_top">Over TOP</a></li>   -->   
+                <li class="divider"></li>                 
+                <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li>                  
+                <li><a href="{{ base_url }}MutasiPiutang">Data Mutasi Piutang</a></li>         
+            <li><a href="{{ base_url }}LapAgingPiutang">Laporan Aging Piutang</a></li>
+
+            {% endif %}
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            {% if logs.cabang != 'Lampung' %}
+
+                <li><a href="{{ base_url }}dataKas">Data Kas</a></li>
+                <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+                <li class="divider"></li>                   
+                <li><a href="{{ base_url }}dataBank">Data Bank</a></li>
+                <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+                <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+                <li><a href="{{ base_url }}datamutasikas">Mutasi Kas</a></li>
+                <li><a href="{{ base_url }}datamutasibank">Mutasi Bank</a></li>
+                <li><a href="{{ base_url }}dataOpnameKas">Data Opname Kas</a></li>
+                <li class="divider"></li>
+                <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+                <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+                <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+                <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+
+            {% else %}
+
+                <li><a href="{{ base_url }}buatKas">Kas</a></li>
+                <li><a href="{{ base_url }}dataKas">Data Kas</a></li>
+                <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+                <li class="divider"></li>                   
+                <li><a href="{{ base_url }}buatBank">Bank</a></li>
+                <li><a href="{{ base_url }}dataBank">Data Bank</a></li>
+                <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+                <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+                <li><a href="{{ base_url }}datamutasikas">Mutasi Kas</a></li>
+                <li><a href="{{ base_url }}datamutasibank">Mutasi Bank</a></li>
+                <li><a href="{{ base_url }}buatkasopname">Opname Kas</a></li>
+                <li><a href="{{ base_url }}dataOpnameKas">Data Opname Kas</a></li>
+                <li class="divider"></li>
+                <li><a href="{{ base_url }}buatbukugiro">Buku Giro</a></li>
+                <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+                <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+                <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+                <li class="divider"></li>
+                <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+            
+            {% endif %}
+
+        </ul>
+    </li> 
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataup">Approval Usulan Pelanggan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datalimitTOP">Approval Sales All</a></li>
+            <li><a href="{{ base_url }}datalimit">Approval Limit</a></li>
+            <li><a href="{{ base_url }}datatop">Approval TOP</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur</a></li>  
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li><a href="{{ base_url }}datausulanlimittop">Approva Usulan Limit Top Pelanggan</a></li>
+            <li class="divider"></li>                   
+        </ul>
+    </li>
+   <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <!-- <li><a href="{{ base_url }}settlement">Settlement Inventory</a></li>   
+            <li><a href="{{ base_url }}settlementKas">Settlement Kas/Bank</a></li>   
+            <li class="divider"></li>  -->                  
+            <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>   
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>   
+            <li class="divider"></li>                   
+           <!--  <li><a href="{{ base_url }}dataDOPending">Proses DO</a></li>
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}db_download">Download Data Awal</a></li>  --> 
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}lplg">Pelanggan</a></li>
+                    </ul>
+                </li>
+            </li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+        </ul>
+    </li>
+    <!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+{% elseif logs.userGroup == 'NSM' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Approval</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datalimitbeli">Approval Usulan Limit Beli</a></li> 
+        </ul>
+    </li>      
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+{% elseif logs.userGroup == 'CabangLogistik' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+        <ul class="dropdown-menu">
+            <li class="dropdown-submenu">
+                <a href="#">Usulan Beli</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ base_url }}usulanbeli">Buat Usulan Beli</a></li>
+                    <li><a href="{{ base_url }}usulanbeliprinsipal">Buat Usulan Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanBeliBonusPrinsipal">Buat Usulan Beli Bonus by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanlimitbeliprinsipal">Buat Usulan Limit Beli by Prinsipal</a></li>
+                    <li><a href="{{ base_url }}usulanlimitbelicabang">Buat Usulan Limit Beli by Cabang</a></li>
+                    <li class="divider"></li> 
+                    <li><a href="{{ base_url }}dataapprovalusulanbeli">Approval Usulan Beli</a></li>
+                    
+                    <li><a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a></li>   
+                    <li><a href="{{ base_url }}datalimitbeliprinsipal">Data Limit Beli By Prinsipal</a></li> 
+                    <li><a href="{{ base_url }}datalimitbelicabang">Data Limit Beli By Cabang</a></li> 
+                    <li><a href="{{ base_url }}datalimitbeli">List Data Usulan Usulan Limit Beli</a></li>  
+                    <li><a href="{{ base_url }}datalimitcabangbeli">List Data Usulan Limit Beli Cabang</a></li> 
+                    <li><a href="{{ base_url }}datapr">Data PR</a></li>                  
+                    <li><a href="{{ base_url }}dataprpo">Data PO</a></li>
+                    <li><a href="{{ base_url }}laporanpodetail">Data PO Detail</a></li>
+                    <li><a href="{{ base_url }}datadopusat">Data DO Pusat</a></li> 
+                    <li><a href="{{ base_url }}laporandobelidetail">Data DO Detail Pusat</a></li>                
+                </ul>
+            </li>
+            <li><a href="{{ base_url }}dataprpoclosed">Close PO</a></li>
+            <li><a href="{{ base_url }}buatbpb">Buat BPB</a></li>   
+            <li><a href="{{ base_url }}buatbpb_cabang">Buat BPB Cabang</a></li>   
+            <li><a href="{{ base_url }}databpb">Data BPB</a></li>
+            <li><a href="{{ base_url }}laporanbpbheader">Data BPB Header v.2</a></li>
+            <li><a href="{{ base_url }}laporanbpbdetail">Data BPB Detail</a></li>
+            <li><a href="{{ base_url }}revisi_bpb">Revisi BPB</a></li>
+            <li><a href="{{ base_url }}laporanmutasiprpo">List Data Usulan -> PR -> PO</a></li>
+            <li class="divider"></li>
+        <li class="dropdown">
+         <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Retur Pembelian</a>
+                    <ul class="dropdown-menu">
+                <li><a href="{{ base_url }}usulanreturbeli">Buat Usulan Retur Beli</a></li>
+                <li><a href="{{ base_url }}datareturbeli">Data Usulan Retur Beli</a></li>
+                <li><a href="{{ base_url }}databkb">Data BKB</a></li>
+        </ul>
+                </li>
+        </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Relokasi</a>
+                    <ul class="dropdown-menu">
+                       <!--  <li><a href="{{ base_url }}buatrelokasi">Buat Usulan Relokasi</a></li>
+                        <li><a href="{{ base_url }}relokasiusulan">Data Usulan Relokasi</a></li> -->
+                        <li><a href="{{ base_url }}buatkirimanrelokasi">Buat Kiriman Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasikiriman">Data Kiriman Relokasi</a></li>
+                        <!-- <li><a href="{{ base_url }}relokasikiriman">Data Kiriman Relokasi</a></li> -->
+                        <li><a href="{{ base_url }}dataterimarelokasi">Data Terima Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasireject">Data Reject Relokasi</a></li>
+                        <li><a href="{{ base_url }}datarelokasikirimanPusat">Data Kiriman Relokasi Pusat</a></li> 
+                        <li><a href="{{ base_url }}laporanrelokasiheader">Data Relokasi Header</a></li> 
+                        <li><a href="{{ base_url }}laporanrelokasidetail">Data Relokasi Detail</a></li> 
+                    </ul>
+                </li>
+            </li> 
+            <li><a href="{{ base_url }}datacndnbelicabang">Data CN/DN Beli</a></li>     
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li class="divider"></li>  
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Buat Kiriman</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}buatkiriman">Buat Kiriman</a></li>
+                        <li><a href="{{ base_url }}buatkirimanKhusus">Buat Kiriman Khusus</a></li>
+                    </ul>
+                </li>
+            </li>              
+               
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Terima Kiriman</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}terimakiriman">Terima Kiriman</a></li>      
+                        <li><a href="{{ base_url }}terimakirimanKhusus">Terima Kiriman Khusus</a></li> 
+                    </ul>
+                </li>
+            </li>        
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li> 
+            <!-- <li><a href="{{ base_url }}datacekkiriman">Cek Gagal Terima Kiriman</a></li> -->  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+            <li><a href="{{ base_url }}datafakturreginkaso">Data Faktur Register Inkaso</a></li> 
+            <li class="divider"></li>    
+            <li><a href="{{ base_url }}buatretur">Buat Retur</a></li>                
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking Faktur Penjualan</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventori</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datainvsum">Inventori Summary</a></li>
+            <li><a href="{{ base_url }}datainvdet">Inventori Detail</a></li>
+            <li><a href="{{ base_url }}datainvhis">Inventori History</a></li>   
+            <li><a href="{{ base_url }}kartustok">Kartu Stok</a></li> 
+            <li><a href="{{ base_url }}kartustokbatch">Kartu Stok Batch</a></li>
+            <li><a href="{{ base_url }}mutasistok">Mutasi Stok</a></li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">SOBH / SOBB</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ base_url }}sobh">Create SOBH</a></li>
+                        <li><a href="{{ base_url }}uploadsobh">Upload SOBH</a></li>
+                        <li><a href="{{ base_url }}datasobhperiode">Data SOBH</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobhdetail">Create SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobhdetail">Upload SOBH Detail</a></li>
+                        <li><a href="{{ base_url }}datasobhdetailperiode">Data SOBH Detail</a></li>
+                        <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobbdetail">Create SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}uploadsobbdetail">Upload SOBB Detail</a></li>
+                        <li><a href="{{ base_url }}datasobbdetailperiode">Data SOBB Detail</a></li>
+                        <!-- <li class="divider"></li> 
+                        <li><a href="{{ base_url }}sobb">Create SOBB</a></li>
+                        <li><a href="{{ base_url }}uploadsobb">Upload SOBB</a></li>
+                        <li><a href="{{ base_url }}datasobbperiode">Data SOBB</a></li> -->
+                    </ul>
+                </li>
+            </li>
+            <li class="dropdown">
+                <li class="dropdown-submenu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Koreksi</a>
+                    <ul class="dropdown-menu">
+			            <li><a href="{{ base_url }}datamutasikoreksi">Data Koreksi & Adjustment</a></li>  
+                       <!-- <li><a href="{{ base_url }}mutasikoreksi">Mutasi Koreksi Stok</a></li>-->
+                        <li><a href="{{ base_url }}mutasibatch">Mutasi Batch</a></li>
+                        <!-- <li><a href="{{ base_url }}mutasigudang">Mutasi Gudang</a></li> -->
+                    </ul>
+                </li>
+            </li>
+            <li><a href="{{ base_url }}datamutasibatch">Data Mutasi Batch</a></li>  
+            <li><a href="{{ base_url }}datamutasigudang">Data Mutasi Gudang</a></li> 
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}datastoksalesman">Data Stok Salesman</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+            <li class="divider"></li> 
+            <li><a href="{{ base_url }}lappu">Laporan PU</a></li>
+            <!-- <li><a href="{{ base_url }}laporanPT">laporan PT</a></li> -->
+            <li><a href="{{ base_url }}laporanPTNew">laporan PT</a></li>
+            <li><a href="{{ base_url }}laporanPTByPrinsipal">laporan PT By Prins</a></li>
+        </ul>
+    </li>
+   <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <!-- <li><a href="{{ base_url }}settlement">Settlement Inventory</a></li>   
+            <li><a href="{{ base_url }}settlementKas">Settlement Kas/Bank</a></li>  -->
+            <!-- <li><a href="{{ base_url }}closingharian">Closing Harian</a></li>   -->
+            <li><a href="{{ base_url }}closingbulanan">Closing Bulanan</a></li>
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+{% elseif logs.userGroup == 'CabangInkaso' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Penjualan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datado">Data Faktur</a></li>
+             <!-- <li><a href="{{ base_url }}dataoutstandingdo">Data DO Outstanding</a></li>      -->
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datafaktur2">Data Faktur Komersil</a></li>  
+            <li><a href="{{ base_url }}laporanpiutang">Laporan Piutang</a></li> 
+            <li><a href="{{ base_url }}agingpiut">Laporan Umur Piutang</a></li> 
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}dataretur">Data Retur</a></li>  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datacndn">Data CN/DN</a></li>  
+            <li><a href="{{ base_url }}datakiriman">Data Kiriman</a></li>  
+            <li><a href="{{ base_url }}datakirimandetail">Data Kiriman Detail</a></li> 
+            <li><a href="{{ base_url }}laporanpdufakturdo">Laporan Faktur Detail</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datafaktur">Register Inkaso</a></li>            
+            <li class="divider"></li>                   
+            <!-- <li><a href="{{ base_url }}buatdih">Buat DIH</a></li>  -->
+            <li><a href="{{ base_url }}buatdih2">Buat DIH New</a></li>            
+            <li><a href="{{ base_url }}datadih">Data DIH</a></li>  
+            <li><a href="{{ base_url }}datadihdetail">Data DIH Detail </a></li>                  
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatpelunasan">Buat Pelunasan</a></li>                         
+            <li><a href="{{ base_url }}buatpelunasanparsial">Buat Pelunasan Parsial</a></li> 
+            <li><a href="{{ base_url }}Over_top">Buat Alasan Piutang Terlambat</a></li>                         
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>
+            <li><a href="{{ base_url }}dataalasanpiutangterlambat">Data Alasan Piutang Terlambat</a></li>                                   
+            <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+            <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li>  
+            <!-- <li><a href="{{ base_url }}Over_top">Over TOP</a></li>   -->   
+            <li class="divider"></li>                         
+            <li><a href="{{ base_url }}kartuPiutang">Kartu Piutang</a></li> 
+            <li><a href="{{ base_url }}MutasiPiutang">Data Mutasi Piutang</a></li>          
+            <li><a href="{{ base_url }}LapAgingPiutang">Laporan Aging Piutang</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>                
+            <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+            <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+            <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+            <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+            <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+        </ul>
+    </li>          
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharianprinsipal">Laporan Omset Sales Prinsipal</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporansalesbypelangganbyprinsipal">Laporan Sales By Pelanggan By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+
+{% elseif logs.userGroup == 'CabangKasir' %}
+
+<ul class="nav navbar-top-links navbar-right">
+    <li><a href="{{ base_url }}main">Dashboard</a></li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pelunasan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}datapelunasan">Data Pelunasan</a></li>                                     
+            <li><a href="{{ base_url }}datagiro">Data Giro</a></li>  
+            <li><a href="{{ base_url }}dataregpenerimaangiro">register Penerimaan Giro</a></li> 
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GL</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}buatKas">Kas</a></li>
+            <!-- <li><a href="{{ base_url }}dataKas">Data Kas</a></li> -->
+            <li><a href="{{ base_url }}dataKasPeriode">Data Kas by Periode</a></li>
+            <li><a href="{{ base_url }}buatkasopname">Opname Kas</a></li>
+            <li><a href="{{ base_url }}dataOpnameKas">Data Opname Kas</a></li>
+            <li class="divider"></li>                   
+            <li><a href="{{ base_url }}buatBank">Bank</a></li>
+            <!-- <li><a href="{{ base_url }}dataBank">Data Bank</a></li> -->
+            <li><a href="{{ base_url }}dataBank2">Data Bank by Periode</a></li>
+            <li><a href="{{ base_url }}dataTransaksiKasBank">Data Kas Bank by Periode</a></li>
+            <li><a href="{{ base_url }}datamutasikas">Mutasi Kas</a></li>
+            <li><a href="{{ base_url }}datamutasibank">Mutasi Bank</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatbukugiro">Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukugiro">Data Buku Giro</a></li>
+            <li><a href="{{ base_url }}databukukasbon">Data Buku Kasbon</a></li>
+            <li><a href="{{ base_url }}databukutitipan">Data Buku Titipan</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}buatclosingkas">Closing Harian Kas</a></li>
+        </ul>
+    </li>          
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Inventaris Kantor</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}entry_data_inventaris">Entri Data Inventaris</a></li>
+            <li><a href="{{ base_url }}data_inventaris">Data Inventaris</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">laporan</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}laporanpiutangBM">laporan Piutang Harian BM</a></li> 
+            <li><a href="{{ base_url }}laporansalesharian">Laporan Faktur Komersil Harian</a></li> 
+            <li><a href="{{ base_url }}laporanDOharian">Laporan Faktur Harian</a></li>
+            <li><a href="{{ base_url }}laporanomsetsalesharian">Laporan Omset Sales</a></li>
+            <li><a href="{{ base_url }}laporansalesotharian">Laporan Sales Outlet Harian</a></li>    
+            <li><a href="{{ base_url }}laporanpiutangpelanggan">Laporan Piutang Pelanggan</a></li> 
+            <li><a href="{{ base_url }}laporansalesbyprinsipal">Laporan Sales By Prinsipal</a></li> 
+            <li><a href="{{ base_url }}laporanjumlahfaktur">Laporan Jumlah DO/Faktur</a></li>
+            <li><a href="{{ base_url }}laporanefaktur">E-Faktur</a></li> 
+            <li><a href="{{ base_url }}laporanefaktur2">E-Faktur By No Faktur</a></li>
+            <li><a href="{{ base_url }}laporanEC">laporan EC</a></li> 
+            <li class="divider"></li>  
+            <li><a href="{{ base_url }}datapelunasanperiode">Laporan Pelunasan Per Periode</a></li> 
+            <li><a href="{{ base_url }}laporanDOTracking">Tracking DO Penjualan</a></li>
+            <li><a href="{{ base_url }}laporanlistDoTracking">List Tracking DO Penjualan</a></li>
+        </ul>
+    </li>
+   <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Closing</a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}settlementKas">Settlement Kas/Bank</a></li>   
+        </ul>
+    </li>
+<!--     <li><a href="{{ base_url }}auth/logout"></i>Logout</a></li> -->
+</ul>
+
+{% endif %}
+

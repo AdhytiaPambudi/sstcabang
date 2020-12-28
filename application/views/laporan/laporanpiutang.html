@@ -1,0 +1,936 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+        <style type="text/css">
+        .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    font-size: 10px;
+}
+.detail-item td{
+    border-right: solid 1px;
+    font-size: 10px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+    font-size: 10px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    .style1 {
+        width: 100%;
+        border-top: 1px solid #000;
+        margin-bottom: 5px;
+    }
+
+    .style2 {
+        border-top: 4px double #000;
+    }
+
+    .atas{
+        border-top: solid 1px;
+    }
+    .bawah{
+        border-bottom: solid 1px;
+    }
+    .kiri{
+        border-left: solid 1px;
+    }
+    .kanan{
+        border-right: solid 1px;
+    }
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Faktur</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="margin-bottom: 10px">
+            <button id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+            <!-- <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button> -->
+        </div>
+        <div class="col-lg-6" style="margin-bottom: 10px; text-align: right;"> 
+        </div>
+        <div class="col-lg-12" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Laporan Piutang</b>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <!--<th>#</th>
+                                        <th>Detail</th>-->
+                                        
+                                        <th>No Faktur</th>
+                                        <th>Tanggal Faktur</th>
+                                        <th>Tanggal Pelunasan</th>
+                                        <th>Type</th>
+                                        <th>Pelanggan</th>
+                                        <th>NamaPelanggan</th>
+                                        <th>Salesman</th>
+                                        <th>Acu</th>
+                                        <th>Status</th>
+                                        <th>Reg Inkaso</th>
+                                        <th>Umur</th>
+                                        <th>TOP</th>
+                                        <th>Cara Bayar</th>
+                                        <th>JTO</th>
+                                        <th>Gross</th>
+                                        <th>Potongan</th>
+                                        <th>Value</th>
+                                        <th>PPN</th>
+                                        <th>Total</th>
+                                        <th>Saldo</th>
+                                        <th>Cabang</th>
+                                        <th>DO</th>
+                                        <th>Alasan JTO</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail Data Faktur</h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto">
+                <h3>Data Header</h3> 
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="headerDataFaktur">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:100px">Cabang</th>
+                            <th style="min-width:100px">No SO</th>
+                            <th style="min-width:100px">No DO</th>
+                            <th style="min-width:100px">No Faktur</th>
+                            <th style="min-width:100px">Time Faktur</th>
+                            <th style="min-width:100px">Pelanggan</th>
+                            <th style="min-width:100px">Nama Pelanggan</th>
+                            <th style="min-width:100px">Alamat Faktur</th>
+                            <th style="min-width:100px">Tipe Pelanggan</th>
+                            <th style="min-width:100px">NPWP Pelanggan</th>
+                            <th style="min-width:100px">Kategori Pelanggan</th>
+                            <th style="min-width:100px">Acu</th>
+                            <th style="min-width:100px">Cara Bayar</th>
+                            <th style="min-width:100px">Cash Diskon</th>
+                            <th style="min-width:100px">Value Cash Diskon</th>
+                            <th style="min-width:100px">TOP</th>
+                            <th style="min-width:100px">Tgl JTO Faktur</th>
+                            <th style="min-width:100px">Nama Salesman</th>
+                            <th style="min-width:100px">Rayon</th>
+                            <th style="min-width:100px">Status</th>
+                            <th style="min-width:100px">Tipe Dokumen</th>
+                            <th style="min-width:100px">Disc Cab Max</th>
+                            <th style="min-width:100px">Disc Prins Max</th>
+                            <th style="min-width:100px">COGS</th>
+                            <th style="min-width:100px">Total COGS</th>
+                        </tr>
+                    </thead>
+                </table><br>
+
+                <h3>Data Detail</h3>
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="detailDataFaktur">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:50px">No</th>
+                            <th style="min-width:100px">Kode Produk</th>
+                            <th style="min-width:100px">Nama Produk</th>
+                            <th style="min-width:100px">Harga</th>
+                            <th style="min-width:100px">Qty DO</th>
+                            <th style="min-width:100px">Bonus DO</th>
+                            <th style="min-width:100px">Qty Faktur</th>
+                            <th style="min-width:100px">Bonus Faktur</th>
+                            <th style="min-width:100px">Value Bonus</th>
+                            <th style="min-width:100px">Disc Cabang</th>
+                            <th style="min-width:100px">Value Disc Cabang</th>
+                            <th style="min-width:100px">Disc Cabang Total</th>
+                            <th style="min-width:100px">Value Disc Cabang Total</th>
+                            <th style="min-width:100px">Disc Prins 1</th>
+                            <th style="min-width:100px">Value Disc Prins 1</th>
+                            <th style="min-width:100px">Disc Prins 2</th>
+                            <th style="min-width:100px">Value Disc Prins 2</th>
+                            <th style="min-width:100px">Disc Prins Total</th>
+                            <th style="min-width:100px">Value Disc Prins Total</th>
+                            <th style="min-width:100px">Disc Total</th>
+                            <th style="min-width:100px">Value Disc Total</th>
+                            <th style="min-width:100px">Gross</th>
+                            <th style="min-width:100px">Potongan</th>
+                            <th style="min-width:100px">Value</th>
+                            <th style="min-width:100px">PPN</th>
+                            <th style="min-width:100px">Lain Lain</th>
+                            <th style="min-width:100px">Total</th>
+                            <th style="min-width:100px">Batch No</th>
+                            <th style="min-width:100px">Exp Date</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="modal_form_cndn" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail Data Faktur CN/DN</h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto">
+                <h3>Data Header</h3> 
+                 <table width="100%" class="table2 table-striped table-bordered table-hover" id="headerDataCNDN">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:100px">Cabang</th>
+                            <th style="min-width:100px">No Faktur</th>
+                            <th style="min-width:100px">Time Faktur</th>
+                            <th style="min-width:100px">Pelanggan</th>
+                            <th style="min-width:100px">Nama Pelanggan</th>
+                            <th style="min-width:100px">Alamat Faktur</th>
+                            <th style="min-width:100px">Tipe Pelanggan</th>
+                            <th style="min-width:100px">NPWP Pelanggan</th>
+                            <th style="min-width:100px">Kategori Pelanggan</th>
+                            <th style="min-width:100px">Acu</th>
+                            <th style="min-width:100px">Cara Bayar</th>
+                            <th style="min-width:100px">TOP</th>
+                        </tr>
+                    </thead>
+                </table><br>
+
+                <h3>Data Detail</h3>
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="detailDataFaktur_cndn">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:50px">No</th>
+                            <th style="min-width:100px">Kode Produk</th>
+                            <th style="min-width:100px">Nama Produk</th>
+                            <th style="min-width:100px">Harga</th>
+                            <th style="min-width:100px">Persen</th>
+                            <th style="min-width:100px">Nilai</th>
+                            <th style="min-width:100px">Disc Cabang</th>
+                            <th style="min-width:100px">Jumlah</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                faktur:[],
+                jml_halaman : 1,
+                TglFaktur: '',
+                NoFaktur: '',
+                TipePelanggan: '',
+                Pelanggan: '',
+                NamaPelanggan: '',
+                AlamatFaktur: '',
+                Cabang: '',
+                NPWPPelanggan: '',
+                CaraBayar: '',
+                TOP: '',
+                Status: '',
+                statusPusat: '',
+                TipeFaktur: '',
+                Gross: '',
+                Value: '',
+                Potongan: '',
+                Ppn: '',
+                Materai: '',
+                OngkosKirim: '',
+                Total: '',
+                total_qty : 0,
+                total_Harga : 0,
+                total_Bonus : 0,
+                total_ValueBonus : 0,
+                total_ValueDiscCab : 0,
+                total_ValueDiscPrins1 : 0,
+                total_ValueDiscPrins2 : 0,
+                data_detail : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.QtyFaktur);
+                    });
+                    return gross;
+                },
+                total_Harga:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga);
+                    });
+                    return gross;
+                },
+                total_Bonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Bonus);
+                    });
+                    return gross;
+                },
+                total_ValueBonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueBonus);
+                    });
+                    return gross;
+                },
+                total_ValueDiscCab:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscCab);
+                    });
+                    return gross;
+                },
+                total_ValueDiscPrins1:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscPrins1);
+                    });
+                    return gross;
+                },
+                total_ValueDiscPrins1:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscPrins2);
+                    });
+                    return gross;
+                },
+            }
+        });
+         vue_cetak_cn = new Vue({
+            el : '#example-cetak-cn',
+            data : {
+                jml_halaman : 1,
+                TglFaktur: '',
+                NoFaktur: '',
+                TipePelanggan: '',
+                TipeDokumen: 'CN',
+                Pelanggan: '',
+                Acu: '',
+                NamaPelanggan: '',
+                AlamatFaktur: '',
+                Cabang: '',
+                NPWPPelanggan: '',
+                TOP: '',
+                Status: '',
+                statusPusat: '',
+                Potongan: '',
+                Total: '',
+                // total_Harga : 0,
+                data_detail : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_Harga:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Jumlah);
+                    });
+                    return gross;
+                },
+                total_ValueBonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueBonus);
+                    });
+                    return gross;
+                },
+                total_ValueDiscCab:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscCab);
+                    });
+                    return gross;
+                },
+            }
+        });
+
+        Vue.filter('currencyDisplay',{
+                read: function(val){
+                    return accounting.formatNumber(val);
+                },
+                write: function(val,oldVal){
+                    return accounting.unformat(val,",")
+                }
+        });
+
+        Vue.filter('format_tanggal',{
+            read: function(val){
+                return f_tanggal(val);
+        }
+        });
+
+        Vue.filter('j_tempo',{
+            read: function(val){
+                var result = new Date(val);
+                result.setDate(result.getDate() + parseFloat(vue_cetak_cn.TOP));
+                return f_tanggal(result);
+        }
+        });
+
+        var status = 'Open';
+        tabel = $('#dataTables-example').DataTable({
+            "ordering": false,
+            "processing": true,
+            "serverSide": true,
+            scrollX:        true,
+            scrollCollapse: true,
+            fixedColumns:   {
+                leftColumns: 1,
+                rightColumns: 1
+            }, 
+            "ajax": {
+                "url": "{{ base_url }}laporanpiutangx",
+                "data":{tipe:'Faktur'}, 
+                "type": "POST"
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            responsive: false,
+            dom: 'Bfrtip',
+            buttons: [
+                'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                },  
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    }); 
+
+    $("#checkAll").change(function () {
+        $("input:checkbox").not("#all").prop('checked', $(this).prop("checked"));
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function allData() { 
+        var all = document.getElementById('all').value;       
+        if($("#all").is(':checked')){ 
+            tabel.ajax.url('{{ base_url }}laporanpiutangx/all');
+        }   
+        else{
+            tabel.ajax.url('{{ base_url }}laporanpiutangx');
+        }
+        reloadTable();
+    }   
+
+    function prosesData(No)
+    {
+        var url = "{{ base_url }}prosesDataFaktur"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function view(no,TipeDokumen){
+
+         // show bootstrap modal when complete loaded
+
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}listDataDetailFaktur",
+            type: "POST",
+            data:{no:no,TipeDokumen:TipeDokumen},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                if(TipeDokumen =='Faktur' || TipeDokumen == 'Retur')
+                {   
+                    $('#modal_form').modal('show');
+                    var x = 1;
+                    var nf = new Intl.NumberFormat();
+                    $('#headerDataFaktur').append('<tr class="itemRowHeader"><td style="min-width:100px">'+data[0].Cabang+'</td><td style="min-width:100px">'+data[0].NoSO+'</td><td style="min-width:100px">'+data[0].NoDO+'</td><td style="min-width:100px">'+data[0].NoFaktur+'</td><td style="min-width:100px">'+data[0].TimeFaktur+'</td><td style="min-width:100px">'+data[0].Pelanggan+'</td><td style="min-width:100px">'+data[0].NamaPelanggan+'</td><td style="min-width:100px">'+data[0].AlamatFaktur+'</td><td style="min-width:100px">'+data[0].TipePelanggan+'</td><td style="min-width:100px">'+data[0].NPWPPelanggan+'</td><td style="min-width:100px">'+data[0].KategoriPelanggan+'</td><td style="min-width:100px">'+data[0].Acu+'</td><td style="min-width:100px">'+data[0].CaraBayar+'</td><td style="min-width:100px">'+data[0].CashDiskon+'</td><td style="min-width:100px">'+numberWithCommas(data[0].ValueCashDiskon)+'</td><td style="min-width:100px">'+data[0].TOP+'</td><td style="min-width:100px">'+data[0].TglJtoFaktur+'</td><td style="min-width:100px">'+data[0].NamaSalesman+'</td><td style="min-width:100px">'+data[0].Rayon+'</td><td style="min-width:100px">'+data[0].Status+'</td><td style="min-width:100px">'+data[0].TipeDokumen+'</td><td style="min-width:100px">'+data[0].DiscCabMax+'</td><td style="min-width:100px">'+data[0].DiscPrinsMax+'</td><td style="min-width:100px">'+data[0].COGS+'</td><td style="min-width:100px">'+data[0].TotalCOGS+'</td></tr>');
+
+                    for(i in data)
+                    {
+                        $('#detailDataFaktur').append($('<tr class="itemRowDetail"><td style="min-width:50px">'+x+'</td><td style="min-width:100px">'+data[i].KodeProduk+'</td><td style="min-width:100px">'+data[i].NamaProduk+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Harga)+'</td><td style="min-width:100px">'+data[i].QtyDO+'</td><td style="min-width:100px">'+data[i].BonusDO+'</td><td style="min-width:100px">'+data[i].QtyFaktur+'</td><td style="min-width:100px">'+data[i].BonusFaktur+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueBonus)+'</td><td style="min-width:100px">'+data[i].DiscCab+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueDiscCab)+'</td><td style="min-width:100px">'+data[i].DiscCabTot+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueDiscCabTotal)+'</td><td style="min-width:100px">'+data[i].DiscPrins1+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueDiscPrins1)+'</td><td style="min-width:100px">'+data[i].DiscPrins2+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueDiscPrins2)+'</td><td style="min-width:100px">'+data[i].DiscPrinsTot+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueDiscPrinsTotal)+'</td><td style="min-width:100px">'+data[i].DiscTotal+'</td><td style="min-width:100px">'+numberWithCommas(data[i].ValueDiscTotal)+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Gross)+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Potongan)+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Value)+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Ppn)+'</td><td style="min-width:100px">'+numberWithCommas(data[i].LainLain)+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Total)+'</td><td style="min-width:100px">'+data[i].BatchNo+'</td><td style="min-width:100px">'+data[i].ExpDate+'</td></tr>'));
+                        x++;
+                    }
+
+                }else{
+                    $('#modal_form_cndn').modal('show');
+                    var x = 1;
+                    var nf = new Intl.NumberFormat();
+                    $('#headerDataCNDN').append('<tr class="itemRowHeader"><td style="min-width:100px">'+data[0].Cabang+'</td><td style="min-width:100px">'+data[0].NoFaktur+'</td><td style="min-width:100px">'+data[0].TimeFaktur+'</td><td style="min-width:100px">'+data[0].Pelanggan+'</td><td style="min-width:100px">'+data[0].NamaPelanggan+'</td><td style="min-width:100px">'+data[0].AlamatFaktur+'</td><td style="min-width:100px">'+data[0].TipePelanggan+'</td><td style="min-width:100px">'+data[0].NPWPPelanggan+'</td><td style="min-width:100px">'+data[0].KategoriPelanggan+'</td><td style="min-width:100px">'+data[0].Acu+'</td><td style="min-width:100px">'+data[0].CaraBayar+'</td><td style="min-width:100px">'+data[0].TOP+'</td></tr>');
+
+                    for(i in data)
+                    {
+                        $('#detailDataFaktur_cndn').append($('<tr class="itemRowDetail"><td style="min-width:50px">'+x+'</td><td style="min-width:100px">'+data[i].KodeProduk+'</td><td style="min-width:100px">'+data[i].Produk+'</td><td style="min-width:100px">'+numberWithCommas(data[i].DasarPerhitungan)+'</td><td style="min-width:100px">'+data[i].Persen+'</td><td style="min-width:100px">'+data[i].Rupiah+'</td><td style="min-width:100px">'+data[i].DscCab+'</td><td style="min-width:100px">'+numberWithCommas(data[i].Jumlah)+'</td></tr>'));
+                        x++;
+                    }
+                }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+    function cetak(no,TipeDokumen){
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}printdataFaktur",
+            type: "POST",
+            data:{no:no,TipeDokumen:TipeDokumen},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(TipeDokumen == 'Faktur' || TipeDokumen =='Retur'){
+                    vue_cetak.TglFaktur         = data[0].TglFaktur;
+                    vue_cetak.NoFaktur          = data[0].NoFaktur;
+                    vue_cetak.TipePelanggan     = data[0].TipePelanggan;
+                    vue_cetak.Pelanggan         = data[0].Pelanggan;
+                    vue_cetak.NamaPelanggan     = data[0].NamaPelanggan;
+                    vue_cetak.AlamatFaktur      = data[0].AlamatFaktur;
+                    vue_cetak.Cabang            = data[0].Cabang;
+                    vue_cetak.NPWPPelanggan     = data[0].NPWPPelanggan;
+                    vue_cetak.CaraBayar         = data[0].CaraBayar;
+                    vue_cetak.TOP               = data[0].TOP;
+                    vue_cetak.Status            = data[0].Status;
+                    vue_cetak.statusPusat       = data[0].statusPusat;
+                    vue_cetak.TipeFaktur        = data[0].TipeFaktur;
+                    vue_cetak.Gross             = data[0].Gross;
+                    vue_cetak.Value             = data[0].Value;
+                    vue_cetak.Potongan          = data[0].Potongan;
+                    vue_cetak.Ppn               = data[0].Ppn;
+                    vue_cetak.Materai           = data[0].Materai;
+                    vue_cetak.OngkosKirim       = data[0].OngkosKirim;
+                    vue_cetak.Total             = data[0].Total;
+                    vue_cetak.data_detail       = data;
+                    var total_value = Math.round(data[0].Total);
+                    document.getElementById("terbilang_value").innerHTML = terbilang(total_value);
+                    $("#bcTarget").barcode(vue_cetak.NoFaktur, "code128",{
+                        barWidth: 1,
+                        barHeight: 30
+                    });
+                    $('#qcTarget').qrcode({
+                        render : "canvas",
+                        width: 60,
+                        height: 60,
+                        text: data[0].NoFaktur
+                    });
+                    var dataUrl = document.querySelector('canvas').toDataURL();
+                    $("canvas").hide();
+                    $("#qrImage").attr('src',dataUrl);
+                    setTimeout(function(){
+                        // $('canvas').printQr();
+                        $('#print_out').print();
+                    },1000);
+                }else{
+                    vue_cetak_cn.TglFaktur         = data[0].TglFaktur;
+                    vue_cetak_cn.NoFaktur          = data[0].NoFaktur;
+                    vue_cetak_cn.TipePelanggan     = data[0].TipePelanggan;
+                    vue_cetak_cn.TipeDokumen       = data[0].TipeDokumen;
+                    vue_cetak_cn.Pelanggan         = data[0].Pelanggan;
+                    vue_cetak_cn.NamaPelanggan     = data[0].NamaPelanggan;
+                    vue_cetak_cn.AlamatFaktur      = data[0].AlamatFaktur;
+                    vue_cetak_cn.Cabang            = data[0].Cabang;
+                    vue_cetak_cn.Acu               = data[0].Acu;
+                    vue_cetak_cn.NPWPPelanggan     = data[0].NPWPPelanggan;
+                    vue_cetak_cn.TOP               = data[0].TOP;
+                    vue_cetak_cn.Status            = data[0].Status;
+                    vue_cetak_cn.statusPusat       = data[0].statusPusat;
+                    vue_cetak_cn.Potongan          = data[0].Potongan;
+                    vue_cetak_cn.Total             = data[0].Total;
+                    vue_cetak_cn.data_detail       = data;
+                    var total_value = Math.round(data[0].Total);
+                    document.getElementById("terbilang_value").innerHTML = terbilang(total_value);
+                    $("#bcTarget").barcode(vue_cetak.NoFaktur, "code128",{
+                        barWidth: 1,
+                        barHeight: 30
+                    });
+                    $('#qcTarget').qrcode({
+                        render : "canvas",
+                        width: 60,
+                        height: 60,
+                        text: data[0].NoFaktur
+                    });
+                    var dataUrl = document.querySelector('canvas').toDataURL();
+                    $("canvas").hide();
+                    $("#qrImage").attr('src',dataUrl);
+                    setTimeout(function(){
+                        // $('canvas').printQr();
+                        $('#print_out').print();
+                    },1000);
+                }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+       
+    }
+
+    function updateData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataFakturPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function buatInkaso()
+    { 
+        $('#progressGIF').show();
+        var txt = "";
+        var url = "{{ base_url }}buatInkaso"; 
+            // ajax adding data to database
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: $('#myForm').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.status == false) {
+                        notif('warning', "PERHATIAN! Belum ada data yang dipilih.");
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil diupload ke server pusat');
+                    }
+                    reloadTable();  
+                    $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    reloadTable();  
+                    $('#progressGIF').hide();
+                }
+            });
+    }
+
+     function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+
+    function f_tanggal(tgl){
+        var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        var bulan = ['Januari', 'Februari', 'Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+        var tanggal = new Date(tgl).getDate();
+        var xhari = new Date(tgl).getDay();
+        var xbulan = new Date(tgl).getMonth();
+        var xtahun = new Date(tgl).getYear();
+        var hari = hari[xhari];
+        var bulan = bulan[xbulan];
+        var tahun = (xtahun < 1000)?xtahun + 1900 : xtahun;
+
+        // console.log(hari +', ' + tanggal + ' ' + bulan + ' ' + tahun);
+        // return hari +', ' + tanggal + ' ' + bulan + ' ' + tahun;
+        return tanggal + ' ' + bulan + ' ' + tahun;
+    }
+</script>
+    {% endblock %}

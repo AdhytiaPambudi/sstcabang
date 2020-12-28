@@ -1,0 +1,767 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <b>Kartu Piutang</b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:30px">Tanggal </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="datepicker" type="text" name="tgldoc" id ="tgldoc"></td> 
+                        <td style="padding-left:30px">Sampai </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="datepicker" type="text" name="tgldoc1" id ="tgldoc1"></td> 
+
+                        <td style="padding-left:30px">Pelanggan </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="form-control" type="text" name="pelanggan" id="pelanggan" onkeyup="cariKode()" autocomplete="off" style="width:400px"></td>   
+                        <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses</span></i></a> </td>
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_pdf();return false;" title="Print to pdf" class="btn btn-primary" ><i class="fa fa-file-pdf-o"><span style="padding-left:10px;padding-right:20px">Print to PDF</span></i></a> </td>
+                         <!-- <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_excel();return false;" title="Excell" class="btn btn-primary" > <i class="fa fa-file-excel-o"><span style="padding-left:10px;padding-right:20px">Excell</span></i></a> </td> -->
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div id="msgBox"></div>
+   <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+   <br>
+   <hr width="100%" size="10">
+   <!-- <div><center><strong>DATA Piutang</strong></center></div> -->
+   <br>
+
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script>
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+    <script src="{{ base_url }}assets/js/jquery.dataTables.min.js"></script>
+    <script src="{{ base_url }}assets/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap.min.js"></script>
+<script>
+
+    var tabel;
+     var pelangganSource = [];
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        var today1 = new Date();
+        $("#tgldoc").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgldoc").data("kendoDatePicker").value(today1);
+        $("#tgldoc1").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgldoc1").data("kendoDatePicker").value(today1);
+
+
+        $.ajax({
+            url : "{{ base_url }}listpelangganAll",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    pelangganSource[i] = data[i].Kode + "~" + data[i].Pelanggan;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data pelanggan');
+            }
+        });   
+
+    });
+    function cariKode(){    
+        $('#pelanggan').typeahead({
+                source: pelangganSource
+            });
+        // console.log(pelangganSource);
+    }
+
+    function f_get_data(){
+        $("#grid").data("kendoGrid").destroy();
+        $("#grid").empty();
+        var nilai_saldo_awal = 0;
+        var dataheader = $(myForm).serialize();
+        var saldo_akhir = 0;//parseInt(nilai_saldo_awal);
+        var cabang = document.getElementById("Cabang").value;
+        var tgl_mulai   = $("#tgldoc").data("kendoDatePicker").value();
+        // var firstDay    = new Date(tgl_mulai.getFullYear(), tgl_mulai.getMonth(), 1);
+        var tgl_selesai = $("#tgldoc1").data("kendoDatePicker").value();
+        // var materialName = document.getElementById("material_name").value;
+        var materialID = document.getElementById("pelanggan").value;
+        if(materialID == '' || materialID == null)
+        {
+            notif("warning","Pilih pelanggan Terlebih Dahulu ");
+            return;
+        }
+        
+        var tgl_start   = f_tanggal(tgl_mulai); /*f_tanggal(firstDay);*/
+        var tgl_end = f_tanggal(tgl_selesai); /*f_tanggal(tgl_selesai);*/
+
+        var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}getkartupiutangPelanggan",   
+                        dataType: 'json',
+                        data: {pelanggan:materialID,tgl1:tgl_start,tgl2:tgl_end},
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        var result = data.s_awal;
+                        if (result.length <= 0){
+                            notif('warning','Data tidak ditemukan');// 
+
+                        }else{  
+                            var json = result.s_awal;
+                            $(result).each(function(i,val){
+                                $.each(val,function(k,v){
+                                    nilai_saldo_awal = v                                                       
+                                });
+                            });
+                        $("#grid th[data-field=data_saldo]").contents().last().replaceWith('Saldo Awal: ' + accounting.formatNumber(nilai_saldo_awal, 3, ","));
+                                    
+                        }
+                        return data.Result;
+                    },
+                    model: {
+                            fields: {
+                                rownumber       : { editable: false, nullable: true },
+                                saldo           : { editable:false},
+                                Nodokumen       : {type:"string", editable:false},
+                                Tgl             : {type:"date",   editable:false},
+                                debet           : {type:"number", editable:false},
+                                kredit          : {type:"number", editable:false},
+                                Transaksi       : {type:"string", editable:false},
+                                Keterangan      : {type:"string",   editable:false},
+                            }
+                    },
+                    aggregate: [{ field: "debet", aggregate: "sum" ,  format: '{0:n2}'},
+                            { field: "kredit", aggregate: "sum" ,  format: '{0:n2}'}], 
+                },
+                // pageSize: 10,
+                // serverPaging: true,
+                // serverFiltering: true,
+                // serverSorting: true
+        });
+
+            $("#grid").kendoGrid({
+                pdf:{
+                      // author:"Lohith G N",
+                      repeatHeaders: true, 
+                      fileName:"Kartu Data Piutang.pdf",
+                      keywords:"SST",
+                      landscape:true,
+                      margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "1cm" },
+                      allPages: true,
+                      paperSize:"A4",
+                      subject:"Kartu Stok",
+                      title:"Kartu Stok",
+                      scale: 0.1,
+                      template: $("#page-template").html(), 
+               },
+                dataSource: ds,
+                sortable: true,
+                height: 600,
+                // height: $(window).height() - 100,
+                sortable:false,
+                resizable: true,
+                scrollable: true,
+                columnMenu:false,
+                selectable: "single",
+                columns: [
+                    {
+                        title: "KARTU DATA PIUTANG",
+                        headerAttributes: {style: "text-align: center"},
+                        columns:[
+                            { field : "periode", 
+                              title: 'Starting Date : ' + tgl_start + ' - Ending Date :' + tgl_end,
+                              headerAttributes: {style: "text-align: left"},
+                              headerTemplate: 'Starting Date  : ' + tgl_start + '  ||  Ending Date  : ' + tgl_end + ' || Cabang : ' + cabang,
+                                columns:[
+                                    { field : "material", 
+                                      title: 'pelanggan : ' + materialID ,
+                                      headerAttributes: {style: "text-align: left"},
+                                      headerTemplate: 'pelanggan : ' + materialID,
+                                        columns:[
+                                            { field: "Nodokumen",
+                                                    title: "Nodokumen",
+                                                    width: 30,
+                                                    editable : true,
+                                                    headerAttributes: {style: "text-align: center"},
+                                                    nullable : true,
+                                                    // template: "<span class='row-number'></span>"
+                                            },
+                                            {
+                                                    field: "Tgl",
+                                                    title: "TGL",
+                                                    width: 40,
+                                                    format      : "{0:dd.MMM.yyyy}",
+                                                    parseFormats: ["MM/dd/yyyy"],
+                                                    filterable: {
+                                                        ui: "datetimepicker"
+                                                    }
+                                            },
+                                            { field: "Transaksi",
+                                                                title: "Transaksi",
+                                                                width: 50,
+                                                                attributes: { style:"text-align:left;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                // template: '#=Getvalue(mvtype)#' 
+                                            },
+                                            { field: "Keterangan",
+                                                                title: "Keterangan",
+                                                                width: 100,
+                                                                attributes: { style:"text-align:left;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                // template: '#=Getvalue(mvtype)#' 
+                                            },
+                                        ]},
+                                        
+                                        { field : "data_saldo", title: 'Saldo Awal: ' + accounting.formatNumber(nilai_saldo_awal, 3, ","),
+                                            headerAttributes: {style: "text-align: right"},
+                                                    columns:[ 
+
+                                                            { field: "debet" ,
+                                                               title: "debet",
+                                                               width: 40,
+                                                               format: '{0:n2}',
+                                                               attributes: { style:"text-align:right;" },
+                                                               headerAttributes: {style: "text-align: center"},
+                                                               // footerTemplate: "<div style='text-align: right' '> #= kendo.toString(sum, '0.00') #</div>"
+                                                            },
+                                                            { field: "kredit" ,
+                                                                title: "kredit",
+                                                                width: 40,
+                                                                format: '{0:n2}',
+                                                                attributes: { style:"text-align:right;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                // footerTemplate: "<div style='text-align: right' '> #= kendo.toString(sum, '0.00') #</div>"
+                                                            },
+                                                            { field: "saldo",
+                                                                title: "Saldo Akhir",
+                                                                width: 50,
+                                                                format: '{0:n2}',
+                                                                // editable : true,
+                                                                attributes: { style:"text-align:right;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                nullable : true,
+                                                                // template: "<span class='row-saldo'></span>"
+                                                            }, 
+
+                                                        ]
+                                        }
+
+                                ]
+                            }
+                            
+                        ]
+                    }
+                    
+                ],
+                dataBound: function (e) {
+                    var grid = $("#grid").data("kendoGrid");
+                    var mBox = $("#msgBox");
+                    if (grid.dataSource.data().length === 0) {
+                        if (!mBox.data("kendoWindow")) {
+                            mBox.kendoWindow({
+                                actions: ["Close"],
+                                animation: {
+                                    open: {
+                                        effects: "fade:in",
+                                        duration: 500
+                                    },
+                                    close: {
+                                        effects: "fade:out",
+                                        duration: 500
+                                    }
+                                },
+                                modal: true,
+                                resizable: false,
+                                title: "No items",
+                                width: 400
+                            }).data("kendoWindow").content("<p>No data available. Please try again later.</p>").center().open();
+                        } else {
+                            mBox.data("kendoWindow").content("<p>No data available. Please try again later.</p>").open();
+                        }
+
+                    }
+
+                 },
+                  dataBinding: function(){
+                    var grid = $("#grid").data("kendoGrid");
+                     var gridData = grid.dataSource.view();
+                     saldo_akhir = 0;
+                     var nilai = parseFloat(nilai_saldo_awal);
+                     if(isNaN(nilai)){
+                        nilai = 0;
+                     }
+                        if(nilai_saldo_awal == '' || nilai_saldo_awal == null)
+                        {
+                            nilai_saldo_awal = 0;
+                        }
+                        var saldo_awal = parseFloat(nilai_saldo_awal);
+                        for (var i = 0; i < gridData.length; i++) {
+                            if (i == 0)
+                            {
+                               saldo_akhir = saldo_awal + saldo_akhir + gridData[i].debet - gridData[i].kredit; 
+                               
+                            }else{
+                               saldo_akhir = saldo_akhir + gridData[i].debet - gridData[i].kredit;
+                            }
+                            gridData[i].saldo=saldo_akhir;
+                            /*document.getElementById('saldoakhir').value = saldo_akhir;
+                            document.getElementById('saldoakhir1').value = saldo_akhir;*/
+                            gridData[i].rownumber=i+1;
+                        }                     
+                        
+                    }
+                // },        
+            }); //end kendo grid
+            $("#grid").data("kendoGrid").setDataSource(ds);
+
+           
+            
+        }//end f_getdata_detail
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+        function f_tanggal(tglx)
+        {
+           
+            month_value = tglx.getMonth()+1;
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = year_value +'-'+ month_value + '-' + day_value  ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            $('#cetak_list').table2excel({
+                exclude:".noExl",
+                name:"kartu stok report",
+                filename: "kartu stok report"
+            });
+        }
+
+    function summary(kode,gudang){
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}liststoksummary",
+            type: "POST",
+            data:{kode:kode,gudang:gudang,tgl_end:tgl_end},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 0;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#datastoksum').append('<tr class="itemRowDetail"><td style="min-width:50px"><input type="text" name="Kodepelanggan['+i+']" id="Kodepelanggan'+i+'" value="'+data[i].Kodepelanggan+'" readonly="" style="background-color: #eee;width:120px"></td><td style="min-width:100px"><input type="text" name="Namapelanggan['+i+']" id="Namapelanggan'+i+'" value="'+data[i].Namapelanggan+'" readonly="" style="background-color: #eee;width:150px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStok['+i+']" id="UnitStok'+i+'" value="'+data[i].UnitStok+'" readonly="" style="background-color: #eee;width:100px" onkeyup="hitung()" onchange="hitung()"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="Gudang['+i+']" id="Gudang'+i+'" value="'+data[i].Gudang+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStokupdate['+i+']" id="UnitStokupdate'+i+'" value="0" style="width:100px" onkeyup="hitung()" onchange="hitung()"><a class="btn btn-sm btn-success" title="fix summary" onclick="fixsummary('+i+')" id="summary"><i class="fa fa-eye"></i>Fix Stok Summary</a></td></tr>');
+                        document.getElementById('stoksummary').value = data[0].UnitStok;
+                        x++;
+                        $("#bucket").val(x);
+                    }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function detail(kode,gudang){
+        $('#modal_form1').modal('show'); // show bootstrap modal when complete loaded
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        $('.itemRowDetail1').remove();
+        $.ajax({
+            url : "{{ base_url }}liststokdetail",
+            type: "POST",
+            data:{kode:kode,gudang:gudang,tgl_end:tgl_end},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 0;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#datastokdetail').append('<tr class="itemRowDetail1"><td style="min-width:50px"><input type="text" name="Kodepelanggan1['+i+']" id="Kodepelanggan1'+i+'" value="'+data[i].Kodepelanggan+'" readonly="" style="background-color: #eee;width:120px"></td><td style="min-width:100px"><input type="text" name="Namapelanggan1['+i+']" id="Namapelanggan1'+i+'" value="'+data[i].Namapelanggan+'" readonly="" style="background-color: #eee;width:150px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStok1['+i+']" id="UnitStok1'+i+'" value="'+data[i].UnitStok+'" readonly="" style="background-color: #eee;width:100px" onkeyup="hitung1()" onchange="hitung1()"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="Gudang1['+i+']" id="Gudang1'+i+'" value="'+data[i].Gudang+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="BatchNo['+i+']" id="BatchNo'+i+'" value="'+data[i].BatchNo+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="ExpDate['+i+']" id="ExpDate'+i+'" value="'+data[i].ExpDate+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="NoDokumen['+i+']" id="NoDokumen'+i+'" value="'+data[i].NoDokumen+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStokupdate1['+i+']" id="UnitStokupdate1'+i+'" value="0" style="width:100px" onkeyup="hitung1()" onchange="hitung1()"><a class="btn btn-sm btn-success" title="fix Detail" onclick="fixdetail('+i+')" id="stokdetail"><i class="fa fa-eye"></i>Fix Stok Detail</a></td></tr>');
+                        // document.getElementById('stoksummary').value = data[0].UnitStok;
+                        x++;
+                        $("#bucket1").val(x);
+                    }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+  
+    function hitung() {
+        var valsum = 0;
+        var valsumupdate = 0;
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        for (var e = 0; e < bucket; e++) {
+            var Kodepelanggan = ((document.getElementById('Kodepelanggan'+e).value) ? document.getElementById('Kodepelanggan'+e).value : "");
+            var UnitStok = ((document.getElementById('UnitStok'+e).value) ? document.getElementById('UnitStok'+e).value : "");
+            var Gudang = ((document.getElementById('Gudang'+e).value) ? document.getElementById('Gudang'+e).value : "");
+            var UnitStokupdate = ((document.getElementById('UnitStokupdate'+e).value) ? document.getElementById('UnitStokupdate'+e).value : "");
+
+            // document.getElementById('stoksummary').value = UnitStok;
+            document.getElementById('stoksummaryupdate').value = UnitStokupdate;
+
+        }
+    }
+
+    function hitung1() {
+        var valsum = 0;
+        var valsumupdate = 0;
+        var bucket = ((document.getElementById('bucket1').value) ? document.getElementById('bucket1').value : 0);
+        for (var e = 0; e < bucket; e++) {
+            var Kodepelanggan = ((document.getElementById('Kodepelanggan1'+e).value) ? document.getElementById('Kodepelanggan1'+e).value : "");
+            var UnitStok = ((document.getElementById('UnitStok1'+e).value) ? document.getElementById('UnitStok1'+e).value : "");
+            var Gudang = ((document.getElementById('Gudang1'+e).value) ? document.getElementById('Gudang1'+e).value : "");
+            var UnitStokupdate = ((document.getElementById('UnitStokupdate1'+e).value) ? document.getElementById('UnitStokupdate1'+e).value : "");
+
+            // document.getElementById('stoksummary').value = UnitStok;
+            valsum = valsum + parseInt(UnitStok);
+            valsumupdate = valsumupdate + parseInt(UnitStokupdate);
+        }
+        document.getElementById('stoksummary1').value = valsum;
+        document.getElementById('stoksummaryupdate1').value = valsumupdate;
+    }
+
+    function fixsummary(e){
+        var Kodepelanggan = ((document.getElementById('Kodepelanggan'+e).value) ? document.getElementById('Kodepelanggan'+e).value : "");
+        var UnitStok = ((document.getElementById('UnitStok'+e).value) ? document.getElementById('UnitStok'+e).value : "");
+        var Gudang = ((document.getElementById('Gudang'+e).value) ? document.getElementById('Gudang'+e).value : "");
+        var UnitStokupdate = ((document.getElementById('UnitStokupdate'+e).value) ? document.getElementById('UnitStokupdate'+e).value : "");
+        var saldoakhir = ((document.getElementById('saldoakhir').value) ? document.getElementById('saldoakhir').value : "");
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        // if(parseInt(UnitStokupdate) > parseInt(saldoakhir)){
+        //     notif('success', 'Warning! Unit Stok tidak boleh melebihi Saldo Akhir ');
+        //     return;
+        // }
+        $.ajax({
+            url : "{{ base_url }}updatestoksummary",
+            type: "POST",
+            data:{Kodepelanggan:Kodepelanggan,
+                  Gudang:Gudang
+                  ,UnitStok:UnitStokupdate,tgl_end:tgl_end},
+            dataType: "JSON",
+            success: function(data)
+            {   
+               if (data ==false) {
+                    notif('warning', 'PERHATIAN! Update Stok Gagal');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate ');
+                }
+                $('#modal_form').modal('hide');
+                load_detail(Kodepelanggan,tgl_end);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+                $('#modal_form').modal('hide');
+            }
+        });
+    }
+
+    function fixdetail(e){
+        var Kodepelanggan = ((document.getElementById('Kodepelanggan1'+e).value) ? document.getElementById('Kodepelanggan1'+e).value : "");
+        var UnitStok = ((document.getElementById('UnitStok1'+e).value) ? document.getElementById('UnitStok1'+e).value : "");
+        var Gudang = ((document.getElementById('Gudang1'+e).value) ? document.getElementById('Gudang1'+e).value : "");
+        var batchNo = ((document.getElementById('BatchNo'+e).value) ? document.getElementById('BatchNo'+e).value : "");
+        var BatchDoc = ((document.getElementById('NoDokumen'+e).value) ? document.getElementById('NoDokumen'+e).value : "");
+        var UnitStokupdate = ((document.getElementById('UnitStokupdate1'+e).value) ? document.getElementById('UnitStokupdate1'+e).value : "");
+        var saldoakhir = ((document.getElementById('saldoakhir').value) ? document.getElementById('saldoakhir').value : "");
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        // if(parseInt(UnitStokupdate) > parseInt(saldoakhir)){
+        //     notif('success', 'Warning! Unit Stok tidak boleh melebihi Saldo Akhir ');
+        //     return;
+        // }
+        $.ajax({
+            url : "{{ base_url }}updatestokdetail",
+            type: "POST",
+            data:{Kodepelanggan:Kodepelanggan,
+                  Gudang:Gudang,
+                  UnitStok:UnitStokupdate,
+                  BatchNo:batchNo,
+                  BatchDoc:BatchDoc,
+                  tgl_end:tgl_end
+              },
+            dataType: "JSON",
+            success: function(data)
+            {   
+               if (data ==false) {
+                    notif('warning', 'PERHATIAN! Update Stok Gagal');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate ');
+                }
+                $('#modal_form1').modal('hide');
+                load_detail(Kodepelanggan,tgl_end);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+                $('#modal_form1').modal('hide');
+            }
+        });
+    }
+      
+</script>
+    {% endblock %}

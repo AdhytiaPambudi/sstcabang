@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>ERP-SST</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{{ base_url }}assets/img/favicon.jpg" />
+
+    <!-- FOR SPEED UP -->
+    <link rel="prerender" href="{{base_url}}main"/>
+
+    <!-- Front CSS -->
+    <link href="{{ base_url }}assets/insentif/css/front.css" rel="stylesheet">
+    
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ base_url }}assets/insentif/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Toggle Core CSS -->
+    <link href="{{ base_url }}assets/insentif/css/sidebar-toggle.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{{ base_url }}assets/insentif/css/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="{{ base_url }}assets/insentif/css/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="{{ base_url }}assets/insentif/css/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- DataTables Button Export CSS -->
+    <link href="{{ base_url }}assets/insentif/css/buttons.dataTables.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ base_url }}assets/insentif/css/sb-admin-2.css" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link href="{{ base_url }}assets/insentif/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Select JS -->
+    <link href="{{ base_url }}assets/insentif/css/select.css" rel="stylesheet" type="text/css">
+
+    <!-- DATEPICKER -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+<div id="notif">
+</div>
+
+    <div id="wrapper">
+
+            {% block content %} {% endblock %}
+
+    </div>
+
+    <a href="javascript:" id="return-to-top"><img src="{{ base_url }}assets/insentif/img/up-arrow.png" width="50px" style="z-index: 999 !important"></a>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ base_url }}assets/insentif/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{{ base_url }}assets/insentif/js/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="{{ base_url }}assets/insentif/js/jquery.dataTables.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/dataTables.responsive.js"></script>
+
+    <!-- DataTables Button Export JavaScript -->
+    <script src="{{ base_url }}assets/insentif/js/dataTables.buttons.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/buttons.flash.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/jszip.min.js"></script>
+    <script src="{{ base_url }}////assets/insentif/js/pdfmake.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/vfs_fonts.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/buttons.html5.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/buttons.print.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/buttons.colVis.min.js"></script>
+
+    <script type="text/javascript" src="{{ base_url }}assets/insentif/js/tableExport.js"></script>
+    <script type="text/javascript" src="{{ base_url }}assets/insentif/js/jquery.base64.js"></script>
+    <script type="text/javascript" src="{{ base_url }}assets/insentif/js/html2canvas.js"></script>
+    <script type="text/javascript" src="{{ base_url }}assets/insentif/js/jspdf/libs/sprintf.js"></script>
+    <script type="text/javascript" src="{{ base_url }}assets/insentif/js/jspdf/jspdf.js"></script>
+    <script type="text/javascript" src="{{ base_url }}assets/insentif/js/jspdf/libs/base64.js"></script>
+    
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ base_url }}assets/insentif/js/sb-admin-2.js"></script>
+
+    <!-- REDIRECT JS     -->
+    <script src="{{ base_url }}assets/insentif/js/redirect.js"></script>
+
+    <!-- print JS -->
+    <script src="{{ base_url }}assets/insentif/js/jQuery.print.js"></script>
+    <!-- <script src="{{ base_url }}assets/insentif/js/select.js"></script> -->
+    
+    <!-- AUTOCOMPLETE -->
+    <script src="{{ base_url }}assets/insentif/js/jquery.mockjax.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/bootstrap-typeahead.js"></script>
+
+    <!-- DATEPICKER -->
+    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>  
+
+    <!-- Vue -->
+    <script src="{{ base_url }}assets/insentif/js/vue.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/vue-calc-input.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/vue-readable-number.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/vue-resource.min.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/accounting.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/qrcode.js"></script>
+    <script src="{{ base_url }}assets/insentif/js/jquery-barcode.min.js"></script>
+
+
+    <!-- MAIN JS UNTUK PROSES HITUNG -->
+    <!-- <script src="{{ base_url }}assets/insentif/js/main.js"></script> -->
+
+    <script type="text/javascript">
+        $(window).scroll(function() {
+            if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
+                $('#return-to-top').fadeIn(200);    // Fade in the arrow
+            } else {
+                $('#return-to-top').fadeOut(200);   // Else fade out the arrow
+            }
+        });
+        $('#return-to-top').click(function() {      // When arrow is clicked
+            $('body,html').animate({
+                scrollTop : 0                       // Scroll to top of body
+            }, 500);
+        });
+
+        function notif(status, text) {
+            $("#notif").append('<div class="alert alert-'+status+' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+text+'</div>');
+            $("#notif").fadeTo(36000, 100).slideUp(1000);
+        }
+
+        function numberWithCommas(x) {
+            if (x==null) {
+                x = 0.00;
+            }
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+
+        function currtoNumber(x) {
+            var currency = x;
+            var number = Number(currency.replace(/[^0-9\.]+/g,""));
+
+            return number;
+        }
+    </script>
+    {% block js %} {% endblock %}
+</body>
+
+</html>

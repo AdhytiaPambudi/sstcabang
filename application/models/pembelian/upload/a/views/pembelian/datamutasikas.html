@@ -1,0 +1,694 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <b>Laporan Mutasi Kas</b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px" colspan="4">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tipe Kas</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px" colspan="4">
+                            <select  id="tipekas" name="tipekas" style="margin:5px;width:200px;" >
+                                <option value="">Pilih Tipe Kas</option>
+                                <option value="kecil">Kas Kecil</option>
+                                <option value="besar">Kas Besar</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Periode </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input type="text" name="tgl1" id ="tgl1"></td>
+                        <td style="padding-left:30px">s/d </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input type="text" name="tgl2" id ="tgl2"></td>
+                        <td style="padding-left:10px"> <a v-bind:href="javascript:" onclick="f_getdata();return false;" title="Proses" class="btn btn-success" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px;color:black">Proses</span></i></a> </td>
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div id="msgBox"></div>
+<div id = 'cetak_list'>
+   <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#cabang").kendoMultiSelect({
+                autoClose: false
+            }).data("kendoMultiSelect");
+        $("#prinsipal").kendoMultiSelect({
+                autoClose: false
+            }).data("kendoMultiSelect");
+        $("#grid").kendoGrid({});
+        var today1 = new Date();
+        $("#tgl1").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgl1").data("kendoDatePicker").value(today1);
+        $("#tgl2").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgl2").data("kendoDatePicker").value(today1);
+        
+    });
+    function f_getdata(){
+        var sawal = 0;
+        var tgl_mulai = $("#tgl1").data("kendoDatePicker").value();
+        var tgl_selesai = $("#tgl2").data("kendoDatePicker").value();
+        var cabang = $("#Cabang").val();
+        var tipekas = $("#tipekas").val();
+        if(cabang == "" || cabang == null){
+            notif("warning", "<h4>Mohon Pilih Cabang</h4>");
+            return;
+        }
+        if(tipekas == "" || tipekas == null){
+            notif("warning", "<h4>Mohon Pilih Tipe Kas</h4>");
+            return;
+        }
+        if ((!Date.parse(tgl_mulai) > !Date.parse(tgl_selesai)) ){
+            toastr.error("Ada kesalahan pada tanggal ! ");
+            return;
+        };
+        var tgl_start   = f_tanggal(tgl_mulai);
+        var tgl_end = f_tanggal(tgl_selesai);
+        $.ajax({
+            url : "{{ base_url }}SaldoAwalMutasiKas",
+            type: "POST",
+            dataType: "JSON",
+            data : {
+                tgl1:tgl_start,
+                tgl2:tgl_end,
+                cabang:cabang,
+                tipekas:tipekas
+            },
+            success: function(data)
+            {
+                
+                // console.log(data.saldo);
+                var sawal = data.saldo;
+                f_get_data(tgl_start,tgl_end,cabang,tipekas,sawal);
+
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR);
+            }
+        });
+        // return sawal;
+    }
+    
+    function f_get_data(tgl_start,tgl_end,cabang,tipekas,sawal){
+        $("#grid").data("kendoGrid").destroy();
+        $("#grid").empty();
+        var nilai_saldo_awal = 0;
+        var saldo_akhir = 0;//parseInt(nilai_saldo_awal);
+        var dataheader = $(myForm).serialize();
+        if(tipekas == 'kecil'){
+            var kas = 'Kas Kecil';
+        }else{
+            var kas = 'Kas Besar';
+        }
+        var ds = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    type: 'Post',
+                    url: "{{ base_url }}getdatamutasikas",   
+                    dataType: 'json',
+                    data : {
+                        tgl1:tgl_start,
+                        tgl2:tgl_end,
+                        cabang:cabang,
+                        tipekas:tipekas
+                    }
+                 }
+            },
+            error: function(e) {
+                alert(e);
+            },
+            schema: {
+                data: function(data){
+                    var result = data.s_awal;
+                        if (result.length <= 0){
+                            notif('warning','Data tidak ditemukan');// 
+
+                        }else{  
+                            var json = result.s_awal;
+                            $(result).each(function(i,val){
+                                $.each(val,function(k,v){
+                                    nilai_saldo_awal = v                                                       
+                                });
+                            });
+                                                   
+                        $("#grid th[data-field=data_saldo]").contents().last().replaceWith('Saldo Awal: ' + accounting.formatNumber(nilai_saldo_awal, 2, ","));
+                                    
+                        }
+                    return data.Result;
+                 },
+                model: {
+                    fields: {
+                        rownumber    : { editable: false, nullable: true },
+                        Tanggal      : {type:"string", editable:false},
+                        No_Voucher   : {type:"string", editable:false},
+                        Jurnal_ID    : {type:"string", editable:false},
+                        Kategori     : {type:"string",   editable:false},
+                        Tipe_Kas     : {type:"string",   editable:false},
+                        Transaksi    : {type:"string", editable:false},
+                        Keterangan   : {type:"string", editable:false},
+                        Debet        : {type:"number", editable:false},
+                        Kredit       : {type:"number", editable:false},
+                    }
+                },     
+            },
+            aggregate: [
+                { field: "Debet", aggregate: "sum" ,  format: '{0:n0}'},
+                { field: "Kredit", aggregate: "sum" ,  format: '{0:n0}'},
+                { field: "saldo", aggregate: "sum" ,  format: '{0:n0}'},
+            ], 
+        });
+
+             $("#grid").kendoGrid({
+                    dataSource : ds,
+                    scrollable: true,
+                    filterable: true,
+                    sortable: true,
+                    navigatable: true,
+                    resizable: true,
+                    // groupable: true,
+                    width:"100%",
+                    height: 700,
+                    pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },
+                    selectable: "single",
+                    save: function (e) {
+                            e.sender.refresh();
+                    }, // untuk menghitung ulang 
+                    toolbar: ["excel"],
+                    excel: {
+                    fileName: "Laporan Mutasi Kas.xlsx",
+                            filterable: true
+                        },
+                    pdf: {
+                            fileName: "Laporan Mutasi Kas.pdf",
+                        },
+                    columns: [
+                    {
+                        title: "LAPORAN MUTASI KAS  " + cabang,
+                        headerAttributes: {style: "text-align: center"},
+                        columns:[
+                            { field : "periode", 
+                              title: 'Starting Date : ' + tgl_start + ' - Ending Date :' + tgl_end,
+                              headerAttributes: {style: "text-align: left"},
+                              headerTemplate: 'Starting Date  : ' + tgl_start + '  ||  Ending Date  : ' + tgl_end + ' || Cabang : ' + cabang,
+                                columns:[
+                                    { title: 'Data Mutasi ' + kas,
+                                      headerAttributes: {style: "text-align: left"},
+                                        columns:[
+                                            {
+                                                field: "Tanggal",
+                                                title: "Tanggal",
+                                                width: 100,
+                                                editable : false,
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                                nullable : true,
+                                            },
+                                            {
+                                                // hidden:true,
+                                                field: "No_Voucher",
+                                                title: "No Voucher",
+                                                nullable: false,
+                                                width: 120,
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                                filterable: { 
+                                                  // ui: IDFilter
+                                                },
+                                                // editor: dropdownproduct
+                                            },
+                                            {
+                                                field: "Jurnal_ID",
+                                                title: "Jurnal ID",
+                                                width: 100,
+                                                attributes: {style:"text-align:left;"},
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                               // editor:dropdownunit
+
+                                            },
+                                            {
+                                                field: "Kategori",
+                                                title: "Kategori",
+                                                width: 75,
+                                                attributes: {style:"text-align:left;"},
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                               // editor:dropdownunit
+
+                                            },
+                                            {
+                                                field: "Tipe_Kas",
+                                                title: "Tipe Kas",
+                                                width: 75,
+                                                attributes: {style:"text-align:left;"},
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                               // editor:dropdownunit
+
+                                            },
+                                            {
+                                                field: "Transaksi",
+                                                title: "Transaksi",
+                                                width: 250,
+                                                attributes: {style:"text-align:left;"},
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                               // editor:dropdownunit
+
+                                            },
+                                            {
+                                                field: "Keterangan",
+                                                title: "Keterangan",
+                                                width: 250,
+                                                attributes: {style:"text-align:left;"},
+                                                headerAttributes: {
+                                                    style: "text-align: center"
+                                                },
+                                               // editor:dropdownunit
+
+                                            },
+                                        ]},
+                                        
+                                        { field : "data_saldo", title: 'Saldo Awal: ' + accounting.formatNumber(sawal,2, ","),
+                                            headerAttributes: {style: "text-align: right"},
+                                            columns:[ 
+                                                {
+                                                    field: "Debet",
+                                                    title: "Debet",
+                                                    width: 150,
+                                                    type: "number",
+                                                    nullable: false,
+                                                    format: '{0:n0}',
+                                                    attributes:{style:"text-align:right;"},
+                                                    headerAttributes: {
+                                                        style: "text-align: center"
+                                                    },
+                                                    footerTemplate:"Total Debet : #= kendo.toString(sum, 'n0') #",
+
+                                                },
+                                                {
+                                                    field: "Kredit",
+                                                    title: "Kredit",
+                                                    width: 150,
+                                                    type: "number",
+                                                    nullable: false,
+                                                    format: '{0:n0}',
+                                                    attributes:{style:"text-align:right;"},
+                                                    headerAttributes: {
+                                                        style: "text-align: center"
+                                                    },
+                                                    footerTemplate:"Total Kredit : #= kendo.toString(sum, 'n0') #",
+
+                                                },
+                                                { 
+                                                    field: "saldo",
+                                                    title: "Saldo Akhir",
+                                                    width: 200,
+                                                    type: "number",
+                                                    nullable: false,
+                                                    format: '{0:n2}',
+                                                    attributes: { style:"text-align:right;" },
+                                                    headerAttributes: {style: "text-align: center"},
+                                                    nullable : true,
+                                                }, 
+
+                                            ]
+                                        }
+
+                                ]
+                            }
+                            
+                        ]
+                    }
+                    
+                ],
+                    dataBound: function (e) {
+                        var grid = $("#grid").data("kendoGrid");
+                        var mBox = $("#msgBox");
+                        if (grid.dataSource.data().length === 0) {
+                            if (!mBox.data("kendoWindow")) {
+                                mBox.kendoWindow({
+                                    actions: ["Close"],
+                                    animation: {
+                                        open: {
+                                            effects: "fade:in",
+                                            duration: 500
+                                        },
+                                        close: {
+                                            effects: "fade:out",
+                                            duration: 500
+                                        }
+                                    },
+                                    modal: true,
+                                    resizable: false,
+                                    title: "No items",
+                                    width: 400
+                                }).data("kendoWindow").content("<p>No data available. Please try again later.</p>").center().open();
+                            } else {
+                                mBox.data("kendoWindow").content("<p>No data available. Please try again later.</p>").open();
+                            }
+
+                        }
+                        
+                    },
+                    dataBinding: function(){
+                        var grid = $("#grid").data("kendoGrid");
+                        var gridData = grid.dataSource.view();
+                        saldo_akhir = 0;
+                        var nilai = parseFloat(nilai_saldo_awal);
+                        if(isNaN(nilai)){
+                            nilai = 0;
+                        }
+                        if(nilai_saldo_awal == '' || nilai_saldo_awal == null)
+                        {
+                            nilai_saldo_awal = 0;
+                        }
+                        var saldo_awal = parseFloat(nilai_saldo_awal);
+                        for (var i = 0; i < gridData.length; i++) {
+                            if (i == 0)
+                            {
+
+                                saldo_akhir = saldo_awal + parseFloat(gridData[i].Debet) - parseFloat(gridData[i].Kredit); 
+                                   
+                            }else{
+                                saldo_akhir = saldo_akhir + parseFloat(gridData[i].Debet) - parseFloat(gridData[i].Kredit);
+                            }
+                            gridData[i].saldo=saldo_akhir;
+                            gridData[i].rownumber=i+1;
+                        }           
+                    }
+
+                });
+            $("#grid").data("kendoGrid").setDataSource(ds);
+
+        }//end f_getdata_detail
+        var rowNumber = 0;
+        function resetRowNumber(e) {
+            rowNumber = 0;
+        }
+         
+        function renderNumber(data) {
+            return ++rowNumber;
+        }
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+         function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },1500);
+        }
+      
+</script>
+    {% endblock %}

@@ -1,0 +1,497 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.hide{
+    display: none;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>                       
+<form role="form" method="post" id="myForm">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Order</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading">
+                    <b>Form Transaksi KAS</b>
+                </div>
+                <div class="panel-body"> 
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">   
+                        <input type="hidden" name="kategori" id="kategori" value="KAS">                      
+                        <div class="form-group-sm">
+                            <label class="control-label">Cabang</label>
+                            <input class="form-control ignore" type="text" name="cabang" id="cabang" value = "{{logs.cabang}}" readonly="">
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Tanggal</label>
+                            <input class="form-control" type="text" name="tanggal" id="tanggal">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Tipe Kas</label>
+                            <select class="form-control" name="tipe_kas" id="tipe_kas" onchange="getsaldoawal();">
+                                <option value="">Pilih</option>
+                                <option value="Besar">Kas Besar</option>
+                                <option value="Kecil">Kas Kecil</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Saldo Kas</label>
+                            <input class="form-control ignore" type="text" name="saldoawal" id="saldoawal" readonly="" style="text-align:right;">
+                            <input class="form-control ignore" type="hidden" name="saldoawalmask" id="saldoawalmask" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Total Uang Kertas</label>
+                            <input class="form-control ignore" type="text" name="totaluangkertas" id="totaluangkertas" readonly="" style="text-align:right;">
+                            <input class="form-control ignore" type="hidden" name="totaluangkertasmask" id="totaluangkertasmask" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Total Uang Logam</label>
+                            <input class="form-control ignore" type="text" name="totaluanglogam" id="totaluanglogam" readonly="" style="text-align:right;">
+                            <input class="form-control ignore" type="hidden" name="totaluanglogammask" id="totaluanglogammask" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Selisih</label>
+                            <input class="form-control ignore" type="text" name="saldoakhir" id="saldoakhir" readonly="" style="text-align:right;">
+                            <input class="form-control ignore" type="hidden" name="saldoakhirmask" id="saldoakhirmask" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <div class="panel panel-default" id="divtotal">
+                <div class="panel-heading">
+                    <b>Total Uang</b>
+                </div>
+                <div class="panel-body"> 
+                    <table class="table" id="table-kertas">
+                                <thead>
+                                    <tr>
+                                        <th>Total Rp.100,000</th>
+                                        <th>Total Rp.50,000</th>
+                                        <th>Total Rp.20,000 </th>
+                                        <th>Total Rp.10,000</th>
+                                        <th>Total Rp.5,000</th>
+                                        <th>Total Rp.2,000</th>
+                                        <th>Total Rp.1,000</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalseratusribu" id="totalseratusribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalseratusribumask" id="totalseratusribumask" readonly="" style="text-align:right;"></td>
+                                       <td><input type="text" class="form-control"  autocomplete="off" name="totallimapuluhribu" id="totallimapuluhribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totallimapuluhribumask" id="totallimapuluhribumask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalduapuluhribu" id="totalduapuluhribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalduapuluhribumask" id="totalduapuluhribumask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalsepuluhribu" id="totalsepuluhribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalsepuluhribumask" id="totalsepuluhribumask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totallimaribu" id="totallimaribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totallimaribumask" id="totallimaribumask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalduaribu" id="totalduaribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalduaribumask" id="totalduaribumask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalseribu" id="totalseribu" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalseribumask" id="totalseribumask" readonly="" style="text-align:right;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    <table class="table" id="table-logam">
+                                <thead>
+                                    <tr>
+                                        <th>Total Rp.1000</th>
+                                        <th>Total Rp.500</th>
+                                        <th>Total Rp.200 </th>
+                                        <th>Total Rp.100</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalseribulogam" id="totalseribulogam" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalseribulogammask" id="totalseribulogammask" readonly="" style="text-align:right;"></td>
+                                       <td><input type="text" class="form-control"  autocomplete="off" name="totallimaratus" id="totallimaratus" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totallimaratusmask" id="totallimaratusmask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalduaratus" id="totalduaratus" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalduaratusmask" id="totalduaratusmask" readonly="" style="text-align:right;"></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="totalseratus" id="totalseratus" readonly="" style="text-align:right;"><input type="hidden" class="form-control"  autocomplete="off" name="totalseratusmask" id="totalseratusmask" readonly="" style="text-align:right;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>Detail</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">  
+                    <div class="form-group-sm">
+                        <div>
+                            <span>Uang Kertas</span>
+                            <table class="table" id="table-kertas">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>@Rp 100.000</th>
+                                        <th>@Rp 50.000</th>
+                                        <th>@Rp 20.000 </th>
+                                        <th>@Rp 10.000</th>
+                                        <th>@Rp 5.000</th>
+                                        <th>@Rp 2.000</th>
+                                        <th>@Rp 1.000</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="seratusribu" id="seratusribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valseratusribu" id="valseratusribu" value =100000></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="limapuluhribu" id="limapuluhribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="vallimapuluhribu" id="vallimapuluhribu" value ='50000'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="duapuluhribu" id="duapuluhribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valduapuluhribu" id="valduapuluhribu" value ='20000'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="sepuluhribu" id="sepuluhribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valsepuluhribu" id="valsepuluhribu" value ='10000'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="limaribu" id="limaribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="vallimaribu" id="vallimaribu" value ='5000'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="duaribu" id="duaribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valduaribu" id="valduaribu" value ='2000'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="seribu" id="seribu" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valseribu" id="valseribu" value ='1000'></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <span>Uang Logam</span>
+                            <table class="table" id="table-logam">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>@Rp 1000</th>
+                                        <th>@Rp 500</th>
+                                        <th>@Rp 200 </th>
+                                        <th>@Rp 100</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="seribulogam" id="seribulogam" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valseribulogam" id="valseribulogam" value ='1000'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="limaratus" id="limaratus" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="vallimaratus" id="vallimaratus" value ='500'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="duaratus" id="duaratus" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valduaratus" id="valduaratus" value ='200'></td>
+                                        <td><input type="text" class="form-control"  autocomplete="off" name="seratus" id="seratus" onkeyup="hitung()" onchange="hitung()" style="text-align:right;"><input type="hidden" class="form-control" name="valseratus" id="valseratus" value ='100'></td>
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>     
+                        </div>
+                    </div>                    
+                    <div class="form-group" align="center">
+                        <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->   
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+</form>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function() {      
+        // START AUTOCOMPLETE NOVOUCHER
+            // $.ajax({
+            //     url : "{{ base_url }}listGLNoVoucher",
+            //     type: "GET",
+            //     dataType: "JSON",
+            //     success: function(data)
+            //     {
+            //         for (var i in data) {
+            //             transaksiSource[i] = data[i].Transaksi;
+            //         }
+
+            //     },
+            //     error: function (jqXHR, textStatus, errorThrown)
+            //     {
+            //         notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+            //     }
+            // }); 
+
+
+        // START AUTOCOMPLETE CABANG
+        //     $.ajax({
+        //         url : "{{ base_url }}listCabang",
+        //         type: "GET",
+        //         dataType: "JSON",
+        //         success: function(data)
+        //         {
+        //             console.log(data);
+        //             for (var i in data) {
+        //                 cabangSource[i] = data[i].Cabang;
+        //             }
+
+        //         },
+        //         error: function (jqXHR, textStatus, errorThrown)
+        //         {
+        //             notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+        //         }
+        //     }); 
+
+        // $('#cabang').typeahead({
+        //     source: cabangSource,
+        // });
+        
+    });  
+
+
+   
+    // });
+
+    $(document).on('keydown', '.newRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (keyCode == 9 && e.shiftKey == false) { 
+        addRow();
+        // call custom function here
+      } 
+    });
+
+    $(document).on('keydown', '.delRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (e.shiftKey && keyCode === 9) { 
+        removeRow();
+        // call custom function here
+      } 
+    });
+
+    document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }
+
+    $("#tanggal").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        format: 'yyyy-mm-dd',
+        onClose: function(dateText, inst) { 
+            $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+        }
+    });
+
+    function clearRow() {
+        // var b = document.getElementById('bucket').value;
+        // for (var i = b; i > 0; i--) {
+        //     $("#itemRow"+i).remove();
+        // }
+
+        // $('#transaksi0').val('');
+        // $('#katagori0').val('');
+        // $('#tipe0').val('');
+        // $('#karyawan0').val('');
+        // $('#bank0').val('');
+        // $('#keterangan0').val('');
+        // $('#dr0').val('');
+        // $('#NoDIH0').val('');
+        // $('#Status0').val('');
+        // $('#cr0').val('');
+        // $('#jurnalid0').val('');
+        // $('#jumlah0').val('');
+        // rowNum = 1;
+        // $("#bucket").val(0);
+        // // addRow();
+    }
+    function hitung() {
+        (document.getElementById('saldoakhir').value) ? document.getElementById('saldoakhir').value : -1;
+        var seratusribu = (document.getElementById('seratusribu').value ? document.getElementById('seratusribu').value :0);
+        var valseratusribu = (document.getElementById('valseratusribu').value ? document.getElementById('valseratusribu').value : 0);
+        var limapuluhribu = (document.getElementById('limapuluhribu').value ? document.getElementById('limapuluhribu').value :0);
+        var vallimapuluhribu = (document.getElementById('vallimapuluhribu').value ? document.getElementById('vallimapuluhribu').value : 0);
+        var duapuluhribu = (document.getElementById('duapuluhribu').value ? document.getElementById('duapuluhribu').value :0);
+        var valduapuluhribu = (document.getElementById('valduapuluhribu').value ? document.getElementById('valduapuluhribu').value:0);
+        var sepuluhribu = (document.getElementById('sepuluhribu').value ? document.getElementById('sepuluhribu').value:0);
+        var valsepuluhribu = (document.getElementById('valsepuluhribu').value ? document.getElementById('valsepuluhribu').value:0);
+        var limaribu = (document.getElementById('limaribu').value ? document.getElementById('limaribu').value:0);
+        var vallimaribu = (document.getElementById('vallimaribu').value ? document.getElementById('vallimaribu').value:0);
+        var duaribu = (document.getElementById('duaribu').value ? document.getElementById('duaribu').value:0);
+        var valduaribu = (document.getElementById('valduaribu').value ? document.getElementById('valduaribu').value : 0);
+        var seribu = (document.getElementById('seribu').value ? document.getElementById('seribu').value:0);
+        var valseribu = (document.getElementById('valseribu').value ? document.getElementById('valseribu').value:0);
+        var seribulogam = (document.getElementById('seribulogam').value ? document.getElementById('seribulogam').value:0);
+        var valseribulogam = (document.getElementById('valseribulogam').value ? document.getElementById('valseribulogam').value:0);
+        var limaratus = (document.getElementById('limaratus').value ? document.getElementById('limaratus').value:0);
+        var vallimaratus = (document.getElementById('vallimaratus').value? document.getElementById('vallimaratus').value:0);
+        var duaratus = (document.getElementById('duaratus').value ? document.getElementById('duaratus').value:0);
+        var valduaratus = (document.getElementById('valduaratus').value ? document.getElementById('valduaratus').value:0);
+        var seratus = (document.getElementById('seratus').value ? document.getElementById('seratus').value:0);
+        var valseratus = (document.getElementById('valseratus').value ? document.getElementById('valseratus').value:0);
+        var saldoawal = (document.getElementById('saldoawal').value ? document.getElementById('saldoawal').value:0);
+        saldoawal = saldoawal.replace(/,/g,'');
+        var totalseratusribu = parseInt(seratusribu) * parseInt(valseratusribu);
+        var totallimapuluhribu = parseInt(limapuluhribu) * parseInt(vallimapuluhribu);
+        var totalduapuluhribu = parseInt(duapuluhribu) * parseInt(valduapuluhribu);
+        var totalsepuluhribu = parseInt(sepuluhribu) * parseInt(valsepuluhribu);
+        var totallimaribu = parseInt(limaribu) * parseInt(vallimaribu);
+        var totalduaribu = parseInt(duaribu) * parseInt(valduaribu);
+        var totalseribu = parseInt(seribu) * parseInt(valseribu);
+        var totalseribulogam = parseInt(seribulogam) * parseInt(valseribulogam);
+        var totallimaratus = parseInt(limaratus) * parseInt(vallimaratus);
+        var totalduaratus = parseInt(duaratus) * parseInt(valduaratus);
+        var totalseratus = parseInt(seratus) * parseInt(valseratus);
+        $("#totalseratusribu").val(numberWithCommas(totalseratusribu));
+        $("#totallimapuluhribu").val(numberWithCommas(totallimapuluhribu));
+        $("#totalduapuluhribu").val(numberWithCommas(totalduapuluhribu));
+        $("#totalsepuluhribu").val(numberWithCommas(totalsepuluhribu));
+        $("#totallimaribu").val(numberWithCommas(totallimaribu));
+        $("#totalduaribu").val(numberWithCommas(totalduaribu));
+        $("#totalseribu").val(numberWithCommas(totalseribu));
+        $("#totalseribulogam").val(numberWithCommas(totalseribulogam));
+        $("#totallimaratus").val(numberWithCommas(totallimaratus));
+        $("#totalduaratus").val(numberWithCommas(totalduaratus));
+        $("#totalseratus").val(numberWithCommas(totalseratus));
+
+        $("#totalseratusribumask").val(totalseratusribu);
+        $("#totallimapuluhribumask").val(totallimapuluhribu);
+        $("#totalduapuluhribumask").val(totalduapuluhribu);
+        $("#totalsepuluhribumask").val(totalsepuluhribu);
+        $("#totallimaribumask").val(totallimaribu);
+        $("#totalduaribumask").val(totalduaribu);
+        $("#totalseribumask").val(totalseribu);
+        $("#totalseribulogammask").val(totalseribulogam);
+        $("#totallimaratusmask").val(totallimaratus);
+        $("#totalduaratusmask").val(totalduaratus);
+        $("#totalseratusmask").val(totalseratus);
+
+        var totalkertas = totalseratusribu + totallimapuluhribu + totalduapuluhribu + totalsepuluhribu + totallimaribu + totalduaribu + totalseribu;
+        var totallogam = totalseribulogam + totallimaratus + totalduaratus + totalseratus;
+         var saldoakhir = (totalseratusribu + totallimapuluhribu + totalduapuluhribu + totalsepuluhribu + totallimaribu + totalduaribu + totalseribu + totalseribulogam + totallimaratus + totalduaratus + totalseratus) - saldoawal;
+        $("#totaluangkertas").val(numberWithCommas(totalkertas));
+        $("#totaluanglogam").val(numberWithCommas(totallogam));
+        $("#saldoakhir").val(numberWithCommas(saldoakhir));
+        $("#totaluangkertasmask").val(totalkertas);
+        $("#totaluanglogammask").val(totallogam);
+        $("#saldoakhirmask").val(saldoakhir);
+        $("#saldoawalmask").val(saldoawal);
+
+    }
+
+    function saveData()
+    {
+        $("#notif").empty();
+        hitung();
+        var status = true
+        var saldoawal = (document.getElementById('saldoawal').value) ? document.getElementById('saldoawal').value : 0;
+        var saldo = saldoawal.replace(/,/g,'');
+        if (saldo == 0 || saldoawal == "") {
+            status = false;
+            notif('warning', 'PERHATIAN! Saldo Awal tidak boleh 0');
+        }
+        var tipe_kas = document.getElementById('tipe_kas').value;
+        if(tipe_kas == ""){
+            status = false;
+            notif('warning', 'PERHATIAN! Tipe Kas Harus disi terlebih dahulu');
+        } 
+        
+        if (status == true) {
+            $('#progressGIF').show();
+            $.ajax({
+                url : "{{ base_url }}saveopnamekas/",
+                type: "POST",
+                data: $('#myForm').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {        
+                            
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil disimpan');  
+                        // $('#myForm')[0].reset();
+                    }
+                    $('#progressGIF').hide();
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                   $('#progressGIF').hide();
+                   location.reload();
+                }
+            });
+        }
+    }
+     function getsaldoawal(){
+        $('#saldoawal').val(0);
+        var tipe_kas = document.getElementById('tipe_kas').value;
+        var tgl = document.getElementById('tanggal').value;
+        if(tgl == ''){
+            notif("warning", "<h4>Mohon isi Tanggal Opname</h4> ");
+            $('#tanggal').focus();
+            return;
+        }
+        $.ajax({
+                url : "{{ base_url }}getsaldoawalopnamekas",
+                type: "POST",
+                data:{tipe_kas:tipe_kas,tgl:tgl},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        if(data.saldo == null || data.saldo == ""){
+                            var saldo = 0;
+                        }else{
+                            var saldo = data.saldo;
+                        }
+                        $('#saldoawal').val(numberWithCommas(saldo));
+                        // transdihSource[i] = data[i].NoDIH;
+                        // $('#NoDIH'+e).append('<option>'+data[i].NoDIH+'</option>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,589 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+<div class="modal">
+    <div id="print_out"></div>
+</div>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data SO</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="padding: 10px;">
+            <button type="button" id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+            <!-- <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button> -->
+        </div>
+        <div class="form-inline col-lg-6" align="right" style="padding: 10px;">
+            <!-- <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data -->
+            <!-- <label>Filter : </label>
+            <select id="filter" name="filter" class="form-control input-sm" style="width: 100px;" onchange="load_datatable()">
+                <option value="">All</option>
+                <option value="Usulan" selected>Usulan</option>
+                <option value="Closed">Closed</option>
+                <option value="Reject">Reject</option>
+            </select> -->
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable List Plafon
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <!-- <th>#</th> -->
+                                        <!-- <th>#</th> -->
+                                        <th style="min-width:100px;">Proses</th>
+                                        <th>No Order</th>
+                                        <th>Tanggal Order</th>
+                                        <th>Pelanggan</th>
+                                        <th>Nama Pelanggan</th>
+                                        <th>Salesman</th>
+                                        <th>Acu</th>
+                                        <th>Cara Bayar</th>
+                                        <!-- <th>Status Order</th> -->
+                                        <!-- <th>Potongan</th>
+                                        <th>Gross</th>
+                                        <th>Gross</th>
+                                        <th>Value</th>
+                                        <th>Diskon</th>
+                                        <th>PPN</th>
+                                        <th>TotalGross</th>
+                                        <th>TotalValue</th> -->
+                                        <!-- <th>Saldo</th> -->
+                                        <th>Total Value</th>
+                                        <th>Plafon</th>
+                                        <th>Sisa Plafon</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Data Pelanggan</h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto">
+               <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Piutang</label>
+                            <input class="form-control" id="piutang" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Nominal Order</label>
+                            <input class="form-control" id="order" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Piutang + Order</label>
+                            <input class="form-control" id="piutangorder" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Plafon</label>
+                            <input class="form-control" id="plafon" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Sisa Plafon</label>
+                            <input class="form-control" id="sisaplafon" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Over Plafon</label>
+                            <input class="form-control" id="overplafon" disabled>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Sales M-1</label>
+                            <input class="form-control" id="salesm1" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Sales M-2</label>
+                            <input class="form-control" id="salesm2" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Sales M-3</label>
+                            <input class="form-control" id="salesm3" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Sales Triwulan</label>
+                            <input class="form-control" id="totalsalestriwulan" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Rata-rata Sales Triwulan</label>
+                            <input class="form-control" id="ratasalestriwulan" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Sales Tertinggi</label>
+                            <input class="form-control" id="salestinggi" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Sales</label>
+                            <input class="form-control" id="lastsales" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Pembayaran Rata-rata M-1</label>
+                            <input class="form-control" id="pembayaranm1" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Pembayaran Rata-rata M-2</label>
+                            <input class="form-control" id="pembayaranm2" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Pembayaran Rata-rata M-3</label>
+                            <input class="form-control" id="pembayaranm3" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button> -->
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="modal_approval_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto">
+                <h3>Data Approval</h3> 
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="ApprovalSO">
+                    <thead style="line-height: 2">
+                         <tr>
+                            <th rowspan='2' style="min-width:100px;text-align:center">Cabang</th>
+                            <th rowspan='2' style="min-width:100px;text-align:center">No SO</th>
+                            <th colspan='3' style="min-width:100px;text-align:center">Approve LImit</th>
+                            <th colspan='3' style="min-width:100px;text-align:center">Approve TOP</th>
+                            <th colspan='3' style="min-width:100px;text-align:center">Approve Disc Cab</th>
+                            <th colspan='3' style="min-width:100px;text-align:center">Approve Disc Prins</th>
+                        </tr>
+                        <tr>
+                            <th style="min-width:100px">KSA</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                            <th style="min-width:100px">KSA</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                            <th style="min-width:100px">KSA</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                            <th style="min-width:100px">KSA</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="modal_top_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto">
+                <h4>Data TOP Piutang</h4> 
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="toppiutang">
+                    <thead style="line-height: 2">
+                         <tr>
+                            <th style="min-width:100px;text-align:center">Limit Kredit</th>
+                            <th style="min-width:100px;text-align:center">Saldo Piutang</th>
+                            <th style="min-width:100px;text-align:center">TOP</th>
+                            <th style="min-width:100px;text-align:center">Umur Piutang</th>
+                        </tr>
+                    </thead>
+                </table>
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="detailpiutang">
+                   <thead style="line-height: 2">
+                            <tr>
+                                <th>No Faktur</th>
+                                <th>Tgl Faktur</th>
+                                <th>Tipe Dok</th>
+                                <th>Pelanggan</th>
+                                <th>Salesman</th>
+                                <th>Cara Bayar</th>
+                                <th>Umur faktur</th>
+                                <th>Total</th>
+                                <th>Saldo</th>
+                                <th>Pelunasan</th>
+                                <th>No giro</th>
+                                <th>Tgl Giro</th>
+                                <th>tglJTO</th>
+                                <th>Bayar giro</th>
+                            </tr>                    
+                        </thead>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        load_datatable();
+
+        $('#dataTables-example').on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                $('#progressGIF').show();
+            } else {
+                $('#progressGIF').hide();
+            }
+        });
+    }); 
+
+    function load_datatable(){
+        if ( $.fn.dataTable.isDataTable( '#dataTables-example' ) ) {
+            tabel.destroy();
+        }
+        tabel = $('#dataTables-example').on('preXhr.dt', function ( e, settings, data ) {
+            $('#progressGIF').show();
+        } ).DataTable({
+            "ordering": false,
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{{ base_url }}listDataApprovalOrderKhusus",
+                "type": "POST",
+                data:{
+                    filter:$('#filter').val()
+                }
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            responsive: false,
+            "scrollX": true,
+            columnDefs:[
+                {
+                    targets : [0],
+                    "width": "160px",
+                    
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                },
+                {
+                    text: 'Cetak Laporan',
+                    action: function ( e, dt, node, config ) {
+                        cetaklist();
+                    }
+                },
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function allData() { 
+        var all = document.getElementById('all').value;       
+        if($("#all").is(':checked')){ 
+            tabel.ajax.url('{{ base_url }}listDataApproval/all');
+        }   
+        else{
+            tabel.ajax.url('{{ base_url }}listDataApproval/TOP');
+        }
+        reloadTable();
+    }   
+
+    function prosesData(No, Status,tipe)
+    {
+        var url = "{{ base_url }}prosesDataApprovalOrderKhusus/"+Status;
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No,tipe:tipe},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data == 200) {
+                    // notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    // reloadTable();
+                // }else if(data.status["response_code"] == true){
+                    // if(data.status["message"] == "Berhasil"){
+                        notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                        // reloadTable();
+                    // }else if(data.status["message"] == "Gagal"){
+                        // notif('warning', 'Warning! Data Gagal DiSimpan');
+                        // reloadTable();
+                    // }
+                }else{
+                     notif('warning', 'Warning! Data Gagal DiSimpan');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                reloadTable();
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function view(no,total){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}listDataDetailPelanggan",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {    
+            
+                var utangorder = parseInt(data.piutang) - parseInt(total);
+                
+                    var utang = data.piutang;
+                    $("#piutang").empty();
+                    $("#piutang").val(numberWithCommas(utangorder));
+                    $("#order").empty();
+                    $("#order").val(numberWithCommas(total));
+                    $("#piutangorder").empty();
+                    $("#piutangorder").val(numberWithCommas(data.piutang));
+                    $("#plafon").empty();
+                    $("#plafon").val(data.plafon);
+                    $("#sisaplafon").empty();
+                    $("#sisaplafon").val(data.sisaplafon);
+                    $("#overplafon").empty();
+                    $("#overplafon").val(data.overplafon);
+                    $("#salesm1").empty();
+                    $("#salesm1").val(data.salesm1);
+                    $("#salesm2").empty();
+                    $("#salesm2").val(data.salesm2);
+                    $("#salesm3").empty();
+                    $("#salesm3").val(data.salesm3);
+                    $("#totalsalestriwulan").empty();
+                    $("#totalsalestriwulan").val(data.salestottriwulan);
+                    $("#ratasalestriwulan").empty();
+                    $("#ratasalestriwulan").val(data.salesrata2triwulan);
+                    $("#salestinggi").empty();
+                    $("#salestinggi").val(data.salestertinggi);
+                    $("#lastsales").empty();
+                    $("#lastsales").val(data.lastsales);
+                    $("#pembayaranm1").empty();
+                    $("#pembayaranm1").val(data.pembayaranm1);
+                    $("#pembayaranm2").empty();
+                    $("#pembayaranm2").val(data.pembayarabm2);
+                    $("#pembayaranm3").empty();
+                    $("#pembayaranm3").val(data.pembayaranm3);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+     function approval(no){
+        $('#modal_approval_form').modal('show'); // show bootstrap modal when complete loaded
+
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}viewapproval",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                     $('#ApprovalSO').append('<tr class="itemRowHeader"><td style="min-width:100px">'+data[0].Cabang+'</td><td style="min-width:100px">'+data[0].NoSO+'</td><td style="min-width:100px">'+data[0].Approve_KSA+'</td><td style="min-width:100px">'+data[0].Approve_BM+'</td><td style="min-width:100px">'+data[0].Approve_RBM+'</td><td style="min-width:100px">'+data[0].Approve_TOP_KSA+'</td><td style="min-width:100px">'+data[0].Approve_TOP_BM+'</td><td style="min-width:100px">'+data[0].Approve_TOP_RBM+'</td><td style="min-width:100px">'+data[0].Approve_DiscCab_BM+'</td><td style="min-width:100px">'+data[0].Approve_DiscCab_RBM+'</td><td style="min-width:100px">'+data[0].Approve_DiscPrins_BM+'</td><td style="min-width:100px">'+data[0].Approve_DiscPrins_pusat+'</td></tr>');
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function toppiutang(pelanggan){
+        $('#modal_top_form').modal('show'); // show bootstrap modal when complete loaded
+        var xx = 0;
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}viewpiutangpelanggan",
+            type: "POST",
+            data:{pelanggan:pelanggan},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var detail = data.detail;
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                     $('#toppiutang').append('<tr class="itemRowHeader"><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].limit_kredit)+'</td><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].saldo)+'</td><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].top)+'</td><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].Umur_faktur)+'</td></tr>');
+                if(xx == 0){
+                    for (var i in detail) {
+                        $('#detailpiutang').append($('<tr class="itemRowDetail"><td>'+detail[i].NoFaktur+'</td><td>'+detail[i].TglFaktur+'</td><td>'+detail[i].TipeDokumen+'</td><td>'+detail[i].Pelanggan+'</td><td>'+detail[i].Salesman+'</td><td>'+detail[i].CaraBayar+'</td><td>'+detail[i].Umur_faktur+'</td><td align="right">'+numberWithCommas(detail[i].Total)+'</td><td align="right">'+numberWithCommas(detail[i].Saldo)+'</td><td align="right">'+numberWithCommas(detail[i].pelunasan)+'</td><td>'+detail[i].Nogiro+'</td><td>'+detail[i].TglGiro+'</td><td>'+detail[i].tglJTO+'</td><td align="right">'+numberWithCommas(detail[i].bayargiro)+'</td></tr>'));
+                            i++;
+                    }
+                }
+                if(detail != ""){
+                    xx = 1;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+    function updateData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataSOapprovalPusat"; 
+        var status ="TOP";
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{status:status},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function cetaklist(){
+        var list_data = [];
+        $("#print_out").empty();
+        $(".ceklis:checked").each(function () {
+            list_data.push($(this).val());
+        });
+        list = list_data.filter((x, i, a) => a.indexOf(x) == i);
+        $('#progressGIF').show();
+        var f = 0;
+        for (var i = 0; i < list_data.length; i++) {
+            // var aa = $('#dataTables-example').DataTable().row(list_data[i]).data();
+            // console.log(list_data[i]);
+            $.ajax({
+                // url : "{{ base_url }}listDataDetailSO",
+                url : "{{ base_url }}cetak_top_limit",
+                type: "POST",
+                data:{no:list_data[i]},
+                dataType: "JSON",
+                success: function(param){
+                    console.log(param);
+                    $("#print_out").append($("<div>").load("{{base_url}}assets/print_template/cetak_top_limit.php", {var1:param, tipe:"Limit"},function(){
+                            f = f+1;
+                            if(f == list_data.length){
+                                $('#progressGIF').hide();
+                                $('#print_out').print();
+                                $('#progressGIF').hide();
+                                // printDiv('print_out')
+                            }
+                        }));
+                },
+                error: function(error){
+
+                }
+            })
+        }
+    }
+
+</script>
+    {% endblock %}

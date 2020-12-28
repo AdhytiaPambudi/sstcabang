@@ -1,0 +1,1009 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+    }
+    .hide{
+        display: none;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input{
+        padding-right: 5px !important;
+    }
+</style>
+
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<!-- =================================== -->
+<div class="col-lg-12">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#home">Retur BPB</a></li>
+    <li><a data-toggle="tab" href="#menu1" onclick="load_prinsipal(this)">Retur Manual</a></li>
+  </ul>
+
+    <div class="tab-content">
+        <div id="home" class="tab-pane fade in active">
+        <form method="post" id="form_bpb" enctype="multipart/form-data">
+        <br>
+            <div class="col-lg-12">
+                <div class="col-sm-2">
+                    <label class="control-label">Cabang :</label> {% for cabang in cabang %}
+                    {% if cabang.Cabang == logs.cabang %}
+                    {{ cabang.Cabang }}-{{ cabang.Kode }}
+                    {% endif %}
+                    {% endfor %}
+                    <br>
+                    <label class="control-label">Tanggal :</label> {{tgl}}
+                    <br>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Dokumen1</label>
+                    <input type="file" class="form-control" name="Dokumen" id="Dokumen">
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Dokumen 2</label>
+                    <input type="file" class="form-control" name="Dokumen2" id="Dokumen2">
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total Gross : </label><input class="form-control" type="text" name="TotalGross" id="TotalGross" style="text-align: right;" readonly>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total Potongan : </label><input class="form-control" type="text" name="TotalPotongan" id="TotalPotongan" style="text-align: right;" readonly>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total Value : </label><input class="form-control" type="text" name="TotalValue" id="TotalValue" style="text-align: right;" readonly>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <br>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-sm-2">
+                    <label class="control-label">Prinsipal</label>
+                    <!-- <input type="text" class="form-control" name="BPB" id="BPB" autocomplete="off" style="text-transform: uppercase;" onchange="getBPB()"> -->
+                    <select class="form-control selectpicker" id="selectPrinsipal" name="selectPrinsipal" data-live-search="true" onchange="getNoBPB(this.value)">
+                        <option value="" >-- Silahkan Pilih Prinsipal--</option>
+                        {% for Prinsipal in Prinsipal %}                                    
+                            <option value="{{Prinsipal.Prinsipal}}" >{{Prinsipal.Prinsipal}}</option>
+                        {% endfor%}
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">BPB</label>
+                    <!-- <input type="text" class="form-control" name="BPB" id="BPB" autocomplete="off" style="text-transform: uppercase;" onchange="getBPB()"> -->
+                    <select class="form-control selectpicker" id="BPB" name="BPB" data-live-search="true" onchange="getBPB()">
+                        <!-- <option value="">--- Silahkan Pilih No BPB ---</option> -->
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Prinsipal</label>
+                    <input type="text" class="form-control" name="Prinsipal" id="Prinsipal" onfocus="getPrinsipal()" onchange="prinsipal()" autocomplete="off" readonly>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Supplier</label>
+                    <input type="text" class="form-control" name="Supplier" id="Supplier" readonly onchange="loadProduk()">
+                    <input type="hidden" name="tipe_retur" value="BPB">
+                    <input class="form-control" type="hidden" name="TotalPPN" id="TotalPPN" style="text-align: right;" readonly>
+                    <input class="form-control" type="hidden" name="TotalNET" id="TotalNET" style="text-align: right;" readonly>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <hr>
+            </div>
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <!-- <table class="table" id="table-barang"> -->
+                    <table id="table-barang" class="table">
+                        <thead>
+                            <tr>
+                                <th width="5">#</th>
+                                <th width="250">Produk</th>
+                                <th width="50">Qty</th>
+                                <th width="50">Disc</th>
+                                <th width="50">Bonus</th>
+                                <th width="75">Harga</th>
+                                <th width="75">HPC</th>
+                                <th width="50">Disc</th>
+                                <th width="100">Value</th>
+                                <th width="75">Batch</th>
+                                <th width="50">Qty REC</th>
+                                <th width="80">Exp.Date</th>
+                                <th width="100">Satuan</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="col-lg-12" align="center">
+                    <table>
+                        <tr>
+                            <td>
+                                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary" style="width: 100px; margin: 3px;">Save</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="reset_form()" style="width: 100px; margin: 3px;">Cancel</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+        </div>
+        <div id="menu1" class="tab-pane fade">
+        <form method="post" id="form-manual" enctype="multipart/form-data">
+            <br>
+            <div class="col-lg-12">
+                <div class="col-sm-2">
+                    <label class="control-label">Cabang :</label> {% for cabang in cabang %}
+                            {% if cabang.Cabang == logs.cabang %} 
+                                {{ cabang.Cabang }}-{{ cabang.Kode }}
+                            {% endif %}
+                        {% endfor %}
+                        <br>
+                    <label class="control-label">Tanggal :</label> {{tgl}}
+                    <br>
+                    
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Dokumen1</label>
+                    <input type="file" class="form-control" name="Dokumen" id="mDokumen">
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Dokumen 2</label>
+                    <input type="file" class="form-control" name="Dokumen2" id="mDokumen2">
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total Gross : </label><input class="form-control" type="text" name="TotalGross" id="mTotalGross" style="text-align: right;" readonly>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total Potongan : </label><input class="form-control" type="text" name="TotalPotongan" id="mTotalPotongan" style="text-align: right;" readonly>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total Value : </label><input class="form-control" type="text" name="TotalValue" id="mTotalValue" style="text-align: right;" readonly>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <br>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-sm-2">
+                    <label class="control-label">BPB</label>
+                    <input type="text" class="form-control" name="BPB" id="mBPB" autocomplete="off" style="text-transform: uppercase;">
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Prinsipal</label>
+                    <!-- <input type="text" class="form-control" name="Prinsipal" id="mPrinsipal" onfocus="load_prinsipal(this)" onchange="load_supplier(this)" autocomplete="off"> -->
+                    <select class="form-control selectpicker" id="mPrinsipal" name="Prinsipal" data-live-search="true" onchange="load_supplier(this)">
+                        <option value="">--- Pilih Prinsipal ---</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Supplier</label>
+                    <input type="text" class="form-control" name="Supplier" id="mSupplier" readonly onchange="loadProduk()">
+                    <input type="hidden" name="tipe_retur" value="Manual">
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total PPN : </label><input class="form-control" type="text" name="TotalPPN" id="mTotalPPN" style="text-align: right;" readonly>
+                </div>
+                <div class="col-sm-2">
+                    <label class="control-label">Total NET : </label><input class="form-control" type="text" name="TotalNET" id="mTotalNET" style="text-align: right;" readonly>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <hr>
+            </div>
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table id="mtable-barang" class="table">
+                        <thead>
+                            <tr>
+                                <th width="5">#</th>
+                                <th width="250">Produk</th>
+                                <th width="50">Qty</th>
+                                <th width="50">Disc</th>
+                                <th width="50">Bonus</th>
+                                <th width="75">Harga</th>
+                                <th width="75">HPC</th>
+                                <th width="50">Disc</th>
+                                <th width="100">Value</th>
+                                <th width="75">Batch</th>
+                                <th width="50">Qty REC</th>
+                                <th width="80">Exp.Date</th>
+                                <th width="100">Satuan</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-12" align="center" style="margin: 10px;">
+                <a href="javascript:void(0)" type="submit" class="btn btn-success" onclick="madd_row();" style="width: 120px; margin: 3px;">Tambah Barang</a>
+            </div>
+            <div class="col-lg-12" align="center">
+                <table>
+                    <tr>
+                        <td>
+                            <button type="button" id="btnSave" onclick="msaveData()" class="btn btn-primary" style="width: 100px; margin: 3px;">Save</button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="reset_form()" style="width: 100px; margin: 3px;">Cancel</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        </div>
+    </div> <!-- terakhir tab content -->
+</div>
+
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    var m_rows = 0;
+    var b_rows = 0;
+    var produkSource = [];
+    var TotalValue = 0;
+
+    $(document).ready(function(){
+        /*var listbpb = [];
+        $.ajax({
+            url: "{{ base_url }}listNoBPB",
+            type : "POST",
+            dataType :'JSON',
+            success:function(data){
+                $.each(data,function(index, value){
+                    $('#BPB').append("<option class='optPO' value='"+value.nobpb+"'>"+value.nobpb+"</option>");
+                });
+                $('.selectpicker').selectpicker('refresh');
+            },
+            error:function(e){
+              console.log(e);  
+            }
+        });*/
+
+        // if(listbpb.length > 0){
+        //     $.each( obj, function( key, value ) {
+        //       console.log(listbpb.length);
+        //     });
+        // }
+        //       console.log(listbpb.length);
+
+        madd_row();
+
+    });
+    function getBPB(){
+        $('#table-barang tbody').empty();
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}dataDetailBPB",
+            type : "POST",
+            dataType : "JSON",
+            data:{no:$('#BPB').val()},
+            success:function(data){
+                $('#notif').empty();
+                if(data.length == 0){
+                    $('#progressGIF').hide();
+                    notif("warning", "tidak ada data");
+                    return;
+                }
+                $('#Prinsipal').val(data[0].Prinsipal+'~'+data[0].NamaPrinsipal);
+                $('#Supplier').val(data[0].Supplier);
+                $('#table-barang tbody').empty();
+
+                $('#bucket').val(data.length-1);
+                b_rows=data.length;
+                for(i in data){
+                    var banyak = parseInt(data[i].Qty) + parseInt(data[i].Bonus);
+                    var UnitCOGS = data[i].Value / banyak;
+                    var TotalCOGS = UnitCOGS * banyak;
+                    $('#table-barang tbody').append(
+                        '<tr id="itemRow'+i+'">'+
+                            '<td><button id="btn'+i+'" baris='+i+' class="btn glyphicon glyphicon-trash" onclick="remove_row(this)" title="Hapus" /></td>'+
+                            '<td><input type="text" name="Produk['+i+']" id="Produk'+i+'" value="'+data[i].Produk+"~"+data[i].NamaProduk+'" style="width:250px" class="delRow" onkeyup="cariKode('+i+')" onchange="getProduk('+i+')" autocomplete="off"></td>'+
+                            '<td><input type="number" baris='+i+' name="Qty['+i+']" id="Qty'+i+'" value="'+data[i].Qty * -1+'"  style="width: 50px; text-align:right;" onkeyup="hitung(this)"></td>'+
+                            '<td><input type="number" baris='+i+' step="0.01" min="0" name="Diskon['+i+']" id="Diskon'+i+'" value="'+accounting.formatNumber(data[i].Disc)+'" style="width: 50px; text-align:right;" onkeyup="hitung(this)" onchange="hitung(this)"></td>'+
+                            '<td><input type="number" baris='+i+' name="Bonus['+i+']" id="Bonus'+i+'" value="'+data[i].Bonus+'" style="width: 50px; text-align:right;" onkeyup="hitung(this)" onchange="hitung(this)"></td>'+
+                            '<td><input type="text" baris='+i+' name="HargaDeal['+i+']" id="HargaDeal'+i+'" value="'+accounting.formatNumber(data[i].HrgBeli)+'" style="width: 75px; text-align:right;" onkeyup="nomor(this); hitung(this)" onchange="hitung(this)"></td>'+
+                            '<td><input type="text" name="HPC['+i+']" id="HPC'+i+'" readonly="" value="'+accounting.formatNumber(data[i].HPC)+'"  style="background-color: #eee; width: 75px; text-align:right;">'+
+                            '<td><input type="text" step="0.01" min="'+i+'" name="DiscCab['+i+']" id="DiscCab'+i+'" readonly="" value="'+accounting.formatNumber(data[i].Disc)+'" style="background-color: #eee; width: 50px; text-align:right;"></td>'+
+                            '<td><input type="text" name="Value['+i+']" id="Value'+i+'" value="'+accounting.formatNumber(data[i].Value * -1)+'"  readonly="" style="background-color: #eee; width: 100px; text-align:right;">'+
+                            '<td><input type="text" name="Batch['+i+']" id="Batch'+i+'" value="'+data[i].BatchNo+'"  readonly="" style="background-color: #eee; width: 75px">'+
+                            '<td><input type="text" name="QtyRec['+i+']" id="QtyRec'+i+'" value="'+data[i].UnitStok+'" readonly="" style="background-color: #eee; width: 50px; text-align:right;"></td>'+
+                            '<td><input type="text" name="ExpDate['+i+']" id="ExpDate'+i+'" value="'+data[i].ExpDate+'" readonly="" style="background-color: #eee; width: 80px"></td>'+
+                            '<td><input type="text" name="Satuan['+i+']" id="Satuan'+i+'" value="'+data[i].Satuan+'" readonly="" style="background-color: #eee; width: 100px"></td>'+
+                            '<td><input type="text" name="Keterangan['+i+']" id="Keterangan'+i+'" value="'+data[i].Keterangan+'" style="width:150px;"></td>'+
+                            '<td hidden><input type="hidden" name="UnitCOGS['+i+']" id="UnitCOGS'+i+'" value="'+UnitCOGS+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                            '<td hidden><input type="hidden" name="TotalCOGS['+i+']" id="TotalCOGS'+i+'" value="'+TotalCOGS+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="HPC1['+i+']" id="HPC1'+i+'" value="'+data[i].HPC1+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="Gross['+i+']" id="Gross'+i+'" value="'+data[i].Gross+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="Potongan['+i+']" id="Potongan'+i+'" value="'+data[i].Potongan+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="PPN['+i+']" id="PPN'+i+'" value="'+data[i].PPN+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="Total['+i+']" id="Total'+i+'" value="'+data[i].Total+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="Disc_Pst['+i+']" id="Disc_Pst'+i+'" value="'+data[i].Disc_Pst+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="Harga_Beli_Pst['+i+']" id="Harga_Beli_Pst'+i+'" value="'+data[i].Harga_Beli_Pst+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td hidden><input type="hidden" name="HPP['+i+']" id="HPP'+i+'" value="'+data[i].HPP+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                                '<td><input type="text" name="batchdoc['+i+']" id="mbatchdoc'+i+'" value="'+data[i].NoDokumen+'" readonly style="background-color: #eee; width: 100px; text-align:right;">'+
+                                '</tr>');
+                }
+                validasi_item();
+                $('#progressGIF').hide();
+            },
+            error:function(e){
+                console.log(e);
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function hitung(x){
+        s = document.getElementById(x.id).getAttribute("baris");
+        var banyak = 0;
+        var value_bonus = 0;
+        var harga = 0;
+        var diskon = 0;
+        var diskon_value = 0;
+        var total_harga = 0;
+        var total_value = 0;
+        var gross = 0;
+        var potongan = 0;
+        var total_potongan = 0;
+        var PPN = 0;
+        var produk = ((document.getElementById('Produk'+s).value) ? document.getElementById('Produk'+s).value : "");
+        var qty = ((document.getElementById('Qty'+s).value) ? document.getElementById('Qty'+s).value : 0);
+        var QtyRec = ((document.getElementById('QtyRec'+s).value) ? document.getElementById('QtyRec'+s).value : 0);
+        var disc_manual = ((document.getElementById('Diskon'+s).value) ? document.getElementById('Diskon'+s).value : '');
+        var discab = ((document.getElementById('DiscCab'+s).value) ? document.getElementById('DiscCab'+s).value : 0);
+        var bonus = ((document.getElementById('Bonus'+s).value) ? document.getElementById('Bonus'+s).value : 0);
+        var harga_manual = ((document.getElementById('HargaDeal'+s).value) ? document.getElementById('HargaDeal'+s).value : 0);
+        var hpc = ((document.getElementById('HPC'+s).value) ? document.getElementById('HPC'+s).value : 0);
+        var UnitCOGS = ((document.getElementById('UnitCOGS'+s).value) ? document.getElementById('UnitCOGS'+s).value : 0);
+        var TotalCOGS = ((document.getElementById('TotalCOGS'+s).value) ? document.getElementById('TotalCOGS'+s).value : 0);
+
+        if(parseInt(qty) > 0){
+            qty = qty * -1;
+            document.getElementById('Qty'+s).value = qty;
+        }
+
+        if(parseInt(bonus) > 0){
+            bonus = bonus * -1;
+            document.getElementById('Bonus'+s).value = bonus;
+        }
+
+        banyak = parseInt(qty) + parseInt(bonus);
+
+        if(parseFloat(harga_manual)>0){
+            harga = parseFloat(harga_manual.replace(/,/g, ""));
+        }else{
+            harga = parseFloat(hpc.replace(/,/g, ""));
+        }
+
+        if(parseFloat(disc_manual)>0){
+            diskon = parseFloat(disc_manual.replace(/,/g, ""));
+        }else{
+            diskon = parseFloat(discab.replace(/,/g, ""));
+        }
+        value_bonus = bonus * harga;
+
+        gross = harga * banyak;
+        total_harga = harga * parseInt(qty);
+        total_diskon = total_harga * diskon/100;
+        potongan = total_diskon + value_bonus;
+        total_value = (gross - potongan);
+        PPN = total_value * 0.1;
+        var total = total_value + PPN;
+
+        UnitCOGS = total_value / banyak;
+        TotalCOGS = (UnitCOGS * banyak)* -1;
+
+        document.getElementById('Value'+s).value = numberWithCommas(total_value);
+        document.getElementById('UnitCOGS'+s).value = UnitCOGS;
+        document.getElementById('TotalCOGS'+s).value = TotalCOGS;
+        document.getElementById('Gross'+s).value = gross;
+        document.getElementById('Potongan'+s).value = potongan;
+        document.getElementById('PPN'+s).value = PPN;
+        document.getElementById('Total'+s).value = total;
+
+        validasi_item();
+    }
+
+    function validasi_item(){
+        $("#notif").empty();
+        var TotalValue = 0;
+        var TotalGross = 0;
+        var TotalPotongan = 0;
+        var TotalPPN = 0;
+        var TotalNET = 0;
+        var kode_batch = [];
+        // console.log(b_rows);
+        if(b_rows > 0){
+            for (var i = 0; i < b_rows; i++) {
+                var ada = document.getElementById("itemRow"+i);
+                if(ada){
+                    var produk = document.getElementById("Produk"+i).value;
+                    var gross = document.getElementById("Gross"+i).value;
+                    var potongan = document.getElementById("Potongan"+i).value;
+                    var value = document.getElementById("Value"+i).value;
+                    var ppn = document.getElementById("PPN"+i).value;
+                    var net = document.getElementById("Total"+i).value;
+                    var qty = document.getElementById("Qty"+i).value;
+                    var bonus = ((document.getElementById('Bonus'+i).value) ? document.getElementById('Bonus'+i).value : 0);
+                    var batch = document.getElementById("Batch"+i).value;
+                    var stok = document.getElementById("QtyRec"+i).value ? document.getElementById("QtyRec"+i).value : 0;
+                    var ExpDate = document.getElementById("ExpDate"+i).value ? document.getElementById("ExpDate"+i).value : "";
+                    
+                    TotalGross += parseFloat(gross.replace(/,/g, ""));
+                    TotalPotongan += parseFloat(potongan.replace(/,/g, ""));
+                    TotalValue += parseFloat(value.replace(/,/g, ""));
+                    TotalPPN += parseFloat(ppn.replace(/,/g, ""));
+                    TotalNET += parseFloat(net.replace(/,/g, ""));
+                    document.getElementById("TotalGross").value = numberWithCommas(TotalGross);
+                    document.getElementById("TotalPotongan").value = numberWithCommas(TotalPotongan);
+                    document.getElementById("TotalValue").value = numberWithCommas(TotalValue);
+                    document.getElementById("TotalPPN").value = numberWithCommas(TotalPPN);
+                    document.getElementById("TotalNET").value = numberWithCommas(TotalNET);
+                    if(parseFloat(gross)==0){
+                        notif("warning","belum lengkap")
+                        return false;
+                    }
+                    if(ExpDate==""){
+                        notif("warning","Expire Date Kosong")
+                        return false;
+                    }
+                    if(batch==""){
+                        notif("warning","batch belum dipilih")
+                        return false;
+                    }
+                    
+                   if(((parseInt(qty) * -1) + (parseInt(bonus) * -1 )) > parseInt(stok)){
+                        notif("danger","<span class='glyphicon glyphicon-question-sign'></span> Qty yang diretur melebihi stok")
+                        return false;
+                    }
+                    if((parseInt(qty) > 0) || (parseInt(bonus) > 0) ){
+                        notif("danger","<span class='glyphicon glyphicon-question-sign'></span> Qty & Bonus Harus Minus")
+                        return false;
+                    }
+                    var cek_batch = jQuery.grep(kode_batch, function (value) { return value.produk == produk });
+                    if(cek_batch.length > 0){
+                        if(cek_batch[0].batch==batch)
+                        {  
+                            notif("warning","produk dan kode batch "+batch+" Sudah ada")
+                            return false;
+                        }
+                    }
+                    kode_batch.push({
+                        "produk":produk,
+                        "batch":batch
+                        })
+                }
+            }
+        }
+
+        return true;
+    }
+
+    function remove_row(x)
+    {
+        s = document.getElementById(x.id).getAttribute("baris");
+        jQuery('#itemRow'+s).remove();
+        var rowCount = $('#table-barang tbody tr').length;
+        if(rowCount == 0){
+            reset_form();
+        }
+        validasi_item();
+    }
+
+    function reset_form(){
+        $("#form_bpb")[0].reset();
+        $('#table-barang tbody').empty();
+    }
+
+    function saveData(){
+        var v = validasi_item();
+        if(v === false){
+            return;
+        }
+
+        $('#notif').empty();
+        $('#progressGIF').hide();
+        var url = "{{ base_url }}saveusulanretur"; 
+        var formdata = new FormData();      
+        // append tipe file
+        var Dokumen = $('#Dokumen')[0].files[0];
+        formdata.append('Dokumen', Dokumen);
+
+        var Dokumen2 = $('#Dokumen2')[0].files[0];
+        formdata.append('Dokumen2', Dokumen2);
+
+        $.each($('#form_bpb').serializeArray(), function(a, b){
+            formdata.append(b.name, b.value);
+        });
+
+        var formData = new FormData($('#form_bpb')[0]);
+        // ajax adding data to database
+        $.ajax({
+            url : url,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "JSON",
+            success: function(data)
+            {
+                // console.log(data);
+                if(data==false){
+                     notif('danger', '<h2>Usulan retur gagal dibuat</h2><br><h3> karena ada salah satu item yg kurang stok / Selisih Stok Summary dan detail</h3>');
+                }else{
+                    if (data.status == 'gagal') {
+                        notif('warning', data.pesan);
+                        $('#progressGIF').hide();
+                    }else{
+                        notif('success', 'SUKSES! Data berhasil disimpan no Doc = '+data.pesan);
+                        reset_form();
+                        $('#progressGIF').hide();
+                    }
+                }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR);
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                reset_form();
+                $('#progressGIF').hide();
+            }
+        });
+    }
+// ==================================================== ================================================================
+// FUNGSI UNTUK MANUAL
+// ==================================================== ================================================================
+    function load_prinsipal(p){
+        var prinsipal_source = [];
+        $.ajax({
+            url : "load_prinsipal",
+            dataType:"JSON",
+            success:function(prinsipals){
+                if(prinsipals.length>0){
+                    // prinsipal_source = prinsipals.map(function(value,index) { return value.Prinsipal+"~"+value.Supplier });
+                    // $('#'+p.id).typeahead({
+                    //     source: prinsipal_source
+                    // });
+                    $.each(prinsipals,function(index, value){
+                        $('#mPrinsipal').append("<option class='optp' value='"+value.Prinsipal+"~"+value.Supplier+"'>"+value.Prinsipal+"~"+value.Supplier+"</option>");
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            },
+            error: function(){
+
+            }
+        })
+    }
+
+    function load_supplier(s) {
+        var split = s.value.split("~");
+        $('#mSupplier').val(split[1]);
+        load_product()
+    }
+
+    function load_product(){
+        var Prinsipal = document.getElementById('mPrinsipal').value;
+        var Supplier = document.getElementById('mSupplier').value;
+        var split2 = Prinsipal.split("~");
+        var prinspl = split2[0];
+        produkSource.length = 0;
+        if ((Prinsipal)) {
+            $.ajax({
+                url : "{{ base_url }}listProdukUsulanBeli/",
+                type: "POST",
+                data:{prinsipal:prinspl, supplier:Supplier},
+                dataType: "JSON",
+                success: function(producs)
+                {
+                    produkSource = producs.map(function(value,index) { return value.Kode_Produk+"~"+value.Produk });
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+        }
+    }
+
+    function madd_row(){
+        var v = mvalidasi_item();
+        if(v === false){
+            return;
+        }
+        $('#mtable-barang tbody').append(
+        '<tr id="mitemRow'+m_rows+'">'+
+            '<td><button id="btn'+m_rows+'" baris='+m_rows+' class="btn glyphicon glyphicon-trash" onclick="mremove_row(this)" title="Hapus" /></td>'+
+            '<td><input type="text" name="Produk['+m_rows+']" id="mProduk'+m_rows+'" style="width:250px" class="delRow" onkeyup="cariKode('+m_rows+')" onchange="getProduk('+m_rows+')" autocomplete="off"></td>'+
+            '<td><input type="number" baris='+m_rows+' name="Qty['+m_rows+']" id="mQty'+m_rows+'"  style="width: 50px; text-align:right;" onkeyup="mhitung('+m_rows+')"></td>'+
+            '<td><input type="number" baris='+m_rows+' step="0.01" min="0" name="Diskon['+m_rows+']" id="mDiskon'+m_rows+'" style="width: 50px; text-align:right;" onkeyup="mhitung('+m_rows+')" onchange="mhitung('+m_rows+')"></td>'+
+            '<td><input type="number" baris='+m_rows+' name="Bonus['+m_rows+']" id="mBonus'+m_rows+'" style="width: 50px; text-align:right;" onkeyup="mhitung('+m_rows+')" onchange="mhitung('+m_rows+')"></td>'+
+            '<td><input type="text" baris='+m_rows+' name="HargaDeal['+m_rows+']" id="mHargaDeal'+m_rows+'" style="width: 75px; text-align:right;" onkeyup="nomor(this); mhitung('+m_rows+')" onchange="mhitung('+m_rows+')"></td>'+
+            '<td><input type="text" name="HPC['+m_rows+']" id="mHPC'+m_rows+'" readonly="" style="background-color: #eee; width: 75px; text-align:right;">'+
+            '<td><input type="text" step="0.01" min="'+m_rows+'" name="DiscCab['+m_rows+']" id="mDiscCab'+m_rows+'" readonly style="background-color: #eee; width: 50px; text-align:right;"></td>'+
+            '<td><input type="text" name="Value['+m_rows+']" id="mValue'+m_rows+'" value="0" readonly="" style="background-color: #eee; width: 100px; text-align:right;">'+
+            '<td><input type="text" name="Batch['+m_rows+']" id="mBatch'+m_rows+'" style="width: 75px" onfocus="getBatch('+m_rows+')" onchange="mgetstok('+m_rows+')" autocomplete="off">'+
+            '<td><input type="text" name="QtyRec['+m_rows+']" id="mQtyRec'+m_rows+'" readonly="" style="background-color: #eee; width: 50px; text-align:right;"></td>'+
+            '<td><input type="text" name="ExpDate['+m_rows+']" id="mExpDate'+m_rows+'" readonly="" style="background-color: #eee; width: 80px"></td>'+
+            '<td><input type="text" name="Satuan['+m_rows+']" id="mSatuan'+m_rows+'" readonly="" style="background-color: #eee; width: 100px"></td>'+
+            '<td><input name="Keterangan['+m_rows+']" id="mKeterangan'+m_rows+'" style="width:150px;"></td>'+
+            '<td hidden><input type="hidden" name="UnitCOGS['+m_rows+']" id="mUnitCOGS'+m_rows+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+            '<td hidden><input type="hidden" name="TotalCOGS['+m_rows+']" id="mTotalCOGS'+m_rows+'" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="HPC1['+m_rows+']" id="mHPC1'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="Gross['+m_rows+']" id="mGross'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="Potongan['+m_rows+']" id="mPotongan'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="PPN['+m_rows+']" id="mPPN'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="Total['+m_rows+']" id="mTotal'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="Disc_Pst['+m_rows+']" id="mDisc_Pst'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="Harga_Beli_Pst['+m_rows+']" id="mHarga_Beli_Pst'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td hidden><input type="hidden" name="HPP['+m_rows+']" id="mHPP'+m_rows+'" value="0" readonly style="background-color: #eee; width: 50px; text-align:right;">'+
+                '<td><input type="text" name="batchdoc['+m_rows+']" id="mbatchdoc'+m_rows+'" value="0" readonly style="background-color: #eee; width: 100px; text-align:right;">'+
+                '</tr>');
+        m_rows=m_rows+1;
+    }
+
+    function cariKode(x){
+        if(produkSource.length>0){
+            $('#mProduk'+x).typeahead({
+                source: produkSource
+            });
+        }
+    }
+
+    function getProduk(e){
+        $('#Value'+e).val("0");
+        $('#Satuan'+e).val("");
+        $('#mBatch'+e).val("");
+        var Value = document.getElementById('mProduk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+        $.ajax({
+            url : "{{ base_url }}getProdukUsulanBeli/" + Kode,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {   
+                if (data)
+                {
+                    if (data.Data) {                            
+                        diskon = data.Diskon;
+                        // Produk
+                        $('#mQty'+e).val('0');
+                        $('#mDiskon'+e).val('0');
+                        $('#mBonus'+e).val('0');
+                        $('#mHargaDeal'+e).val('0');
+                        $('#mHPC'+e).val(accounting.formatNumber(data.HBC));
+                        $('#mDiscCab'+e).val(accounting.formatNumber(data.DBC));
+                        $('#QtyRec'+e).val('0');
+                        $('#Kategori'+e).val(data.Data.Kategori);
+                        $('#mSatuan'+e).val(data.Data.Satuan);
+                        $('#mValue'+e).val("0");
+                        $('#mTotal'+e).val("0");
+                        $('#mDisc_Pst'+e).val(data.DBP);
+                        $('#mHarga_Beli_Pst'+e).val(data.HBP);
+
+                    }
+                }
+                else
+                {                        
+                    $('#Satuan'+e).val("");
+                    $('#mBatch'+e).val("");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif("error", "error");
+            }
+        });
+    }
+
+    function getBatch(e){
+        batch = [];
+        var Value = document.getElementById('mProduk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+        $.getJSON( "{{ base_url }}getBatch/" + Kode, function( data ) {
+            var batch = data.map(function(value,index) { return value.BatchNo+"~"+value.NoBPB });
+            var autocomplete = $('#mBatch'+e).typeahead();
+            autocomplete.data('typeahead').source = batch;
+        });
+    }
+
+    function mgetstok(e){
+        var Value = document.getElementById('mProduk'+e).value;
+        var batch = document.getElementById('mBatch'+e).value;
+        var batchdoc = batch.split("~")[1];
+        batch = batch.split("~")[0];
+        document.getElementById('mbatchdoc'+e).value = batchdoc;
+        var split = Value.split("~");
+        var produk = split[0];
+        $.ajax({
+          url: "{{ base_url }}getstok_retur",
+          type:'POST',
+          dataType: "JSON",
+          data: {
+            "produk":produk,
+            "batch":batch,
+            "batchdoc": batchdoc
+            },
+          success: function(data){
+            if(data){
+                $("#mQtyRec"+e).val(data.UnitStok);
+                $("#mExpDate"+e).val(data.ExpDate);
+                $("#mUnitCOGS"+e).val(data.UnitCOGS);
+                mhitung(e);
+            }else{
+                $("#mQtyRec"+e).val('0');
+                $("#mExpDate"+e).val('');
+                $("#UnitCOGS"+e).val('0');
+                mhitung(e);
+            }
+          },
+          error:function(er){
+            console.log(er);
+          }
+        });
+    }
+
+    function mhitung(s){
+        var banyak = 0;
+        var value_bonus = 0;
+        var harga = 0;
+        var diskon = 0;
+        var diskon_value = 0;
+        var total_harga = 0;
+        var total_value = 0;
+        var gross = 0;
+        var potongan = 0;
+        var total_potongan = 0;
+        var PPN = 0;
+        var produk = ((document.getElementById('mProduk'+s).value) ? document.getElementById('mProduk'+s).value : "");
+        var qty = ((document.getElementById('mQty'+s).value) ? document.getElementById('mQty'+s).value : 0);
+        var QtyRec = ((document.getElementById('mQtyRec'+s).value) ? document.getElementById('mQtyRec'+s).value : 0);
+        var disc_manual = ((document.getElementById('mDiskon'+s).value) ? document.getElementById('mDiskon'+s).value : '');
+        var discab = ((document.getElementById('mDiscCab'+s).value) ? document.getElementById('mDiscCab'+s).value : 0);
+        var bonus = ((document.getElementById('mBonus'+s).value) ? document.getElementById('mBonus'+s).value : 0);
+        var harga_manual = ((document.getElementById('mHargaDeal'+s).value) ? document.getElementById('mHargaDeal'+s).value : 0);
+        var hpc = ((document.getElementById('mHPC'+s).value) ? document.getElementById('mHPC'+s).value : 0);
+        var UnitCOGS = ((document.getElementById('mUnitCOGS'+s).value) ? document.getElementById('mUnitCOGS'+s).value : 0);
+        var TotalCOGS = ((document.getElementById('mTotalCOGS'+s).value) ? document.getElementById('mTotalCOGS'+s).value : 0);
+
+        if(parseInt(qty) > 0){
+            qty = qty * -1;
+            document.getElementById('mQty'+s).value = qty;
+        }
+
+        if(parseInt(bonus) > 0){
+            bonus = bonus * -1;
+            document.getElementById('mBonus'+s).value = bonus;
+        }
+
+        banyak = parseInt(qty) + parseInt(bonus);
+
+        if(parseFloat(harga_manual)>0){
+            harga = parseFloat(harga_manual.replace(/,/g, ""));
+        }else{
+            harga = parseFloat(hpc.replace(/,/g, ""));
+        }
+
+        if(parseFloat(disc_manual)>0){
+            diskon = parseFloat(disc_manual.replace(/,/g, ""));
+        }else{
+            diskon = parseFloat(discab.replace(/,/g, ""));
+        }
+        value_bonus = bonus * harga;
+
+        gross = harga * banyak;
+        total_harga = harga * parseInt(qty);
+        total_diskon = total_harga * diskon/100;
+        potongan = total_diskon + value_bonus;
+        total_value = (gross - potongan);
+        PPN = total_value * 0.1;
+        var total = total_value + PPN;
+
+        UnitCOGS = total_value / banyak;
+        TotalCOGS = (UnitCOGS * banyak)* -1;
+
+        document.getElementById('mValue'+s).value = numberWithCommas(total_value);
+        document.getElementById('mUnitCOGS'+s).value = UnitCOGS;
+        document.getElementById('mTotalCOGS'+s).value = TotalCOGS;
+        document.getElementById('mGross'+s).value = gross;
+        document.getElementById('mPotongan'+s).value = potongan;
+        document.getElementById('mPPN'+s).value = PPN;
+        document.getElementById('mTotal'+s).value = total;
+        mvalidasi_item();
+    }
+
+    function mvalidasi_item(){
+        $("#notif").empty();
+        var mTotalValue = 0;
+        var mTotalGross = 0;
+        var mTotalPotongan = 0;
+        var mTotalPPN = 0;
+        var mTotalNET = 0;
+        var kode_batch = [];
+        if(m_rows > 0){
+            for (var i = 0; i < m_rows; i++) {
+                var ada = document.getElementById("mitemRow"+i);
+                if(ada){
+                    var produk = document.getElementById("mProduk"+i).value;
+                    var gross = document.getElementById("mGross"+i).value;
+                    var potongan = document.getElementById("mPotongan"+i).value;
+                    var value = document.getElementById("mValue"+i).value;
+                    var ppn = document.getElementById("mPPN"+i).value;
+                    var net = document.getElementById("mTotal"+i).value;
+                    var qty = document.getElementById("mQty"+i).value;
+                    var batch = document.getElementById("mBatch"+i).value;
+                    var bonus = ((document.getElementById('mBonus'+i).value) ? document.getElementById('mBonus'+i).value : 0);
+                    // var stok = document.getElementById("mQtyRec"+i).value;
+                    var stok = document.getElementById("mQtyRec"+i).value ? document.getElementById("mQtyRec"+i).value : 0;
+                    var ExpDate = document.getElementById("mExpDate"+i).value ? document.getElementById("mExpDate"+i).value : "";
+                    mTotalGross += parseFloat(gross.replace(/,/g, ""));
+                    mTotalPotongan += parseFloat(potongan.replace(/,/g, ""));
+                    mTotalValue = mTotalValue + parseFloat(value.replace(/,/g, ""));
+                    mTotalPPN += parseFloat(ppn.replace(/,/g, ""));
+                    mTotalNET += parseFloat(net.replace(/,/g, ""));
+                    document.getElementById("mTotalGross").value = numberWithCommas(mTotalGross);
+                    document.getElementById("mTotalPotongan").value = numberWithCommas(mTotalPotongan);
+                    document.getElementById("mTotalValue").value = numberWithCommas(mTotalValue);
+                    document.getElementById("mTotalPPN").value = numberWithCommas(mTotalPPN);
+                    document.getElementById("mTotalNET").value = numberWithCommas(mTotalNET);
+                    if(parseFloat(value)==0){
+                        notif("warning","belum lengkap")
+                        return false;
+                    }
+                    if(batch==""){
+                        notif("warning","batch belum dipilih")
+                        return false;
+                    }
+                    if(ExpDate==""){
+                        notif("warning","Expire Date Kosong")
+                        return false;
+                    }
+                    if(((parseInt(qty) * -1) + (parseInt(bonus) * -1 )) > parseInt(stok)){
+                        notif("danger","<span class='glyphicon glyphicon-question-sign'></span> Qty yang diretur melebihi stok")
+                        return false;
+                    }
+                    if((parseInt(qty) > 0) || (parseInt(bonus) > 0) ){
+                        notif("danger","<span class='glyphicon glyphicon-question-sign'></span> Qty & Bonus Harus Minus")
+                        return false;
+                    }
+                    var cek_batch = jQuery.grep(kode_batch, function (value) { return value.produk == produk });
+                    if(cek_batch.length > 0){
+                        if(cek_batch[0].batch==batch)
+                        {  
+                            notif("warning","produk dan kode batch "+batch+" Sudah di ada")
+                            return false;
+                        }
+                    }
+                    kode_batch.push({
+                        "produk":produk,
+                        "batch":batch
+                        })
+                }
+            }
+        }
+
+        return true;
+    }
+
+    function msaveData()
+    {
+        if($("#mBPB").val() == ""){
+            notif("warning","Nomor BPB Manual belum diisi");
+            return;
+        }
+        var v = mvalidasi_item();
+        if(v === false){
+            return;
+        }
+        $('#notif').empty();
+        var url = "{{ base_url }}saveusulanretur"; 
+
+        var formdata = new FormData();      
+        // append tipe file
+        var Dokumen = $('#mDokumen')[0].files[0];
+        formdata.append('Dokumen', Dokumen);
+
+        var Dokumen2 = $('#mDokumen2')[0].files[0];
+        formdata.append('Dokumen2', Dokumen2);
+
+        $.each($('#form-manual').serializeArray(), function(a, b){
+            formdata.append(b.name, b.value);
+        });
+
+        var formData = new FormData($('#form-manual')[0]);
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "JSON",
+            success: function(data)
+            {
+                mreset_form();
+                if(data==false){
+                     notif('danger', '<h2>Usulan retur gagal dibuat</h2><br><h3> karena ada salah satu item yg kurang stok  / Selisih Stok Summary dan detail</h3>');
+                     $('#progressGIF').hide();
+                }else{
+                    if (data.status == 'gagal') {
+                        notif('warning', data.pesan);
+                        $('#progressGIF').hide();
+                    }else{
+                        notif('success', 'SUKSES! Data berhasil disimpan no Doc = '+data.pesan);
+                        reset_form();
+                        $('#progressGIF').hide();
+                    }
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function mremove_row(x)
+    {
+        s = document.getElementById(x.id).getAttribute("baris");
+        jQuery('#mitemRow'+s).remove();
+        var rowCount = $('#mtable-barang tbody tr').length;
+        if(rowCount == 0){
+            mreset_form();
+        }
+        mvalidasi_item();
+    }
+
+    function mreset_form(){
+        $("#form-manual")[0].reset();
+        $('#mtable-barang tbody').empty();
+    }
+
+    function getNoBPB(Prinsipal){
+        // var listbpb = [];
+        $('#BPB').empty();
+         $('#BPB').append('<option value="">--- Silahkan Pilih No BPB ---</option>');
+        $.ajax({
+            url: "{{ base_url }}listNoBPB",
+            type : "POST",
+            data :{Prinsipal:Prinsipal},
+            dataType :'JSON',
+            success:function(data){
+                $.each(data,function(index, value){
+                    $('#BPB').append("<option class='optPO' value='"+value.nobpb+"'>"+value.nobpb+"</option>");
+                });
+                $('.selectpicker').selectpicker('refresh');
+            },
+            error:function(e){
+              console.log(e);  
+            }
+        });
+    }
+</script>
+{% endblock %}

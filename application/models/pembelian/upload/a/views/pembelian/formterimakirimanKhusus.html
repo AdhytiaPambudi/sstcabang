@@ -1,0 +1,729 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+       resize: none;
+    }
+    .modal .modal-body {
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Terima Kiriman</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Form Terima Kiriman
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form role="form" method="post" id="myForm">
+                                <div class="form-group">
+                                    <label class="control-label">No Kiriman</label>
+                                    <input class="form-control" name="NoKiriman" id="NoKiriman" value="{{kode}}" readonly="" style="background-color: #eee">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Tanggal Terima</label>
+                                    <input class="form-control" name="tglTerima" id="tglTerima" value="{{tgl}}" readonly="" style="background-color: #eee">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Detail Order</label>
+                                    <div class="table-responsive">
+                                        <table class="table" id="table-barang">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <!-- <th>Edit</th> -->
+                                                    <th>No Faktur</th>
+                                                    <th>Tgl</th>
+                                                    <th>Pelanggan</th>
+                                                    <th>Status</th>
+                                                    <th>Alasan Kembali</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% set x = 0 %}
+                                                {% for data in data %}
+                                                <tr>
+                                                    <td>{{loop.index}}</td>
+                                                    <!-- <td><button type="button" class="btn-sm btn-info" onclick="showModal({{data.NoDO}})">Edit</button></td> -->
+                                                    <td><input class="form-control" type="text" name="NoDO[{{loop.index0}}]" value="{{data.NoDO}}" id="NoDO{{loop.index0}}" readonly="" style="background-color: #eee; width: 150px"></td>
+                                                    <td><input class="form-control" type="text" name="TglDO[{{loop.index0}}]" value="{{data.TglDO}}" id="NoDO{{loop.index0}}" readonly="" style="background-color: #eee; width: 150px"></td>
+                                                    <td><input class="form-control" type="text" name="Pelanggan[{{loop.index0}}]" value="{{data.Pelanggan}} ~ {{data.NamaPelanggan}}" id="Pelanggan{{loop.index0}}" readonly="" style="background-color: #eee; width: 300px"></td>
+                                                    <td>
+                                                        <select class="form-control" name="Status[{{loop.index0}}]" id="Status{{loop.index0}}" style="width: 150px" onchange="alasan({{loop.index0}})">
+                                                            <option value="">Pilih Status</option>  
+                                                            <option value="Terkirim">Terkirim</option>    
+                                                            <option value="Kembali">Kembali</option> 
+                                                            <option value="Pending">Pending</option>   
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="Alasan[{{loop.index0}}]" id="Alasan{{loop.index0}}" style="width: 100%; min-width: 500px" readonly="">
+                                                    </td>
+                                                </tr>
+                                                {% set x = loop.index0 %}
+                                                {% endfor %}
+                                                <input type="hidden" name="bucket" id="bucket2" value="{{x}}">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                </div>
+                                <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Save</button>
+                                <button type="button" class="btn btn-danger">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <form role="form" method="post" id="myForm2">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Form Edit DO</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <input type="text" name="noDO" id="noDO" class="form-control" readonly="">
+                        <input type="hidden" name="noSO" id="noSO" class="form-control" readonly="">
+                        <input type="hidden" name="tgl" id="tgl" class="form-control" readonly="">
+                        <input type="hidden" name="pelanggan" id="pelanggan" class="form-control" readonly="">
+                        <input type="hidden" name="pengirim" id="pengirim" class="form-control" readonly="">
+                        <input type="hidden" name="salesman" id="salesman" class="form-control" readonly="">
+                        <input type="hidden" name="acu" id="acu" class="form-control" readonly="">
+                        <input type="hidden" name="carabayar" id="carabayar" class="form-control" readonly="">
+                        <input type="hidden" name="cashdiskon" id="cashdiskon" class="form-control" readonly="">                        
+                        <input type="hidden" name="grosir" id="grosir" class="form-control" readonly="">
+                        <input type="hidden" name="potongan" id="potongan" class="form-control" readonly="">
+                        <input type="hidden" name="value" id="value" class="form-control" readonly="">
+                        <input type="hidden" name="cashdiskontotal" id="cashdiskontotal" class="form-control" readonly="">
+                        <input type="hidden" name="ppn" id="ppn" class="form-control" readonly="">
+                        <input type="hidden" name="materai" id="materai" class="form-control" readonly="">
+                        <input type="hidden" name="ongkir" id="ongkir" class="form-control" readonly="">
+                        <input type="hidden" name="total" id="total" class="form-control" readonly="">
+                        <table class="table" id="table-produk">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Batch</th>
+                                    <th>Stok</th>
+                                    <th>Exp Date</th>                                    
+                                    <th>UOM</th>
+                                    <th>Harga</th>
+                                    <th>Dsc Cab</th>
+                                    <th>Dsc Prins 1</th>
+                                    <th>Dsc Prins 2</th>
+                                    <th>Bns Cab</th>
+                                    <th>Bns Prins</th>
+                                    <th>Total Value</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer form">
+                <input type="hidden" name="bucket" id="bucket">
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <a href="javascript:void(0)" type="submit" class="btn btn-success" onclick="addRow(this.form);">Tambah Barang</a>                                        
+                <button type="button" class="btn btn-default" onclick="resetForm(event)">Reset Form</button>
+                <a href="javascript:void(0)" type="submit" class="btn btn-danger" id="removeRow" onclick="removeRow();">Hapus Baris</a>
+            </div>
+        </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(document).on('keydown', '.newRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (keyCode == 9 && e.shiftKey == false) { 
+    addRow();
+    // call custom function here
+  } 
+});
+
+$(document).on('keydown', '.delRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (e.shiftKey && keyCode === 9) { 
+    removeRow();
+    // call custom function here
+  } 
+});
+
+$(document).ready(function() {
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+    });
+
+    function alasan(e) {
+        var status = document.getElementById('Status'+e).value;
+        if (status == "Kembali" || status == "Pending") {
+            $("#Alasan"+e).attr("readonly", false);
+        }
+        else
+        {
+            $("#Alasan"+e).attr("readonly", true);
+        }
+
+    }
+    
+    function save()
+    {
+        $('#progressGIF').show();
+        var url = "{{ base_url }}saveTerimaKirimanKhusus"; 
+        var bucket = document.getElementById('bucket2').value
+        var kondisi = true;
+
+        for (var i = 0; i <= bucket; i++) {
+            var no = document.getElementById('NoDO'+i).value;
+            var status = document.getElementById('Status'+i).value;
+            var alasan = document.getElementById('Alasan'+i).value;
+
+            if (status == "")
+            {
+                notif('warning', 'PERHATIAN! Mohon pilih status untuk No Faktur : '+no);
+                kondisi = false;
+            }
+
+            if ((status == "Kembali" || status == "Pending" ) && alasan == "")
+            {
+                notif('warning', 'PERHATIAN! Mohon isi alasan untuk No Faktur : '+no);
+                kondisi = false;
+            }
+        }
+
+        // ajax adding data to database
+        if (kondisi==true) 
+        {
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: $('#myForm').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.pesan == 'sukses') {
+                        if(data.status==false){
+                            notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                        }else{
+                            notif('success', 'SUKSES! Data berhasil diupdate');
+                        }  
+                    }
+                    else{
+                        notif('warning', 'tidak bisa melakukan Terima Faktur, proses sedang dilakukan oleh user : ' + data.user);
+                    }
+                    window.location = "{{ base_url }}terimakirimanKhusus"; 
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    $('#progressGIF').hide();
+                    window.location = "{{ base_url }}terimakirimanKhusus"; 
+                }
+            });
+        }
+        else{
+            $('#progressGIF').hide();
+        }
+    }
+
+    function showModal(noDO) {
+        $('#modal_form').modal('show');
+        getData(noDO);
+    }
+
+    var rowNum = 0;
+    var produkSource = [];
+    function getData(noDO) {
+        $('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}getDataDO",
+            type: "POST",
+            data:{noDO:noDO},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                 for (var i in data) {
+                    if (produkSource.indexOf(data[i].KodeProduk + "~" + data[i].NamaProduk)==-1) produkSource.push(data[i].KodeProduk + "~" + data[i].NamaProduk);
+                    $('#noDO').val(data[0].NoDO);
+                    $('#noSO').val(data[0].NoSO);
+                    $('#tgl').val(data[0].TglDO);
+                    $('#pelanggan').val(data[0].Pelanggan);
+                    $('#salesman').val(data[0].Salesman);
+                    $('#acu').val(data[0].Acu);
+                    $('#carabayar').val(data[0].CaraBayar);
+                    $('#cashdiskon').val(data[0].CashDiskon);
+                    $('#materai').val(data[0].Materai);
+                    $('#ongkir').val(data[0].OngkosKirim);
+                    var x = parseInt(i) + 1;
+                        $('#table-produk').append('<tr class="itemRow"><td>'+x+'</td><td><input type="hidden" name="idx['+i+']" id="idx'+i+'" value="'+i+'"><input type="text" name="produk['+i+']" id="produk'+i+'" class="form-control"  onkeyup="cariKode('+i+')" onchange="getProduk('+i+')" autocomplete="off" value="'+data[i].KodeProduk+'~'+data[i].NamaProduk+'" readonly="" style="width:220px" title="'+data[i].NamaProduk+'"></td><td><input type="hidden" name="qtyso['+i+']" id="qtyso'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung()" value="'+data[i].QtySO+'"><input type="text" name="jumlah['+i+']" id="jumlah'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung()" value="'+data[i].QtyDO+'"><input type="hidden" name="jumlahmask['+i+']" id="jumlahmask'+i+'" class="form-control"value="'+data[i].QtyDO+'"></td><td><input type="text" name="batch['+i+']" id="batch'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung(); setBatch('+i+');" value="'+data[i].BatchNo+'" autocomplete="off"><input type="hidden" name="batchMask['+i+']" id="batchMask'+i+'" value="'+data[i].BatchNo+'"></td><td><input type="text" name="stok['+i+']" id="stok'+i+'" class="form-control" readonly="" value="'+data[i].UnitStok+'"></td><td><input type="text" name="expdate['+i+']" id="expdate'+i+'" class="form-control" value="'+data[i].ExpDate+'" readonly=""></td><td><input type="text" name="uom['+i+']" id="uom'+i+'" class="form-control" readonly="" value="'+data[i].UOM+'"></td><td><input type="text" name="harga['+i+']" id="harga'+i+'" class="form-control" readonly="" value="'+data[i].Harga+'"></td><td><input type="text" name="dsccab['+i+']" id="dsccab'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung()" value="'+data[i].DiscCab+'" readonly=""><input type="hidden" name="valuedsccab['+i+']" id="valuedsccab'+i+'" class="form-control" value="'+data[i].ValueDiscCab+'"></td><td><input type="text" name="dscprins1['+i+']" id="dscprins1'+i+'" class="form-control" readonly="" value="'+data[i].DiscPrins1+'"><input type="hidden" name="valuedscprins1['+i+']" id="valuedscprins1'+i+'" class="form-control" value="'+data[i].ValueDiscPrins1+'"></td><td><input type="text" name="dscprins2['+i+']" id="dscprins2'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung()" value="'+data[i].DiscPrins2+'" readonly=""><input type="hidden" name="valuedscprins2['+i+']" id="valuedscprins2'+i+'" class="form-control" value="'+data[i].ValueDiscPrins2+'"></td><td><input type="text" name="bnscab['+i+']" id="bnscab'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung()" value="'+data[i].BonusDO+'" readonly=""><input type="hidden" name="valuebnscab['+i+']" id="valuebnscab'+i+'" class="form-control" value="'+data[i].ValueBnsCab+'"></td><td><input type="text" name="bnsprins['+i+']" id="bnsprins'+i+'" class="form-control" onkeyup="hitung()" onchange="hitung()" value="0" readonly=""><input type="hidden" name="valuebnsprins['+i+']" id="valuebnsprins'+i+'" class="form-control" value="0"></td><td><input type="text" name="totalvaluemask['+i+']" id="totalvaluemask'+i+'" class="form-control" readonly="" value="'+numberWithCommas(data[i].Total)+'" readonly=""><input type="hidden" name="totalvalue['+i+']" id="totalvalue'+i+'" class="form-control" readonly="" value="'+data[i].Total+'"><input type="hidden" name="NoBPB['+i+']" id="NoBPB'+i+'" value="'+data[i].NoBPB+'"><input type="hidden" name="DiscCabMax['+i+']" id="DiscCabMax'+i+'" value="'+data[i].DiscCabMax+'"><input type="hidden" name="DiscPrinsMax['+i+']" id="DiscPrinsMax'+i+'" value="'+data[i].DiscPrinsMax+'"></td></tr>');
+                        // formatDate(i);
+                        getBatch(i, data[i].KodeProduk);
+                }
+                rowNum = i;
+                $('#bucket').val(rowNum);
+                hitung();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                
+            }
+        });
+    }
+
+    // function formatDate(e) {
+    //     $("#expdate"+e).datepicker({
+    //         changeMonth: true,
+    //         changeYear: true,
+    //         showButtonPanel: true,
+    //         format: 'yyyy-mm-dd',
+    //     });
+    // }
+
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        var s = document.getElementById('jumlah'+b).value;
+        if (s) {
+            rowNum ++;
+            var x=rowNum+1;
+            $('#table-produk').append('<tr class="itemRow" id="itemRow'+rowNum+'"><td>'+x+'</td><td><input type="hidden" name="idx['+rowNum+']" id="idx'+rowNum+'" value="'+rowNum+'"><input type="text" name="produk['+rowNum+']" id="produk'+rowNum+'" class="form-control"  onkeyup="cariKode('+rowNum+')" onchange="getAddProduk('+rowNum+')" autocomplete="off"></td><td><input type="hidden" name="qtyso['+rowNum+']" id="qtyso'+rowNum+'" class="form-control" onkeyup="hitung()" onchange="hitung()" ><input type="text" name="jumlah['+rowNum+']" id="jumlah'+rowNum+'" class="form-control" onkeyup="hitung()" onchange="hitung()" ><input type="hidden" name="jumlahmask['+rowNum+']" id="jumlahmask'+rowNum+'" class="form-control"></td><td><input type="text" name="batch['+rowNum+']" id="batch'+rowNum+'" class="form-control" onkeyup="getprodBatch('+rowNum+');hitung()" onchange="hitung(); setBatch('+rowNum+');" autocomplete="off"><input type="hidden" name="batchMask['+rowNum+']" id="batchMask'+rowNum+'"></td><td><input type="text" name="stok['+rowNum+']" id="stok'+rowNum+'" class="form-control" readonly=""></td><td><input type="text" name="expdate['+rowNum+']" id="expdate'+rowNum+'" class="form-control" readonly=""></td><td><input type="text" name="uom['+rowNum+']" id="uom'+rowNum+'" class="form-control" readonly=""></td><td><input type="text" name="harga['+rowNum+']" id="harga'+rowNum+'" class="form-control" readonly=""></td><td><input type="text" name="dsccab['+rowNum+']" id="dsccab'+rowNum+'" class="form-control" onkeyup="hitung()" onchange="hitung()" readonly=""><input type="hidden" name="valuedsccab['+rowNum+']" id="valuedsccab'+rowNum+'" readonly=""></td><td><input type="text" name="dscprins1['+rowNum+']" id="dscprins1'+rowNum+'" class="form-control" readonly=""><input type="hidden" name="valuedscprins1['+rowNum+']" id="valuedscprins1'+rowNum+'" readonly=""></td><td><input type="text" name="dscprins2['+rowNum+']" id="dscprins2'+rowNum+'" class="form-control" onkeyup="hitung()" onchange="hitung()" readonly=""><input type="hidden" name="valuedscprins2['+rowNum+']" id="valuedscprins2'+rowNum+'" readonly=""></td><td><input type="text" name="bnscab['+rowNum+']" id="bnscab'+rowNum+'" class="form-control" onkeyup="hitung()" onchange="hitung()" readonly=""><input type="hidden" name="valuebnscab['+rowNum+']" id="valuebnscab'+rowNum+'" readonly="" readonly=""></td><td><input type="text" name="bnsprins['+rowNum+']" id="bnsprins'+rowNum+'" class="form-control" onkeyup="hitung()" onchange="hitung()" readonly=""><input type="hidden" name="valuebnsprins['+rowNum+']" id="valuebnsprins'+rowNum+'" readonly=""></td><td><input type="text" name="totalvaluemask['+rowNum+']" id="totalvaluemask'+rowNum+'" class="form-control" readonly=""></td><td><input type="hidden" name="totalvalue['+rowNum+']" id="totalvalue'+rowNum+'" class="form-control" readonly=""><input type="hidden" name="NoBPB['+rowNum+']" id="NoBPB'+rowNum+'"><input type="hidden" name="DiscCabMax['+rowNum+']" id="DiscCabMax'+rowNum+'" ><input type="hidden" name="DiscPrinsMax['+rowNum+']" id="DiscPrinsMax'+rowNum+'"></td></tr>)');
+
+
+            $('#bucket').val(rowNum);
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning', 'PERHATIAN! Isi form diatas terlebih dahulu');
+        }
+    }
+
+    function removeRow() 
+    {        
+        if (rowNum>0) {
+            $('#itemRow'+rowNum).remove();
+            rowNum--;
+        }
+        else{
+
+            notif('warning', 'PERHATIAN! Baris tidak bisa dihapus');
+        }
+        $('#bucket').val(rowNum);
+    }
+
+    function cariKode(e){    
+        $('#produk'+e).typeahead({
+                source: produkSource
+            });
+    }
+
+    function getProduk(e){
+        var bucket =document.getElementById('bucket').value; 
+        var Value = document.getElementById('produk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+            $.ajax({
+                url : "{{ base_url }}getProdukBuatOrder/" + Kode,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    if (data) {                              
+                        $('#uom'+e).val(data.Satuan);
+                        $('#harga'+e).val(data.HNA);
+                        $('#dsccab'+e).val(data.Dsc_Cab);
+                        $('#dscprins1'+e).val(data.Dsc_Pri);
+
+                    }
+                    else{                            
+                        $('#uom'+e).val("");
+                        $('#harga'+e).val("");
+                        $('#dsccab'+e).val("");
+                        $('#dscprins1'+e).val("");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    
+                }
+            });
+
+    }
+
+    function getAddProduk(e){
+        var bucket =document.getElementById('bucket').value; 
+        var Value = document.getElementById('produk'+e).value;
+        var NoDO  = document.getElementById('noDO').value;
+        var split = Value.split("~");
+        var Kode = split[0];
+            $.ajax({
+                url : "{{ base_url }}getProdukNambahOrder/",
+                type: "POST",
+                dataType: "JSON",
+                data:{NoDO:NoDO,kode:Kode},
+                success: function(data)
+                {   
+                    if (data) { 
+                        $('#jumlahmask'+e).val(0);                             
+                        $('#uom'+e).val(data.UOM);
+                        $('#harga'+e).val(data.Harga);
+                        $('#dsccab'+e).val(data.DiscCab);
+                        $('#CashDiskon'+e).val(data.CashDiskon);
+                        $('#valuedsccab'+e).val(data.ValueDiscCab);
+                        $('#dscprins1'+e).val(data.DiscPrins1);
+                        $('#valuedscprins1'+e).val(data.ValueDiscPrins1);
+                        $('#dscprins2'+e).val(data.DiscPrins2);
+                        $('#valuedscprins2'+e).val(data.ValueDiscPrins2);
+                        $('#bnscab'+e).val(0);
+                        $('#valuebnscab'+e).val(0);
+                        $('#bnsprins'+e).val(0);
+                        $('#valuebnsprins'+e).val(0);
+                        $('#totalvaluemask'+e).val(0);
+                        $('#totalvalue'+e).val(0);
+                        $('#NoBPB'+e).val(data.NoBPB);
+                        $('#DiscCabMax'+e).val(data.DiscCabMax);
+                        $('#DiscPrinsMax'+e).val(data.DiscPrinsMax);
+
+                    }
+                    else{    
+                        $('#jumlahmask'+e).val(0);                        
+                        $('#uom'+e).val("");
+                        $('#harga'+e).val("");
+                        $('#dsccab'+e).val(0);
+                        $('#dscprins1'+e).val(0);
+                        $('#valuedscprins1'+e).val(0);
+                        $('#dscprins2'+e).val(0);
+                        $('#CashDiskon'+e).val(0);
+                        $('#valuedscprins2'+e).val(0);
+                        $('#bnscab'+e).val(0);
+                        $('#valuebnscab'+e).val(0);
+                        $('#bnsprins'+e).val(0);
+                        $('#valuebnsprins'+e).val(0);
+                        $('#totalvaluemask'+e).val(0);
+                        $('#totalvalue'+e).val(0);
+                        $('#NoBPB'+e).val("");
+                        $('#DiscCabMax'+e).val(0);
+                        $('#DiscPrinsMax'+e).val(0);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    
+                }
+            });
+    }
+
+   function hitung() {
+        var gross = 0;
+        var totgross = 0;
+        var potongan = 0;
+        var totpotongan = 0;
+        var value = 0;
+        var totvalue = 0;
+        var cashdiskon = 0;
+        var totcashdiskon = 0;
+        var ppn = 0;
+        var totppn = 0;
+        var summary = 0;
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        var ongkir = ((document.getElementById('ongkir').value) ? document.getElementById('ongkir').value : 0);
+        var materai = ((document.getElementById('materai').value) ? document.getElementById('materai').value : 0);
+
+        for (var e = 0; e <= bucket; e++) {
+            var jml = ((document.getElementById('jumlah'+e).value) ? document.getElementById('jumlah'+e).value : 0);
+            var harga = ((document.getElementById('harga'+e).value) ? document.getElementById('harga'+e).value : 0);
+            var dsccab = ((document.getElementById('dsccab'+e).value) ? document.getElementById('dsccab'+e).value : 0);
+            var dscprins1 = ((document.getElementById('dscprins1'+e).value) ? document.getElementById('dscprins1'+e).value : 0);
+            var dscprins2 = ((document.getElementById('dscprins2'+e).value) ? document.getElementById('dscprins2'+e).value : 0);
+            var bnscab = ((document.getElementById('bnscab'+e).value) ? document.getElementById('bnscab'+e).value : 0);
+            var bnsprins = ((document.getElementById('bnsprins'+e).value) ? document.getElementById('bnsprins'+e).value : 0);
+
+            gross = jml * harga;
+            var diskoncab = dsccab/100;  
+            var diskonprins1 = dscprins1/100;
+            var diskonprins2 = dscprins2/100;
+            var diskonprins = diskonprins1 + diskonprins2;
+            var dsccab = gross * diskoncab; 
+            var dscprins1 = ( harga * jml ) * ( diskonprins1 );
+            var dscprins2 = ( harga * jml ) * ( diskonprins2 );
+            var dscprins = dscprins1 + dscprins2;
+            var boncab = ( bnscab * harga) - ( bnscab * harga * diskoncab);
+            var bonprins = ( bnsprins * harga) - ( bnsprins * harga * diskonprins);
+            var potongan = bonprins + boncab + dsccab + dscprins;
+            var value = gross - potongan;
+            var ppn = (value) * ( 10 / 100 );
+            var TotValue = value + ppn; 
+            $('#totalvaluemask'+e).val(numberWithCommas(TotValue));
+            $('#totalvalue'+e).val(TotValue);
+            $('#valuedsccab'+e).val(dsccab);
+            $('#valuedscprins1'+e).val(dscprins1);
+            $('#valuedscprins2'+e).val(dscprins2);
+            $('#valuebnscab'+e).val(boncab);
+            $('#valuebnsprins'+e).val(bonprins);
+            totgross = totgross + gross;
+            totpotongan = totpotongan + potongan;
+            totvalue = totvalue + value;
+            totcashdiskon = totcashdiskon + dsccab + dscprins;
+            totppn = totppn + ppn;
+            summary = summary + TotValue;
+        }
+        if (summary <= 250000) {
+            var materai = 0;
+        }
+        else if (summary <= 1000000) {
+            var materai = 3000;
+        }
+        else{
+            var materai = 6000;
+        }
+        summary = summary + parseInt(materai) + parseInt(ongkir);
+        $('#grosir').val(totgross);
+        $('#potongan').val(totpotongan);
+        $('#value').val(totvalue);
+        $('#cashdiskontotal').val(totcashdiskon);
+        $('#ppn').val(totppn);
+        $('#materai').val(materai);
+        $('#total').val(summary);
+    }
+
+    function saveData()
+    {
+        hitung();
+        var status = true;
+        var status_qty = true;
+        var status_batch = true;
+        var s = document.getElementById('bucket').value;
+        var batch2 = "";
+        var kode2 = "";
+        var totjmlmax =0;
+        var totqty =0;
+        var x = 0;
+        var arr = [];
+        var arr_batch =[];
+        for (var i = 0; i <= s; i++) {
+            x++;
+            var produk = document.getElementById('produk'+i).value;
+            var qty = document.getElementById('jumlah'+i).value;
+            var qty2 = document.getElementById('jumlahmask'+i).value;
+            var bns = document.getElementById('bnscab'+i).value;
+            var batch = document.getElementById('batch'+i).value;
+            var stok = document.getElementById('stok'+i).value;
+            var stok2 = parseInt(stok) + parseInt(qty2) + parseInt(bns);
+            var xpld = produk.split("~");
+            var banyak = parseInt(qty2) + parseInt(bns);
+            var qtybns = parseInt(qty) + parseInt(bns);
+            var kode = xpld[0];
+            if (parseInt(qty)+parseInt(bns) < 0 || (qty == "" && bns =="")) {
+                notif("warning","PERHATIAN! Qty/Jumlah harus diisi minimal 0.")
+                status = false;
+            }
+            if ((parseInt(qty)+parseInt(bns)) > parseInt(stok2)) {
+                notif("warning","PERHATIAN! Qty/Jumlah Produk  tidak boleh lebih besar dari stok.")
+                status = false;
+            }
+            // if(parseInt(stok) <= 0 && (parseInt(qty)+parseInt(bns)) > 0) {
+            //     notif("warning","PERHATIAN! Ada Produk yg Stok Kosong Sedangkan Qty Lebih dari 0.")
+            //     status = false;
+            // }
+            
+            //===== cek max qty =============== //
+            var index = arr.findIndex(x => x.produk==kode);
+            if (index === -1){
+                arr.push({
+                    produk : kode,
+                    nama : produk,
+                    qty : qtybns,
+                    max : banyak
+                });
+            }
+            else {
+                arr[index]["qty"] = arr[index]["qty"] + qtybns;
+                arr[index]["max"] = arr[index]["max"] + banyak;
+                // addOrReplace(arr, {produk: kode, max: totjmlmax});
+            }
+            //=======================================================
+            //===== cek batch ========================
+            var xx = arr_batch.findIndex(x => x.produk==kode);
+            if (xx === -1){
+                arr_batch.push({
+                    produk : kode,
+                    batch : batch
+                });
+            }
+            else {
+               var jj = arr_batch.findIndex(x => x.batch==batch);
+               if(jj === -1){
+                    arr_batch.push({
+                        produk : kode,
+                        batch : batch
+                    });
+               }else{
+                    notif("warning","PERHATIAN! Ada Pemilihan Batch yg sama di produk yg sama.");
+                    status = false;
+               }
+                // addOrReplace(arr, {produk: kode, max: totjmlmax});
+            }
+                   
+        }   
+
+        for (x = 0; x < arr.length; x++) { 
+            var arr_prd = arr[x]["nama"];
+            var arr_qty = arr[x]["qty"];
+            var arr_banyak = arr[x]["max"];
+            if(arr_qty != arr_banyak){
+                notif("warning","PERHATIAN! Produk " + produk + "  Total Qty : " + arr_qty + " tidak sama dengan Qty DO asal :" + arr_banyak);
+                status = false;
+            }
+        } 
+
+        if (status == true) {
+            $('#progressGIF').show();
+            $('#modal_form').modal('hide');
+            $.ajax({
+                url : "{{ base_url }}updateDataDO",
+                type: "POST",
+                data: $('#myForm2').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {    
+                    if (data.status ==true) {
+                        notif('success','Data berhasil Di simpan');
+                        $('#progressGIF').hide();
+                    }
+                    else{
+                        notif('warning','PERHATIAN! Stok produk tidak cukup.');
+                        $('#progressGIF').hide();
+                    }
+                    $('#progressGIF').hide();
+                    $('#modal_form').modal('hide');
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                   $('#progressGIF').hide();                   
+                    $('#modal_form').modal('show');
+                }
+            });
+        }
+    }
+
+    // function addOrReplace(array, item) { // (1)
+    //     const i = array.findIndex(_item => _item.produk === item.produk);
+    //     if (i > -1) array[i] = item; // (2)
+    //     else array.push(item);
+    // }
+
+    var batchSource = [];
+    var batchSource2 = [];
+    function getBatch(e, KodeProduk) {
+        batchSource.length = 0;
+        batchSource2.length = 0;
+        $.ajax({
+            url : "{{ base_url }}listBatch",
+            type: "POST",
+            data:{kode:KodeProduk},
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    batchSource[i] = data[i].BatchNo+" | "+data[i].UnitStok+" | "+data[i].ExpDate;
+                    batchSource2[i] = data[i].BatchNo;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data Batch');
+            }
+        }); 
+        $('#batch'+e).typeahead({
+            source: batchSource
+        });
+    }
+
+    function getprodBatch(e) {
+        var batchSource1=[];
+        // batchSource.length = 0;
+        // batchSource2.length = 0;
+        var Value = document.getElementById('produk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+        $.ajax({
+            url : "{{ base_url }}listBatch",
+            type: "POST",
+            data:{kode:Kode},
+            dataType: "JSON",
+            success: function(data)
+            {
+               
+                for (var i in data) {
+                    batchSource1[i] = data[i].BatchNo+" | "+data[i].UnitStok+" | "+data[i].ExpDate;
+                    // batchSource2[i] = data[i].BatchNo;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data Batch');
+            }
+        }); 
+        $('#batch'+e).typeahead({
+            source: batchSource1
+        });
+    }
+
+    function setBatch(e) {
+        var s = document.getElementById('batch'+e).value;
+        var split = s.split(" | ");
+        if (split[1]) {           
+            $('#batch'+e).val(split[0]);
+            $('#stok'+e).val(split[1]);
+            $('#expdate'+e).val(split[2]);
+            // $('#expdate'+e).attr('value',split[2]);
+            // $('#expdate'+e).datepicker('setDate', split[2]);
+        }
+    }
+</script>
+{% endblock %}

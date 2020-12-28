@@ -1,0 +1,839 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.my_style {
+    font-weight:bold;
+    color:#B51454;
+}
+.kanan{
+    text-align: right;
+}
+</style>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Target Salesman</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <button class="btn btn-success" onclick="addData()"><i class="fa fa-plus"></i> Add Data</button>
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        <br><br>
+        <table width="50%">
+            <tr>
+                <td>Periode</td>
+                <td>:</td>
+                <td>
+                    <select id="tahun"  class="form-control" >
+                        <option value="{{tahun1}}">{{tahun1}}</option>
+                        {% for getTahun in getTahun %}
+                            <option value="{{getTahun.tahun}}">{{getTahun.tahun}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select id="bulan"  class=" form-control" >
+                        <option nm-bulan ="{{bulan}}" value="{{bulan1}}">{{bulan}}</option>
+                        <option nm-bulan ="Januari" value="01">Januari</option>
+                        <option nm-bulan ="Februari" value="02">Februari</option>
+                        <option nm-bulan ="Maret" value="03">Maret</option>
+                        <option nm-bulan ="April" value="04">April</option>
+                        <option nm-bulan ="Mei" value="05">Mei</option>
+                        <option nm-bulan ="Juni" value="06">Juni</option>
+                        <option nm-bulan ="Juli" value="07">Juli</option>
+                        <option nm-bulan ="Agustus" value="08">Agustus</option>
+                        <option nm-bulan ="September" value="09">September</option>
+                        <option nm-bulan ="Oktober" value="10">Oktober</option>
+                        <option nm-bulan ="November" value="11">November</option>
+                        <option nm-bulan ="Desember" value="12">Desember</option>
+                    </select>
+                </td>
+                <td><button class="btn btn-primary" onclick="load_data()">Tampilkan data</button></td>
+                <td><button class="btn btn-success" onclick="upload_all()"><i class="fa fa-refresh"></i> Proses All</button></td>
+            </tr>
+        </table>
+        </div>
+        
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Target Salesman 
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Cabang</th>
+                                        <th>Kode Salesman</th>
+                                        <th>Nama Salesman</th>
+                                        <th>Tipe Salesman</th>
+                                        <th>Mcl</th>
+                                        <th>Tanggal</th>
+                                        <th>Prinsipal</th>
+                                        <th>Target</th>
+                                        <th>Edit</th>
+                                        <th>delete</th>
+                                        <th>Status Pusat</th>
+                                    </tr>
+                                </thead>
+                             <tfoot >
+                                <tr>
+                                    <th colspan="8" align="right">Total</th>
+                                    <th  class="kanan my_style" id="total-target"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+
+                                </tr>
+                                
+                            </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body form">
+                            <form role="form" method="post" id="myForm">
+                                <input type="hidden" value="" name="id" id="id"/> 
+                                <!-- <div class="form-group">
+                                    <label class="control-label">Cabang</label>
+                                    <select id="Cabang" onchange="load_kodeSalesman(this.value)" name="Cabang" class="selectpicker form-control" data-live-search="true">
+                                        {% for Cabang in Cabang %}
+                                            <option value="{{Cabang.Cabang}}">{{Cabang.Cabang}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="help-block"></span>
+                                </div> -->
+                                <div class="form-group">
+                                    <label class="control-label">Cabang</label>
+                                    <input class="form-control" name="Cabang" id="Cabang" value="{{Cabang}}" readonly="true">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Kode Salesman</label>
+
+                                    <select onchange="set_Salesman()" id="KodeSalesman" name="KodeSalesman" class=" form-control selectpicker" data-live-search="true">
+                                        <option value="">--Pilih--</option>
+                                        {% for Kode in Kode %}
+                                            <option data-nm="{{Kode.Nama}}" data-tipe="{{Kode.Tipe_Salesman}}" data-tgl="{{Kode.Tanggal}}" data-mcl="{{Kode.MCL}}" value="{{Kode.Kode}}">{{Kode.Kode}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Nama Salesman</label>
+                                    <input class="form-control" name="NamaSalesman" id="NamaSalesman" readonly="true">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Tipe Salesman</label>
+                                    <input class="form-control" name="TipeSalesman" id="TipeSalesman" readonly="true">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">MCL</label>
+                                    <input class="form-control" name="Mcl" id="Mcl" readonly="true">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Tanggal</label>
+                                    <input class="form-control" type="date" name="tgl" id="tgl" readonly="true" >                                   
+                                </div>
+
+                                <div class="box-form-update">
+                                    <div class="form-group">
+                                        <label class="control-label">Prinsipal</label>
+                                        <input class="form-control" type="text" name="Prinsipal"  id="Prinsipal" readonly="true" >                                   
+                                    </div> 
+                                    
+                                   <div class="form-group">
+                                       <label class="control-label">Target</label>
+                                       <input class="form-control" name="Target" id="Target" onkeypress="return isNumberKey(event)">
+                                       <span class="help-block"></span>
+                                   </div>
+                                </div>
+
+                                <div class="box-form-add">
+                                    <div class="form-group">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <table class="table" id="table-produk">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Prinsipal</th>
+                                                                <th>Target</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr id="itemRow0">
+                                                                <td><a class="btn btn-danger" onclick="removeRow(0)">Hapus</a></td>
+                                                                <td>
+                                                                    <input type="text" name="prinsipal[0]" id="prinsipal0" style="width: 300px" class="delRow"  onkeyup="cariKode(0)" autocomplete="off">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" name="target[0]" id="target0"  onkeypress="return isNumberKey(event)" value='0'>
+                                                                </td>
+                                                                
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>   
+                                                    <button type="button" onclick="addRow()" class="btn btn-default">Tambah Prinsipal</button> Atau Tekan F1
+                                                    <input type="hidden" name="bucket" id="bucket" value="0">  
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                            </form>
+
+            </div>
+            <div class="modal-footer">
+                <div id="box-btn">
+                    <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    
+                </div>
+                <div id="box-notif" style="display: none">
+                    <div class="alert alert-info">
+                      <strong>Data Hanya bisa di edit saat di Bulan Berjalan</strong> 
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+
+
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var saveMethod;
+    var tabel;
+    var prinsipalSource = [];
+    var cek_target_salesmanSource = [];
+
+    $(document).ready(function() {
+
+      load_data();
+      loadPrinsipal();
+
+    });
+
+    $(document).on('keydown', '.newRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (keyCode == 9 && e.shiftKey == false) { 
+        addRow();
+        // call custom function here
+      } 
+    });
+
+    document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+            $('#prinsipal'+b).focus();
+        }
+        
+    }
+
+    function load_data(){
+        bulan = $('#bulan').val();
+        tahun = $('#tahun').val();
+        // alert(bulan + tahun);
+
+         if ($.fn.dataTable.isDataTable('#dataTables-example')) {
+            tabel.destroy();
+            $('#dataTables-example tbody').empty();
+        }
+
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataTargetSalesman",
+                "data": ({tahun:tahun,bulan:bulan}),
+                "type": "POST"
+            },
+            responsive: true,
+            dom: 'Bfrtip',
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            buttons: [
+                'copy', 'csv', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+
+            columnDefs: [
+                {
+                    targets: 8,
+                    className: 'kanan my_style',
+                    "render": function ( data, type, row, meta ) {
+                        return accounting.formatNumber(data);
+                    }
+                }
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                },
+            "order": [[ 0, "desc" ]]
+            });
+
+        $('#myForm')[0].reset(); // reset form on modals
+        // $('.selectpicker').selectpicker('val', '');
+
+        $.ajax({
+              url: '{{ base_url }}listDataTargetSalesman_count',
+              type: 'POST',
+              data: {tahun:tahun,bulan:bulan},
+          })
+          .done(function(data) {
+               json = JSON.parse(data);
+               if (json.total != 'null') {
+
+                $('#total-target').html(number_format(json.total));
+               }else{
+                $('#total-target').html(number_format(0));
+               }
+          }) 
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function load_kodeSalesman(){
+        $("#NamaSalesman").val('');
+        $("#Mcl").val('');
+        $("#tgl").val('');
+        $("#TipeSalesman").val('');
+
+        bulan = $('#bulan').val();
+        tahun = $('#tahun').val();
+        cabang = $('#Cabang').val();
+        nm_bulan = $('#bulan option:selected').attr('nm-bulan');
+
+        $.ajax({
+          url: '{{ base_url }}listDataKodeSalesman/',
+          type: "POST",
+          data: {cabang:cabang,bulan:bulan,tahun:tahun},
+          dataType: "json",
+          success:function(data) {
+              $('#KodeSalesman').empty();
+              if (data == '') {
+                $('#KodeSalesman').append('<option value="">Tidak ada data di periode '+ nm_bulan + ' ' + tahun +'</option>');
+              }else{
+
+                  $('#KodeSalesman').append('<option value="">--Pilih--</option>');
+                  $.each(data, function(key, value) {
+                      $('#KodeSalesman').append('<option data-nm="'+ value.Nama +'" data-tgl="'+ value.Tanggal +'" data-mcl="'+ value.MCL +'" value="'+ value.Kode +'">'+ value.Kode +'</option>');
+                  });
+              }
+          }
+      });
+    }
+
+    function tanggal_akhir(){
+        bulan = $('#bulan').val();
+
+        $.ajax({
+          url: '{{ base_url }}tanggal_akhir/',
+          type: "POST",
+          data: {bulan:bulan},
+          dataType: "json",
+          success:function(data) {
+             // alert(data);
+              $("#tgl").val(data.tgl);
+          }
+      });
+    }
+
+    function set_Salesman(){
+        nama = $("#KodeSalesman option:selected").attr("data-nm");
+        mcl = $("#KodeSalesman option:selected").attr("data-mcl");
+        // tgl = $("#KodeSalesman option:selected").attr("data-tgl");
+        tipe = $("#KodeSalesman option:selected").attr("data-tipe");
+        $("#NamaSalesman").val(nama);
+        $("#Mcl").val(mcl);
+        // $("#tgl").val(tgl);
+        $("#TipeSalesman").val(tipe);
+        loadcek_target_salesman();
+    }
+
+    function addData()
+    {
+        saveMethod = 'add';
+        clearRow();
+        $(".box-form-update").hide();
+        $(".box-form-add").show();
+        var date = new Date();
+        var yy = date.getYear();
+        var year = (yy < 1000) ? yy + 1900 : yy;
+
+        tahun = $('#tahun').val();
+        bulan = $('#bulan').val();
+        if (tahun < year) {
+            alert('Tidak Bisa Tambah data Ke bulan sebelumnya'); return;  
+        }else if (bulan <= date.getMonth()){
+            alert('Tidak Bisa Tambah data Ke bulan sebelumnya'); return;  
+        }
+        
+
+        // $('#suppliermask').hide();
+        $('.bootstrap-select').show();     
+        document.getElementById('id').value = '';   
+        $('#modal_form').modal('show'); // show bootstrap modal
+        $('.modal-title').text('Form Target Salesman'); // Set Title to Bootstrap modal title
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+        $('.help-block').empty(); // clear error string
+        $('.form-group').removeClass('has-error'); // clear error class
+        $("#KodeSalesman").prop("disabled",false);
+        $("#Prinsipal").prop("disabled",false);
+        $("#Tanggal").val(new Date());
+        tanggal_akhir();
+        // load_kodeSalesman();
+        $('#box-notif').hide();
+        $('#box-btn').show();
+    }
+
+    function updateData(id)
+    {
+        saveMethod = 'update';
+        $("#KodeSalesman").prop("disabled",true);
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.form-group').removeClass('has-error'); // clear error class
+        $(".box-form-add").hide();
+        $(".box-form-update").show();
+        $('.bootstrap-select').hide();
+
+        //Ajax Load data from ajax
+        $.ajax({
+            url : "{{ base_url }}getDataTargetSalesman/" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                $('#id').val(data.id);
+                $('#KodeSalesman').val(data.KodeSalesman);
+                $('#NamaSalesman').val(data.NamaSalesman);
+                $('#TipeSalesman').val(data.TipeSalesman);
+                $('#tgl').val(data.Tanggal);
+                $('#Prinsipal').val(data.Prinsipal);
+                $("#Prinsipal").prop("disabled",true);
+                $('#Mcl').val(data.Mcl);
+                $('#Target').val(data.Target);
+                $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+                $('.modal-title').text('Target Salesman Form Update'); // Set title to Bootstrap modal title
+
+                if (data.tahun >= {{tahun1}} && data.bulan >= {{bulan1}}) {
+                    $('#box-notif').hide();
+                    $('#box-btn').show();
+                }else{
+                    $('#box-btn').hide();
+                    $('#box-notif').show();
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function deleteData(id){
+        if(confirm('Are you sure delete this data?'))
+        {
+            // ajax delete data to database
+            $.ajax({
+                url : "{{ base_url }}deleteDataTargetSalesman/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    reloadTable();
+                    $("#notif").empty();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert('Error deleting data');
+                }
+            });
+
+        }
+    }
+
+    function upload(id){
+       /* if(confirm('Are you sure delete this data?'))
+        {*/
+            // ajax delete data to database
+            $.ajax({
+                url : "{{ base_url }}uploadTargetSalesman/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    notif('success', 'Data Berhasil Di Upload');
+                    reloadTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert('Error data');
+                }
+            });
+
+        // }
+    }
+
+    function upload_all(){
+       /* if(confirm('Are you sure delete this data?'))
+        {*/
+            // ajax delete data to database
+            bulan = $('#bulan').val();
+            tahun = $('#tahun').val();
+
+            $.ajax({
+                url : "{{ base_url }}uploadTargetSalesman_all/" ,
+                type: "POST",
+                data: {tahun:tahun,bulan:bulan},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    notif('success', 'Data Berhasil Di Upload');
+                    reloadTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert('Error data');
+                }
+            });
+
+        // }
+    }
+
+    function saveData()
+    {
+        // $('#btnSave').text('Saving...'); //change button text
+        // $('#btnSave').attr('disabled',true); //set button disable 
+        var url;
+        // alert(saveMethod);
+
+        if(saveMethod == 'add') {
+            url = "{{ base_url }}saveDataTargetSalesman";
+        } else {
+            url = "{{ base_url }}updateDataTargetSalesman";
+        }
+
+        
+        if(saveMethod == 'add') {
+            
+            // ajax adding data to database
+            KodeSalesman = $('#KodeSalesman').val();
+            Mcl = $('#Mcl').val();
+            $("#notif").empty();
+
+            if (KodeSalesman == '') {
+                notif('warning', 'Harap Lengkapi Form'); return;
+            }
+
+            if (Mcl == '' || Mcl == '0') {
+                notif('warning', 'MCL tidak boleh 0'); return;
+            }
+
+             var bucket = document.getElementById('bucket').value;
+
+            var arr_batch=[];
+            // alert(bucket );
+            // cek_status = '0';
+            for (var e = 0; e <= bucket; e++) {
+                
+                n = parseInt(e) + 1;
+                var prinsipal = document.getElementById('prinsipal'+e).value;
+
+                // var qty = document.getElementById('jumlah'+e).value;
+                var qty = parseInt((document.getElementById('target'+e).value) ? document.getElementById('target'+e).value : 0);
+
+                if (prinsipal == '') {
+                    notif("warning","PERHATIAN! Prinsipal pada baris " +n+ " harus di isi."); return;   
+                }
+
+                if (qty == '0' || qty == '') {
+                    notif("warning","PERHATIAN! Target pada baris " +n+ " tidak boleh 0."); return;
+                }
+
+                if ($.inArray(prinsipal, prinsipalSource) == -1) {
+                    notif('warning', 'PERHATIAN! Prinsipal pada baris ' +n+ ' tidak ada dalam database');
+                    return;
+                }
+                // alert($.inArray(prinsipal, cek_target_salesmanSource));
+
+                /*if ($.inArray(prinsipal, cek_target_salesmanSource) == 0) {
+                    notif('warning', 'PERHATIAN! Prinsipal '+prinsipal+' Pada KodeSalesman ini sudah ada');
+                    return;
+                } */
+                // alert($.inArray(prinsipal, cek_target_salesmanSource));
+                
+                
+              
+                   var jj = arr_batch.findIndex(x => x.prinsipal==prinsipal);
+                   if(jj === -1){
+                        arr_batch.push({
+                            prinsipal : prinsipal
+                        });
+                   }else{
+                        notif("warning","PERHATIAN! Ada Pemilihan prinsipal yg sama.");
+                        status = false;
+                   }
+                   // alert('s');
+               
+            }
+        }
+
+        $.ajax({
+            url : url,
+            type: "POST",
+            data: $('#myForm').serialize(),
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status) //if success close modal and reload ajax table
+                {
+                    $('#modal_form').modal('hide');
+                    reloadTable();
+                }
+                else
+                {
+                    notif("warning","PERHATIAN! Prinsipal pada Kode Salesman ini Sudah Ada.");
+                }
+
+                $('#btnSave').text('save'); //change button text
+                $('#btnSave').attr('disabled',false); //set button enable 
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $('#modal_form').modal('hide');
+                notif("warning","PERHATIAN! Ada Prinsipal pada Kode Salesman yang Sudah Ada.");
+
+            }
+        });
+    }
+
+    function number_format(nStr)
+    {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+
+
+    function loadPrinsipal() {
+       
+            $.ajax({
+                url : "{{ base_url }}loadPrinsipal/",
+                type: "POST",
+                // data:{prinsipal:prinspl, supplier:Supplier},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        prinsipalSource[i] = data[i].Prinsipal;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+        
+    }
+
+    function loadcek_target_salesman() {
+
+        KodeSalesman = $("#KodeSalesman").val();
+        tgl = $("#tgl").val();
+        cabang = $("#Cabang").val();
+       
+            $.ajax({
+               url : "{{ base_url }}cek_targetSalesman/",
+                type: "POST",
+                data: {KodeSalesman:KodeSalesman,tgl:tgl,cabang:cabang},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        cek_target_salesmanSource[i] = data[i].Prinsipal;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+        
+    }
+
+    function cek_targetSalesman(e){
+        KodeSalesman = $("#KodeSalesman").val();
+        tgl = $("#tgl").val();
+        prinsipal = $("#prinsipal"+e).val();
+        cabang = $("#Cabang").val();
+        n = parseInt(e) +1;
+
+        // alert(KodeSalesman + tgl + prinsipal + cabang); return;
+        $.ajax({
+            url : "{{ base_url }}cek_targetSalesman/",
+            type: "POST",
+            data: {KodeSalesman:KodeSalesman,tgl:tgl,prinsipal:prinsipal,cabang:cabang},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == '1') {
+                    $("#notif").empty();
+                    notif('warning','Prinsipal pada baris ke '+ n+ ' sudah ada');
+                    return data.status;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function cariKode(e){  
+            $('#prinsipal'+e).typeahead({
+                    source: prinsipalSource
+                });
+    }
+
+
+    var rowNum = 0;
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        
+        if(b == -1){
+            b = 0;
+            rowNum = 0;
+        }
+        var s = document.getElementById('target'+b).value;
+        var ss = document.getElementById('prinsipal'+b).value;
+        if (s != '0' && s != '' && ss != '' ) {
+            $('#removeRow').show();
+            rowNum ++;
+            var x = rowNum + 1;
+            $('#table-produk').append(''+
+                '<tr id="itemRow'+rowNum+'">'+
+                    '<td><a class="btn btn-danger" onclick="removeRow('+rowNum+')">Hapus</a></td>'+
+                    '<td>'+
+                        '<input type="text" name="prinsipal['+rowNum+']" id="prinsipal'+rowNum+'" style="width: 300px" class="delRow"  onkeyup="cariKode('+rowNum+')"  autocomplete="off">'+
+                    '</td>'+
+                    '<td>'+
+                       ' <input type="text" name="target['+rowNum+']" id="target'+rowNum+'"  onkeypress="return isNumberKey(event)" value="0">'+
+                    '</td>'+
+                '</tr>)');
+
+            $('#bucket').val(rowNum);
+            $('#prinsipal'+rowNum).focus();
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning', 'PERHATIAN! Isi form diatas terlebih dahulu');
+        }
+    }
+
+    function removeRow(e) 
+    {        
+        if (rowNum>0) {
+            jQuery('#itemRow'+e).remove();
+            rowNum--;
+        }
+        else{
+
+            notif('warning', 'PERHATIAN! Baris pertama tidak bisa dihapus'); return;
+        }
+        $('#bucket').val(rowNum);
+    }
+
+    function clearRow() 
+    {
+        var bucket = document.getElementById('bucket').value;
+        for (var e = bucket; e > 0; e--) {            
+            jQuery('#itemRow'+e).remove();            
+            rowNum--;
+        }
+
+        $('#removeRow').hide();
+        $('#bucket').val(rowNum);
+    }
+
+</script>
+    {% endblock %}

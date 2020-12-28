@@ -1,0 +1,1238 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    <style type="text/css">
+        .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+.rata-kanan{
+    text-align: right;
+}
+.huruf-tebal{
+    font-weight: bold;
+}
+
+td.child ul li span.dtr-data{
+    display: inline-block;
+    min-width: 80px;
+    text-align: right;
+    text-align: right;
+}
+table tr td{
+    padding: 0 5px 0 5px;
+}
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data SO</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="margin-bottom: 10px">
+            <button type="button" id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+            <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button>
+        </div>
+        <div class="col-lg-6" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <marquee width = "100%"><b>Untuk Mengecek Data SO sudah terkirim ke pusat atau belum, ada kolom Data pusat, klik tombol Cek, jika data So sudah terkirim, datanya akan muncul, jika belum, maka data kosong<b></marquee>
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable List SO
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Reject</th>
+                                        <th>Closed</th>
+                                        <th>DO</th>
+                                        <th>No SO</th>
+                                        <th>Tanggal SO</th>
+                                        <th>Status</th>
+                                        <th>Pelanggan</th>
+                                        <th>Nama Pelanggan</th>
+                                        <th>Salesman</th>
+                                        <th>Acu</th>
+                                        <th>Total Piutang</th>
+                                        <th>Umur (TOP) Piutang</th>
+                                        <th>Cara Bayar</th>
+                                        <th>Total</th>
+                                        <th>Detail</th>
+                                        <th>Data Pusat</th>
+                                        <th>Monitoring Approval</th>
+                                        <th>Monitoring Status</th>
+                                        <th>Status Pusat</th>
+                                        <th>Kirim Ulang Ke Pst</th>
+                                        <th>Proses L/T</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail Data SO</h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto">
+                <h3>Data Header</h3> 
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="headerDataSO">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:100px">Cabang</th>
+                            <th style="min-width:100px">No SO</th>
+                            <th style="min-width:100px">Time SO</th>
+                            <th style="min-width:100px">Pelanggan</th>
+                            <th style="min-width:100px">Nama Pelanggan</th>
+                            <th style="min-width:100px">Alamat Pelanggan</th>
+                            <th style="min-width:100px">Tipe Pelanggan</th>
+                            <th style="min-width:100px">NPWP Pelanggan</th>
+                            <th style="min-width:100px">Kategori Pelanggan</th>
+                            <th style="min-width:100px">Acu</th>
+                            <th style="min-width:100px">Cara Bayar</th>
+                            <th style="min-width:100px">Cash Diskon</th>
+                            <th style="min-width:100px">Value Cash Diskon</th>
+                            <th style="min-width:100px">TOP</th>
+                            <th style="min-width:100px">Tgl JTO Order</th>
+                            <th style="min-width:100px">Nama Salesman</th>
+                            <th style="min-width:100px">Rayon</th>
+                            <th style="min-width:100px">Status</th>
+                            <th style="min-width:100px">Tipe Dokumen</th>
+                            <th style="min-width:100px">No DO</th>
+                            <th style="min-width:100px">No Faktur</th>
+                            <th style="min-width:100px">Disc Cab Max</th>
+                            <th style="min-width:100px">Disc Prins Max</th>
+                            <th style="min-width:100px">COGS</th>
+                            <th style="min-width:100px">Total COGS</th>
+                            <th style="min-width:100px">Limit</th>
+                            <th style="min-width:100px">TOP</th>
+                            <th style="min-width:100px">Disc Cabang</th>
+                            <th style="min-width:100px">Disc Prinsipal</th>
+                        </tr>
+                    </thead>
+                </table><br>
+                <h3>Data TOP Piutang</h3> 
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="toppiutang">
+                    <thead style="line-height: 2">
+                         <tr>
+                            <th style="min-width:100px;text-align:center">Limit Kredit</th>
+                            <th style="min-width:100px;text-align:center">Saldo Piutang</th>
+                            <th style="min-width:100px;text-align:center">TOP</th>
+                            <th style="min-width:100px;text-align:center">Umur Piutang</th>
+                        </tr>
+                    </thead>
+                </table><br>
+                <h3>Data Detail</h3>
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="detailDataSO">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:50px">No</th>
+                            <th style="min-width:100px">Kode Produk</th>
+                            <th style="min-width:100px">Nama Produk</th>
+                            <th style="min-width:100px">Harga</th>
+                            <th style="min-width:100px">Qty SO</th>
+                            <th style="min-width:100px">Bonus</th>
+                            <th style="min-width:100px">Value Bonus</th>
+                            <th style="min-width:100px">Disc Cabang</th>
+                            <th style="min-width:100px">Value Disc Cabang</th>
+                            <th style="min-width:100px">Disc Cabang Total</th>
+                            <th style="min-width:100px">Value Disc Cabang Total</th>
+                            <th style="min-width:100px">Disc Prins 1</th>
+                            <th style="min-width:100px">Value Disc Prins 1</th>
+                            <th style="min-width:100px">Disc Prins 2</th>
+                            <th style="min-width:100px">Value Disc Prins 2</th>
+                            <th style="min-width:100px">Disc Prins Total</th>
+                            <th style="min-width:100px">Value Disc Prins Total</th>
+                            <th style="min-width:100px">Disc Total</th>
+                            <th style="min-width:100px">Value Disc Total</th>
+                            <th style="min-width:100px">Gross</th>
+                            <th style="min-width:100px">Potongan</th>
+                            <th style="min-width:100px">Value</th>
+                            <th style="min-width:100px">PPN</th>
+                            <th style="min-width:100px">Lain Lain</th>
+                            <th style="min-width:100px">Total</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+<div class="modal fade" role="dialog"  id="example-cetak" role="dialog">
+    <div class="modal-content">
+    <div class="modal-body form">
+    <div id ="print_out">
+    <table border="0" cellspacing="0">
+        <tr>
+            <td height="80px" width="80px" valign="top">
+                <div id="logo"><img src="{{base_url}}assets/logo/1489135837049.jpg"></div>
+            </td>
+            <td width="270px" valign="top">
+                PT. SAPTA SARITAMA<br>
+                Jl. Caringin No. 254 A BABAKAN, BANDUNG
+            </td>
+            <td rowspan="3" valign="top">
+                <table cellspacing="0">
+                    <tr>
+                        <td>No.SO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="NoSo"></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TglSo"></td>
+                    </tr>
+                    <tr>
+                        <td>Cabang &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Cabang"></td>
+                    </tr>
+                    <tr>
+                        <td>Tipe Pelanggan &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TipePelanggan"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Cara Bayar &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="CaraBayar"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>TOP &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TOP"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Tipe Faktur &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TipeFaktur"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Status &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Status"></td>  
+                    </tr>
+                    <tr>
+                        <td>Status Pusat &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="statusPusat"></td>  
+                    </tr>
+                </table>
+            </td>
+            <td valign="top">
+                    <H5>Sales Order</H5>
+            </td>
+            <!-- <td valign="top" width="150px">Barcode</td> -->
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>Pelanggan</td>
+                        <td>: <span v-html='Pelanggan'></span> - <span v-html='NamaPelanggan'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Alamat</td>
+                        <td>: <span v-html='AlamatPelanggan'></td>
+                    </tr>
+                    <tr>
+                        <td>NPWP</td>
+                        <td>: <span v-html='NPWPPelanggan'></td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <table cellspacing="0" class="report-container">
+    <thead class="report-header">
+        <tr class="detail atas" align="center">
+            <td rowspan="2" width="20" class="awal">No.</td>
+            <td rowspan="2" width="80">ID PRODUK</td>
+            <td rowspan="2" width="220">NAMA PRODUK</td>
+            <td colspan="3">DATA</td>
+            <td colspan="2" width="80">BONUS</td>
+            <td colspan="3" width="80">DISKON</td>
+            <td rowspan="2" width="80">GROSS</td>
+            <td rowspan="2" width="80">POTONGAN</td>
+            <td rowspan="2" width="80">VALUE</td>
+        </tr>
+        <tr class="detail" align="center">
+            <td width="40">Qty</td>
+            <td width="30">Satuan</td>
+            <td width="50">Harga</td>
+            <td width="50">Qty</td>
+            <td width="50">Value</td>
+            <td width="50">Cabang</td>
+            <td width="50">Prinsipal 1</td>
+            <td width="50">Prinsipal 2</td>
+        </tr>
+    </thead>
+    <tbody class="report-body">
+        <tr v-for = "(index,datas) in data_detail" class="detail-item" style="font-size: 11px; page-break-after: always;" >
+            <td v-html='index + 1' class='awal'> {{ index }}</td>
+            <td v-html='datas.KodeProduk' style='padding-left:5px;'></td>
+            <td v-html='datas.NamaProduk' style='padding-left:2px;'></td>
+            <td v-html='datas.QtySO | currencyDisplay' style='padding-right:2px;' align='right'> </td>
+            <td v-html='datas.UOM' style='padding-left:2px;'></td>
+            <td v-html='datas.Harga | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Bonus | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueBonus | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueDiscCab | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueDiscPrins1 | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.ValueDiscPrins2 | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Gross_detail | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Potongan_detail | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Value_detail | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+        </tr>
+    </tbody>
+     <!-- <tr class="page-break"> -->
+    <tr v-if="data_detail.length <= 10 ">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;" ></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 10 && data_detail.length <= 20">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 20 && data_detail.length < 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length >= 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <!-- <tfoot class="report-footer"> -->
+        <tr class="detail atas" style="font-size: 11px;">
+            <td class='awal' colspan="3" valign="top">Jumlah</td>
+            <td align='right' v-html='total_qty | currencyDisplay' style='padding-right:2px;'></td>
+            <td></td>
+            <td align='right' v-html='total_Harga | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Bonus | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueBonus | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueDiscCab | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueDiscPrins1 | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_ValueDiscPrins2 | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='Gross | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='Potongan | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='Value | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail atas">
+            <td style='padding-left:5px;' colspan="11" rowspan='4' valign="top" class="awal">Terbilang : <br> <span id ="terbilang_value"></span></td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Pembulatan / Uang Muka / Ongkir</td>
+            <td align='right' v-html='OngkosKirim | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Materai</td>
+            <td align='right' v-html='Materai | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPN</td>
+            <td align='right' v-html='Ppn | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="3" rowspan="4" class="awal"></td>
+            <td colspan="4" rowspan="4"></td>
+            <td colspan="4" rowspan="4"></td>
+            <td colspan="2">Jumlah Tagihan</td>
+            <td align='right' v-html='Total | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Dasar Pengenaan Pajak</td>
+            <td></td>
+        </tr>
+    <!-- </tfoot> -->
+    </table>
+    <table width="840px;">
+        <tr>
+            <td>
+                Pembayaran harap di transfer ke rekening {....................} BCA cabang {---------------------} A/C : {-----------};
+                Pembayaran dengan cek dan giro dianggap sah setelah diuangkan <br>
+                * Sesuai PER. DJP /16/PJ/2014 e-faktur Pajak tidak perlu di cek hard copy. Jika diperlukan e-faktur Pajak dapat
+                dicetak sendiri dengan memindai kode QRCODE dikiri bawah dokumen ini.
+            </td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_approval_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <marquee width = "100%"><b>Jika Data Kosong, maka data SO belum terkirim ke pusat, KLik proses di kolom status Pusat atau di kolom kirim ulang ke pst<b></marquee>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto">
+                <h3>Data Approval</h3> 
+                <input type="hidden" class="form-control" name="noso" id="noso">
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="ApprovalSO">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th rowspan='2' style="min-width:100px;text-align:center">Cabang</th>
+                            <th rowspan='2' style="min-width:100px;text-align:center">No SO</th>
+                            <th colspan='4' style="min-width:100px;text-align:center">Approve LImit</th>
+                            <th colspan='4' style="min-width:100px;text-align:center">Approve TOP</th>
+                            <th colspan='2' style="min-width:100px;text-align:center">Approve Disc Cab</th>
+                            <th colspan='2' style="min-width:100px;text-align:center">Approve Disc Prins</th>
+                        </tr>
+                        <tr>
+                            <th style="min-width:100px">KSA</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                            <th style="min-width:100px">Pusat</th>
+                            <th style="min-width:100px">KSA</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                            <th style="min-width:100px">Pusat</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">RBM</th>
+                            <th style="min-width:100px">BM</th>
+                            <th style="min-width:100px">Prinsipal</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="updateapproval('')"><i class="fa fa-refresh"></i> Update Approval</button>
+            </div>
+       
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+         vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                jml_halaman : 1,
+                TglSo: '',
+                NoSo: '',
+                TipePelanggan: '',
+                Pelanggan: '',
+                NamaPelanggan: '',
+                AlamatPelanggan: '',
+                Cabang: '',
+                NPWPPelanggan: '',
+                CaraBayar: '',
+                TOP: '',
+                Status: '',
+                statusPusat: '',
+                TipeFaktur: '',
+                Gross: '',
+                Value: '',
+                Potongan: '',
+                Ppn: '',
+                Materai: '',
+                OngkosKirim: '',
+                Total: '',
+                total_qty : 0,
+                total_Harga : 0,
+                total_Bonus : 0,
+                total_ValueBonus : 0,
+                total_ValueDiscCab : 0,
+                total_ValueDiscPrins1 : 0,
+                total_ValueDiscPrins2 : 0,
+                data_detail : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.QtySO);
+                    });
+                    return gross;
+                },
+                total_Harga:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga);
+                    });
+                    return gross;
+                },
+                total_Bonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Bonus);
+                    });
+                    return gross;
+                },
+                total_ValueBonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueBonus);
+                    });
+                    return gross;
+                },
+                total_ValueDiscCab:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscCab);
+                    });
+                    return gross;
+                },
+                total_ValueDiscPrins1:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscPrins1);
+                    });
+                    return gross;
+                },
+                total_ValueDiscPrins1:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.ValueDiscPrins2);
+                    });
+                    return gross;
+                },
+            }
+        });
+        Vue.filter('currencyDisplay',{
+                read: function(val){
+                    return accounting.formatNumber(val);
+                },
+                write: function(val,oldVal){
+                    return accounting.unformat(val,",")
+                }
+        }); 
+        var status = 'Open';
+        tabel = $('#dataTables-example').DataTable({
+            "ordering": false,
+            "processing": true,
+            "serverSide": true, 
+            // scrollX:true,
+            scrollCollapse: true,
+            fixedColumns:   {
+                leftColumns: 1,
+                rightColumns: 1
+            }, 
+            "ajax": {
+                "url": "{{ base_url }}listDataSO",
+                "data":{status:status}, 
+                "type": "POST"
+            },
+            // responsive: true,
+            dom: 'Bfrtip',
+            columnDefs: [
+                {
+                    targets: [14],
+                    className: 'rata-kanan huruf-tebal',
+                    "render": function( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                },
+            ],
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    }); 
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function allData() { 
+        var all = document.getElementById('all').value;       
+        if($("#all").is(':checked')){ 
+            tabel.ajax.url('{{ base_url }}listDataSO/all');
+        }   
+        else{
+            tabel.ajax.url('{{ base_url }}listDataSO');
+        }
+        reloadTable();
+    }   
+
+    function prosesData(No)
+    {
+        var url = "{{ base_url }}prosesDataSO"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+
+
+    function proseslt(No)
+    {
+        var url = "{{ base_url }}prosesDataLT"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function view(no){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}listDataDetailSO",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                    $('#headerDataSO').append('<tr class="itemRowHeader"><td style="min-width:100px">'+data[0].Cabang+'</td><td style="min-width:100px">'+data[0].NoSO+'</td><td style="min-width:100px">'+data[0].TimeSO+'</td><td style="min-width:100px">'+data[0].Pelanggan+'</td><td style="min-width:100px">'+data[0].NamaPelanggan+'</td><td style="min-width:100px">'+data[0].AlamatPelanggan+'</td><td style="min-width:100px">'+data[0].TipePelanggan+'</td><td style="min-width:100px">'+data[0].NPWPPelanggan+'</td><td style="min-width:100px">'+data[0].KategoriPelanggan+'</td><td style="min-width:100px">'+data[0].Acu+'</td><td style="min-width:100px">'+data[0].CaraBayar+'</td><td style="min-width:100px" class="rata-kanan">'+data[0].CashDiskon+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[0].ValueCashDiskon)+'</td><td style="min-width:100px">'+data[0].TOP+'</td><td style="min-width:100px">'+data[0].TglJtoOrder+'</td><td style="min-width:100px">'+data[0].NamaSalesman+'</td><td style="min-width:100px">'+data[0].Rayon+'</td><td style="min-width:100px">'+data[0].Status+'</td><td style="min-width:100px">'+data[0].TipeDokumen+'</td><td style="min-width:100px">'+data[0].NoDO+'</td><td style="min-width:100px">'+data[0].NoFaktur+'</td><td style="min-width:100px" class="rata-kanan">'+data[0].DiscCabMax+'</td><td style="min-width:100px" class="rata-kanan">'+data[0].DiscPrinsMax+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[0].COGS)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[0].TotalCOGS)+'</td><td style="min-width:100px">'+data[0].StatusLimit+'</td><td style="min-width:100px">'+data[0].StatusTOP+'</td><td style="min-width:100px">'+data[0].StatusDiscCab+'</td><td style="min-width:100px">'+data[0].StatusDiscPrins+'</td></tr>');
+
+                    for(i in data)
+                    {
+                        $('#detailDataSO').append('<tr class="itemRowDetail"><td style="min-width:50px">'+x+'</td><td style="min-width:100px">'+data[i].KodeProduk+'</td><td style="min-width:100px">'+data[i].NamaProduk+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].Harga)+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].QtySO+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].Bonus+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].ValueBonus)+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].DiscCab+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].ValueDiscCab)+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].DiscCabTot+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].ValueDiscCabTotal+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].DiscPrins1+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].ValueDiscPrins1)+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].DiscPrins2+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].ValueDiscPrins2)+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].DiscPrinsTot+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].ValueDiscPrinsTotal)+'</td><td style="min-width:100px" class="rata-kanan">'+data[i].DiscTotal+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].ValueDiscTotal)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].Gross)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].Potongan)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].Value)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].Ppn)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].LainLain)+'</td><td style="min-width:100px" class="rata-kanan">'+numberWithCommas(data[i].Total)+'</td></tr>');
+                        // console.log(i);
+                        x++;
+                    }
+
+                toppiutang(data[0].Pelanggan);
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+     function cek(no){
+        $('#modal_approval_form').modal('show'); // show bootstrap modal when complete loaded
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $("#noso").val('');
+        $.ajax({
+            url : "{{ base_url }}viewapprovalpusat",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                    $('#ApprovalSO').append('<tr class="itemRowHeader"><td style="min-width:100px">'+data[0].Cabang+'</td><td style="min-width:100px">'+data[0].NoSO+'</td><td style="min-width:100px">'+data[0].Approve_KSA+'</td><td style="min-width:100px">'+data[0].Approve_BM+'</td><td style="min-width:100px">'+data[0].Approve_RBM+'</td><td style="min-width:100px">'+data[0].Approve_pusat+'</td><td style="min-width:100px">'+data[0].Approve_TOP_KSA+'</td><td style="min-width:100px">'+data[0].Approve_TOP_BM+'</td><td style="min-width:100px">'+data[0].Approve_TOP_RBM+'</td><td style="min-width:100px">'+data[0].Approve_TOP_pusat+'</td><td style="min-width:100px">'+data[0].Approve_DiscCab_BM+'</td><td style="min-width:100px">'+data[0].Approve_DiscCab_RBM+'</td><td style="min-width:100px">'+data[0].Approve_DiscPrins_BM+'</td><td style="min-width:100px">'+data[0].Approve_DiscPrins_pusat+'</td></tr>');
+                    $("#noso").val(data[0].NoSO);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function toppiutang(pelanggan){
+        // $('#modal_top_form').modal('show'); // show bootstrap modal when complete loaded
+        var xx = 0;
+        $('.itemRowHeader1').remove();
+        // $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}viewpiutangpelanggan",
+            type: "POST",
+            data:{pelanggan:pelanggan},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var detail = data.detail;
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                     $('#toppiutang').append('<tr class="itemRowHeader1"><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].limit_kredit)+'</td><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].saldo)+'</td><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].top)+'</td><td style="min-width:100px;text-align:center">'+numberWithCommas(data.header[0].Umur_faktur)+'</td></tr>');
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function updateData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataSOapprovalPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+    function updateapproval(no)
+    {
+        $("#notif").empty();
+        var Noso = $("#noso").val();
+        if(no != ''){
+            var nodok = no;
+        }else{
+            var nodok = Noso;
+        }
+        var url = "{{ base_url }}updateDataSOapprovalbyno"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{no:nodok},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                $('#modal_approval_form').modal('hide');
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function updateDataDO()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataSOapprovalPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data ==false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function rejectData(no)
+    {
+        if(confirm('Apakah kamu yakin ingin membatalkan data SO ini?'))
+        {
+            $("#notif").empty();
+            var url = "{{ base_url }}rejectDataSO"; 
+            // ajax adding data to database
+            $('#progressGIF').show();
+            var status = 'Reject';
+            $.ajax({
+                url : url,
+                type: "POST",
+                data:{no:no,status:status},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.ket == 'GAGAL') {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    // else if (data.ket == 'CEK') {
+                    //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                    // }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                    }
+                    reloadTable();
+                    $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    $('#progressGIF').hide();
+                }
+            });
+        }
+    }
+    function closeData(no)
+    {
+        if(confirm('Apakah kamu yakin ingin Close data SO ini?'))
+        {
+            $("#notif").empty();
+            var url = "{{ base_url }}rejectDataSO"; 
+            // ajax adding data to database
+            $('#progressGIF').show();
+            var status = 'Closed';
+            $.ajax({
+                url : url,
+                type: "POST",
+                data:{no:no,status:status},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.ket == 'GAGAL') {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    // else if (data.ket == 'CEK') {
+                    //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                    // }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                    }
+                    reloadTable();
+                    $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    $('#progressGIF').hide();
+                }
+            });
+        }
+    }
+
+    function prosesDataDO(No)
+    {
+        var url = "{{ base_url }}prosesDO"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                }
+                $('#progressGIF').hide();
+                    reloadTable();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+                reloadTable();
+            }
+        });
+    }
+
+    function prosesulangtop(no,status)
+    {
+        $("#notif").empty();
+        // var Noso = $("#noso").val();
+        // if(no != ''){
+        //     var nodok = no;
+        // }else{
+        //     var nodok = Noso;
+        // }
+        var url = "{{ base_url }}prosesulangtop"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{no:no,status:status},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data == false) {
+                    notif('warning', 'PERHATIAN! Tidak bisa update data ');
+                }
+                else{
+                    notif('success', 'SUKSES! Status Limit / TOP berhasil di update');
+                }
+                // $('#modal_approval_form').modal('hide');
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! gaggal update');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+    function prosesUlangDataSO(No)
+    {
+        var url = "{{ base_url }}prosesUlangDataSO"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+</script>
+    {% endblock %}

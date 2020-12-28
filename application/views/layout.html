@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>ERP-SST</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{{ base_url }}assets/img/favicon.jpg" />
+
+    <!-- Front CSS -->
+    <link href="{{ base_url }}assets/css/front.css" rel="stylesheet">
+    
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ base_url }}assets/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Menu Multilavel Dropdwon -->
+    <link href="{{ base_url }}assets/css/main.css" rel="stylesheet">
+    <!-- <link href="css/main.css" rel="stylesheet"> -->
+
+    <!-- Bootstrap Toggle Core CSS -->
+    <link href="{{ base_url }}assets/css/sidebar-toggle.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{{ base_url }}assets/css/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="{{ base_url }}assets/css/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="{{ base_url }}assets/css/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- DataTables Button Export CSS -->
+    <link href="{{ base_url }}assets/css/buttons.dataTables.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ base_url }}assets/css/sb-admin-2.css" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link href="{{ base_url }}assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Select JS -->
+    <link href="{{ base_url }}assets/css/select.css" rel="stylesheet" type="text/css">
+
+    <!-- Datetimepicker  -->
+    <link href="{{ base_url }}assets/css/jquery.datetimepicker.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Datepacker -->
+    <link href="{{base_url}}assets/js/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+    <!-- Progressbar -->
+    <link href="{{base_url}}assets/css/jquery.progressTimer.css" rel="stylesheet">
+
+    <!-- Select2 -->
+    <link href="{{base_url}}assets/css/select2.min.css" rel="stylesheet" />
+    <link href="{{ base_url }}assets/css/toastr.css" rel="stylesheet" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div id="notif">
+</div>
+    <div id="wrapper">
+
+            {% block content %} {% endblock %}
+
+    </div>
+    <a href="javascript:" id="return-to-top"><img src="{{ base_url }}assets/img/up-arrow.png" width="50px"></a>
+    <!-- /#wrapper -->
+    
+    <!-- jQuery -->
+    <!-- <script src="{{ base_url }}assets/js/jquery.min.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>  -->
+    <script src="{{ base_url }}assets/js/js.js"></script>
+
+    <script src="{{ base_url }}assets/js/excelexportjs.js"></script>
+    <!-- <script src="{{ base_url }}assets/js/jquery-3.3.1.js"></script> -->
+    <script src="{{ base_url }}assets/js/jquery.dataTables.min.js"></script>
+    <script src="{{ base_url }}assets/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ base_url }}assets/js/dataTables.buttons.min.js"></script>
+    <script src="{{ base_url }}/assets/js/pdfmake.min.js"></script>
+    <script src="{{ base_url }}/assets/js/vfs_fonts.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.html5.min.js"></script>
+    
+    <!-- <script src="{{ base_url }}assets/js/jquery.chained.min.js"></script> -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ base_url }}assets/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="{{ base_url }}assets/js/dataTables.responsive.js"></script>
+
+    <!-- DataTables Button Export JavaScript -->
+    <script src="{{ base_url }}assets/js/buttons.flash.min.js"></script>
+    <script src="{{ base_url }}assets/js/jszip.min.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.print.min.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.colVis.min.js"></script>
+    
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ base_url }}assets/js/sb-admin-2.js"></script>
+    <!-- Custom Theme JavaScript -->
+
+    <!-- Select JS -->
+    <script src="{{ base_url }}assets/js/select.js"></script>
+    <script src="{{ base_url }}assets/js/jquery.validate.min.js"></script>
+    
+    <!-- Datepicker -->
+    <script src="{{base_url}}assets/js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Datetimepicker -->
+    <script src="{{base_url}}assets/js/jquery.datetimepicker.full.min.js"></script>
+    
+    <!-- REDIRECT JS -->
+    <script src="{{ base_url }}assets/js/redirect.js"></script>
+
+    <!-- AUTOCOMPLETE -->
+    <script src="{{ base_url }}assets/js/jquery.mockjax.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <!-- <script src="{{ base_url }}assets/js/jQuery.print.js"></script> -->
+    <script src="{{ base_url }}assets/js/jQuery.print.min.js"></script>
+
+    <script src="{{ base_url }}assets/js/vue.min.js"></script>
+    <script src="{{ base_url }}assets/js/vue-calc-input.js"></script>
+    <script src="{{ base_url }}assets/js/vue-readable-number.js"></script>
+    <script src="{{ base_url }}assets/js/vue-resource.min.js"></script>
+    <!-- <script src="{{ base_url }}assets/js/Vue.ajax.js"></script> -->
+    <script src="{{ base_url }}assets/js/accounting.js"></script>
+    <!-- Progress bar -->
+    <script src="{{ base_url }}assets/js/jquery.easyui.min.js"></script>
+    <script src="{{ base_url }}assets/js/jquery.progressTimer.js"></script>
+
+    <!-- Select2 -->
+    <script src="{{ base_url }}assets/js/select2.min.js"></script>
+
+    <!-- =================================================== -->
+    <script src="{{ base_url }}assets/js/jquery.qrcode.js"></script>
+    <script src="{{ base_url }}assets/js/qrcode.js"></script>
+    <script src="{{ base_url }}assets/js/jquery-barcode.min.js"></script>
+    <script src="{{ base_url }}assets/js/gmaps.js"></script>
+    <script src="{{ base_url }}assets/js/toastr.js"></script>
+    <script src="{{ base_url }}assets/socket.io/dist/socket.io.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+            // run_socket();
+      });
+
+        let ipAddress = "119.235.19.137";
+
+        const port = "8223";
+        const socketIoAddress = `http://${ipAddress}:${port}?cabang={{ logs.cabang }}&user={{ logs.userGroup }}`;
+        const socket = io(socketIoAddress);
+
+
+        // let ipAddress_local = location.hostname;
+        let ipAddress_local = '{{ ip }}';
+        if (ipAddress_local == "localhost") {
+            ipAddress_local = "localhost";
+            port_local = "3006";
+        }else{
+            port_local = '{{ logs.port }}';
+        }
+        console.log('{{ ip }}');
+        const socketIoAddress_local = `http://${ipAddress_local}:${port_local}?cabang={{ logs.cabang }}&user={{ logs.userGroup }}`;
+
+        const socket_local = io(socketIoAddress_local);
+
+        //console.log("Running " + socketIoAddress);
+
+        $(window).scroll(function() {
+            if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
+                $('#return-to-top').fadeIn(200);    // Fade in the arrow
+            } else {
+                $('#return-to-top').fadeOut(200);   // Else fade out the arrow
+            }
+        });
+        $('#return-to-top').click(function() {      // When arrow is clicked
+            $('body,html').animate({
+                scrollTop : 0                       // Scroll to top of body
+            }, 500);
+        });
+
+        socket_local.on('socketCabang', function( data ) {
+                // toastr.info(data.message, 'socketCabang');
+                // console.log(data);
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-bottom-left",
+                "timeOut": 3000
+            }
+            // console.log(data);
+            if (data.cabang == '{{ logs.cabang }}' && (data.group.indexOf('{{ logs.userGroup }}') > 0 || data.group.indexOf('{{ logs.userGroup }}') == '') && '{{ logs.userGroup }}' != data.userGroup) {
+                toastr.info(data.message,'Pemberitahuan');
+
+            }
+        });
+        
+        function notif(status, text) {
+            $("#notif").append('<div class="alert alert-'+status+' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+text+'</div>');
+            $("#notif").fadeTo(36000, 100).slideUp(1000);
+        }
+
+        function numberWithCommas(x) {
+            if (x==null) {
+                x = 0.00;
+            }
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+
+        function currtoNumber(x) {
+            var currency = x;
+            var number = Number(currency.replace(/[^0-9\.]+/g,""));
+
+            return number;
+        }
+
+        function f_tanggal(tgl){
+            var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            var bulan = ['Januari', 'Februari', 'Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+            var tanggal = new Date(tgl).getDate();
+            var xhari = new Date(tgl).getDay();
+            var xbulan = new Date(tgl).getMonth();
+            var xtahun = new Date(tgl).getYear();
+            var hari = hari[xhari];
+            var bulan = bulan[xbulan];
+            var tahun = (xtahun < 1000)?xtahun + 1900 : xtahun;
+
+            // console.log(hari +', ' + tanggal + ' ' + bulan + ' ' + tahun);
+            // return hari +', ' + tanggal + ' ' + bulan + ' ' + tahun;
+            return tanggal + ' ' + bulan + ' ' + tahun;
+        }
+
+    function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+
+    function isNumberKey(evt)
+    {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+
+        return true;
+    }
+    
+    // Number Format   ==  Membuat class="number"
+    var el = document.querySelector('input.number');
+    el.addEventListener('keyup', function (event) {
+        if (event.which >= 37 && event.which <= 40) return;
+
+        this.value = this.value.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        });
+
+    </script>
+    {% block js %} {% endblock %}
+</body>
+
+</html>

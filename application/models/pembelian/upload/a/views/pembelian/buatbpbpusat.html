@@ -1,0 +1,619 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+    }
+    .hide{
+        display: none;
+    }
+    
+</style>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Buat BPB</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Form Buat BPB
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form role="form" method="post" id="myForm" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <input type="hidden" name="counter" value="{{counter}}">
+                                    <label class="control-label">Cabang</label>
+                                    <select class="form-control" id="cabang" name="cabang" onchange="resetData();">
+                                        <option value="">--- Silahkan Pilih Cabang ---</option>
+                                        {% for cabang in cabang %}
+                                            <option value="{{ cabang.Cabang }}">{{ cabang.Cabang }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>                                     
+                                
+                                <!-- hidden -->
+                                <input class="form-control" type="hidden" name="prinsipal" id="prinsipal" readonly="">
+                                <input class="form-control" type="hidden" name="supplier" id="supplier" readonly="">
+                                <input class="form-control" type="hidden" name="nousulan" id="nousulan" readonly="">
+                                <input class="form-control" type="hidden" name="tipe" id="tipe" readonly="">                       
+
+                                <div class="form-group">
+                                    <label class="control-label">No PO</label>
+                                    <input class="form-control" type="text" name="nopo" id="nopo" readonly="">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Pilih PR</label>
+                                    <select class="form-control" id="pr" name="pr" onchange="getPR()">
+                                        <option value="">--- Silahkan Pilih No PR ---</option>
+                                        {% for pr in pr %}
+                                            <option value="{{ pr.No_PR }}" class="{{pr.Cabang}}">{{ pr.No_PR }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">No SJ</label>
+                                    <input type="text" class="form-control" name="nosj" id="nosj">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">No BEX</label>
+                                    <input type="text" class="form-control" name="nobex" id="nobex">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">No INVOICE</label>
+                                    <input type="text" class="form-control" name="noinvoice" id="noinvoice">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Tanggal</label>
+                                    <input type="text" class="form-control" name="tanggal" id="tanggal" value="{{tgl}}" readonly="">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">No BPB</label>
+                                    <input type="text" class="form-control" name="nobpb" id="nobpb" readonly="">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Keterangan</label>
+                                    <textarea class="form-control" name="keterangan" id="keterangan" rows="5"></textarea>
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <div class="table-responsive">
+                                        <table class="table" id="table-barang">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Produk</th>
+                                                    <th>Qty Pesan</th>
+                                                    <th>Satuan</th>
+                                                    <th>Qty Terima</th>
+                                                    <th>ED (mmyy)</th>
+                                                    <th>Batch No</th>
+                                                    <th>Harga Beli</th>
+                                                    <th>Diskon</th>
+                                                    <th>Bonus</th>
+                                                    <th>HPC</th>
+                                                    <th>HPC Awal</th>
+                                                    <th>Value BPB</th>
+                                                    <th>Exp Date</th>
+                                                    <th>Banyak</th>
+                                                    <th>Batch ID</th>
+                                                    <th>Batch ID2</th>
+                                                    <th>Pot Cabang</th>
+                                                    <th>PPN Cabang</th>
+                                                    <th>Harga Beli Pusat</th>
+                                                    <th>Diskon Pusat</th>
+                                                    <th>HPP</th>
+                                                    <th>Value BPP</th>
+                                                    <th>Pot Pusat</th>
+                                                    <th>PPN Pusat</th>
+                                                    <th>Batch Ref</th>
+                                                    <th>Exp Ref</th>
+                                                    <th>No GMS</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- <tr id="itemRow0">
+                                                    <td></td>
+                                                    <td><input name="produk[]" id="produk0"></td>
+                                                    <td><input name="qtypesan[]" id="qtypesan0"></td>
+                                                    <td><input name="satuan[]" id="satuan0"></td>
+                                                    <td><input name="qtyterima[]" id="qtyterima0"></td>
+                                                    <td><input name="ed[]" id="ed0"></td>
+                                                    <td><input name="batchno[]" id="batchno0"></td>
+                                                    <td><input name="hargabeli[]" id="hargabeli0"></td>
+                                                    <td><input name="diskon[]" id="diskon0"></td>
+                                                    <td><input name="bonus[]" id="bonus0"></td>
+                                                    <td><input name="hpc[]" id="hpc0"></td>
+                                                    <td><input name="hpcawal[]" id="hpcawal0"></td>
+                                                    <td><input name="valuebpb[]" id="valuebpb0"></td>
+                                                    <td><input name="expdate[]" id="expdate0"></td>
+                                                    <td><input name="banyak[]" id="banyak0"></td>
+                                                    <td><input name="batchid[]" id="batchid0"></td>
+                                                    <td><input name="batchid2[]" id="batchid20"></td>
+                                                    <td><input name="potcabang[]" id="potcabang0"></td>
+                                                    <td><input name="ppncabang[]" id="ppncabang0"></td>
+                                                    <td><input name="hargabelipusat[]" id="hargabelipusat0"></td>
+                                                    <td><input name="diskonpusat[]" id="diskonpusat0"></td>
+                                                    <td><input name="hpp[]" id="hpp0"></td>
+                                                    <td><input name="valuebpp[]" id="valuebpp0"></td>
+                                                    <td><input name="potpusat[]" id="potpusat0"></td>
+                                                    <td><input name="ppnpusat[]" id="ppnpusat0"></td>
+                                                    <td><input name="batchref[]" id="batchref0"></td>
+                                                    <td><input name="expref[]" id="expref0"></td>
+                                                    <td><input name="nogms[]" id="nogms0"></td>
+                                                </tr> -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                    <div align="center">
+                                        <input type="hidden" name="bucket" id="bucket" value="0">
+                                        <input type="hidden" name="bucketmask" id="bucketmask" value="0">
+                                        <a href="javascript:void(0)" type="submit" class="btn btn-success" onclick="addRow(this.form);">Tambah Barang</a>                                        
+                                        <button type="reset" class="btn btn-default">Reset Form</button>
+                                        <a href="javascript:void(0)" type="submit" class="btn btn-danger" id="removeRow" onclick="removeRow();">Hapus Baris</a>
+                                    </div>
+                                <div class="form-group">
+                                    <input type="hidden" name="counter" value="{{counter}}">
+                                    <label class="control-label">Dokumen</label>
+                                    <input type="file" class="form-control" name="Dokumen" id="Dokumen">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Dokumen 2</label>
+                                    <input type="file" class="form-control" name="Dokumen2" id="Dokumen2">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Total 1</label>
+                                    <input class="form-control" name="total1" id="total1">
+                                    <input class="form-control" type="hidden" name="total1mask" id="total1mask">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Potongan</label>
+                                    <input class="form-control" name="potongan" id="potongan">
+                                    <input class="form-control" type="hidden" name="potonganmask" id="potonganmask">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Total 2</label>
+                                    <input class="form-control" name="total2" id="total2">
+                                    <input class="form-control" type="hidden" name="total2mask" id="total2mask">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">PPN</label>
+                                    <input class="form-control" name="ppn" id="ppn">
+                                    <input class="form-control" type="hidden" name="ppnmask" id="ppnmask">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Total Value</label>
+                                    <input class="form-control" name="totalvalue" id="totalvalue">
+                                    <input class="form-control" type="hidden" name="totalvaluemask" id="totalvaluemask">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Counter</label>
+                                    <input class="form-control" name="counter" id="counter">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Status</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="">--- Silahkan Pilih Status ---</option>
+                                        <option>Open</option>
+                                        <option>INVC</option>
+                                        <option>Cancel</option>
+                                    </select>
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <hr>
+                                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                                <button type="button" class="btn btn-danger">Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+{% endblock %}
+
+
+{% block js %}
+<script src="{{ base_url }}assets/js/jquery.chained.min.js"></script>
+<script type="text/javascript">
+$("#pr").chained("#cabang");     
+$(document).ready(function() {   
+        $('#removeRow').hide();
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+});
+
+    // START TAMBAH & HAPUS ROW BARANG
+    var rowNum = 0;
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        var s = document.getElementById('satuan'+b).value;
+        if (s) {
+            $('#removeRow').show();
+            rowNum ++;
+
+            $('#table-barang').append($('<tr id="itemRow'+rowNum+'"><td></td><td><input name="produk[]" id="produk'+rowNum+'" onkeyup="cariKode('+rowNum+')" onchange="getProduk('+rowNum+')" readonly="" style="background-color:#ccc"></td><td><input name="qtypesan[]" id="qtypesan'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="satuan[]" id="satuan'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="qtyterima[]" id="qtyterima'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="ed[]" id="ed'+rowNum+'"></td><td><input name="batchno[]" id="batchno'+rowNum+'" onchange="validateBatch('+i+')"></td><td><input name="hargabeli[]" id="hargabeli'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="diskon[]" id="diskon'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="bonus[]" id="bonus'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="hpc[]" id="hpc'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="hpcawal[]" id="hpcawal'+rowNum+'"></td><td><input name="valuebpb[]" id="valuebpb'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="expdate[]" id="expdate'+rowNum+'" onchange="validateBatch('+i+')"></td><td><input name="banyak[]" id="banyak'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="batchid[]" id="batchid'+rowNum+'"></td><td><input name="batchid2[]" id="batchid2'+rowNum+'"></td><td><input name="potcabang[]" id="potcabang'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="ppncabang[]" id="ppncabang'+rowNum+'" readonly="" style="background-color:#ccc"></td><td><input name="hargabelipusat[]" id="hargabelipusat'+rowNum+'"></td><td><input name="diskonpusat[]" id="diskonpusat'+rowNum+'"></td><td><input name="hpp[]" id="hpp'+rowNum+'"></td><td><input name="valuebpp[]" id="valuebpp'+rowNum+'"></td><td><input name="potpusat[]" id="potpusat'+rowNum+'"></td><td><input name="ppnpusat[]" id="ppnpusat'+rowNum+'"></td><td><input name="batchref[]" id="batchref'+rowNum+'"></td><td><input name="expref[]" id="expref'+rowNum+'"></td><td><input name="nogms[]" id="nogms'+rowNum+'"></td></tr>'));
+
+            $('#bucket').val(rowNum);
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning', 'PERHATIAN! Isi form diatas terlebih dahulu');
+        }
+    }
+
+    function removeRow() 
+    {
+        jQuery('#itemRow'+rowNum).remove();
+        var bucketmask = document.getElementById('bucketmask').value;
+        rowNum--;
+        if (rowNum==bucketmask) {
+            $('#removeRow').hide();
+        }
+        $('#bucket').val(rowNum);
+    }
+
+    function clearRow() 
+    {
+        var bucket = document.getElementById('bucket').value;
+        for (var e = bucket; e >= 0; e--) {            
+            jQuery('#itemRow'+e).remove();            
+            rowNum--;
+        }
+
+        $('#removeRow').hide();
+        $('#bucket').val(rowNum);
+    }  
+
+    function resetData() {
+        clearRow();
+        $('#myForm').find('input, select, textarea').not("#cabang,#pr,#tanggal").val('');
+    }
+
+    function getPR() {
+        var no = document.getElementById('pr').value;
+        // START CEK BPB
+        $.ajax({
+                url : "{{ base_url }}getbpbpr/",
+                type: "POST",
+                data:{no:no},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data != '') {
+                        clearRow();      
+                        $('#nopo').val(data[0].NoPO);
+                        $('#nopr').val(data[0].NoPR);
+                        $('#nousulan').val(data[0].NoUsulan);
+                        $('#prinsipal').val(data[0].Prinsipal);
+                        $('#supplier').val(data[0].Supplier);
+                        $('#tipe').val(data[0].Tipe);
+                        $('#nosj').val(data[0].NoSJ);
+                        $('#nobex').val(data[0].NoBEX);
+                        $('#noinvoice').val(data[0].NoInv);
+                        $('#status').val(data[0].Status);
+                        for(i in data){ 
+                        var hargabeli = ((data[i].Harga_Deal != 0) ? data[i].Harga_Deal : data[i].Harga_Beli_Cab);                      
+                            $('#table-barang').append($('<tr id="itemRow'+i+'"><td></td><td><input name="produk[]" value="'+data[i].Produk+'~'+data[i].NamaProduk+'" id="produk'+i+'" onkeyup="cariKode('+i+')" onchange="getProduk('+i+')" readonly="" style="background-color:#ccc"></td><td><input name="qtypesan[]" value="'+data[i].QtyPO+'" id="qtypesan'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="satuan[]" value="'+data[i].Satuan+'" id="satuan'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="qtyterima[]" id="qtyterima'+i+'" onkeyup="hitung()" onchange="hitung()" value="'+data[i].Qty+'"></td><td><input name="ed[]" id="ed'+i+'"></td><td><input name="batchno[]" id="batchno'+i+'" onchange="validateBatch('+i+')" value="'+data[i].BatchNo+'"></td><td><input name="hargabeli[]" value="'+hargabeli+'" id="hargabeli'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="diskon[]" value="'+data[i].Disc+'" id="diskon'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="bonus[]" value="'+data[i].Bonus+'" id="bonus'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="hpc[]" id="hpc'+i+'" readonly="" style="background-color:#ccc" value="'+data[i].HPC+'"></td><td><input name="hpcawal[]" id="hpcawal'+i+'" value="'+data[i].HPC1+'" readonly="" style="background-color:#ccc"></td><td><input name="valuebpb[]" id="valuebpb'+i+'" readonly="" style="background-color:#ccc" value="'+data[i].Value+'"></td><td><input name="expdate[]" id="expdate'+i+'"  onchange="validateBatch('+i+')" value="'+data[i].ExpDate+'"></td><td><input name="banyak[]" id="banyak'+i+'" readonly="" style="background-color:#ccc" value="'+data[i].Banyak+'"></td><td><input name="batchid[]" id="batchid'+i+'"></td><td><input name="batchid2[]" id="batchid2'+i+'"></td><td><input name="potcabang[]" id="potcabang'+i+'" readonly="" style="background-color:#ccc" value="'+data[i].Potongan+'"></td><td><input name="ppncabang[]" id="ppncabang'+i+'" readonly="" style="background-color:#ccc" value="'+data[i].PPN+'"></td><td><input name="hargabelipusat[]" id="hargabelipusat'+i+'" value="'+data[i].Harga_Beli_Pst+'"></td><td><input name="diskonpusat[]" id="diskonpusat'+i+'" value="'+data[i].Disc_Pst+'"></td><td><input name="hpp[]" id="hpp'+i+'" value="'+data[i].HPP+'"></td><td><input name="valuebpp[]" id="valuebpp'+i+'"></td><td><input name="potpusat[]" id="potpusat'+i+'"></td><td><input name="ppnpusat[]" id="ppnpusat'+i+'"></td><td><input name="batchref[]" id="batchref'+i+'"></td><td><input name="expref[]" id="expref'+i+'"></td><td><input name="nogms[]" id="nogms'+i+'"></td></tr>'));                        
+                        }
+                        $('#nobpb').val(data[0].NoDokumen);
+                        var bpb = data[0].NoDokumen;
+                        var split = bpb.split("/");
+                        var counter = split[4];
+                        $('#counter').val(counter);
+                        rowNum = i;
+                        $("#bucketmask").val(i);
+                        $("#bucket").val(i);
+                        hitung();
+                        loadProduk();
+                    }
+                    else{
+                        PRPO(no);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list data from ajax');
+                }
+            });
+        // END CEK BPB        
+    }
+
+    function PRPO(no) {
+        $.ajax({
+                url : "{{ base_url }}getprpo/",
+                type: "POST",
+                data:{no:no},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data != '') {
+                        clearRow();
+                        $('#nopo').val(data[0].No_PO);
+                        $('#nousulan').val(data[0].No_Usulan);
+                        $('#prinsipal').val(data[0].Prinsipal);
+                        $('#supplier').val(data[0].Supplier);
+                        $('#tipe').val(data[0].Tipe);
+                        $('#cabang').val(data[0].Cabang);
+                        $('#keterangan').val(data[0].Keterangan);
+                        for(i in data){                        
+                            var hargabeli = ((data[i].Harga_Deal != 0) ? data[i].Harga_Deal : data[i].Harga_Beli_Cab);
+                            $('#table-barang').append($('<tr id="itemRow'+i+'"><td></td><td><input name="produk[]" value="'+data[i].Produk+'~'+data[i].Nama_Produk+'" id="produk'+i+'" onkeyup="cariKode('+i+')" onchange="getProduk('+i+')" readonly="" style="background-color:#ccc"></td><td><input name="qtypesan[]" value="'+data[i].Qty_PO+'" id="qtypesan'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="satuan[]" value="'+data[i].Satuan+'" id="satuan'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="qtyterima[]" id="qtyterima'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="ed[]" id="ed'+i+'"></td><td><input name="batchno[]" id="batchno'+i+'" onchange="validateBatch('+i+')"></td><td><input name="hargabeli[]" value="'+hargabeli+'" id="hargabeli'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="diskon[]" value="'+data[i].Disc2+'" id="diskon'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="bonus[]" value="'+data[i].Bonus+'" id="bonus'+i+'" onkeyup="hitung()" onchange="hitung()"></td><td><input name="hpc[]" id="hpc'+i+'" readonly="" style="background-color:#ccc" value="'+data[i].HPC+'"></td><td><input name="hpcawal[]" id="hpcawal'+i+'" value="'+data[i].HPC+'" readonly="" style="background-color:#ccc"></td><td><input name="valuebpb[]" id="valuebpb'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="expdate[]" id="expdate'+i+'"  onchange="validateBatch('+i+')"></td><td><input name="banyak[]" id="banyak'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="batchid[]" id="batchid'+i+'"></td><td><input name="batchid2[]" id="batchid2'+i+'"></td><td><input name="potcabang[]" id="potcabang'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="ppncabang[]" id="ppncabang'+i+'" readonly="" style="background-color:#ccc"></td><td><input name="hargabelipusat[]" id="hargabelipusat'+i+'" value="'+data[i].Harga_Beli_Pst+'"></td><td><input name="diskonpusat[]" id="diskonpusat'+i+'" value="'+data[i].Disc_Pst+'"></td><td><input name="hpp[]" id="hpp'+i+'" value="'+data[i].HPP+'"></td><td><input name="valuebpp[]" id="valuebpp'+i+'"></td><td><input name="potpusat[]" id="potpusat'+i+'"></td><td><input name="ppnpusat[]" id="ppnpusat'+i+'"></td><td><input name="batchref[]" id="batchref'+i+'"></td><td><input name="expref[]" id="expref'+i+'"></td><td><input name="nogms[]" id="nogms'+i+'"></td></tr>'));                        
+                        }
+                        rowNum = i;
+                        $("#bucketmask").val(i);
+                        $("#bucket").val(i);
+                        loadProduk();
+                        getCounterBPB();
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list data from ajax');
+                }
+            });
+    }
+
+    function getCounterBPB() {
+        var cab = document.getElementById('cabang').value;
+        var po = document.getElementById('nopo').value;
+        var split = po.split("/");  
+        if (cab) {
+            $.ajax({
+                url : "{{ base_url }}getCounterBPB/",
+                type: "POST",
+                data:{cab:cab},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    $("#nobpb").val("BPB/"+split[1]+"/"+split[2]+"/"+data.tgl+"/"+data.counter);   
+                    $("#counter").val(data.counter);
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get counter from ajax');
+                }
+            });
+        }
+    }
+
+    var produkSource = [];
+    function loadProduk() {
+        var Prinsipal = document.getElementById('prinsipal').value;
+        var Supplier = document.getElementById('supplier').value;
+        var split2 = Prinsipal.split("~");
+            var prinspl = split2[0];
+        if ((Prinsipal) && (Supplier)) {
+            $.ajax({
+                url : "{{ base_url }}listProdukUsulanBeli/",
+                type: "POST",
+                data:{prinsipal:prinspl, supplier:Supplier},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        produkSource[i] = data[i].Kode_Produk+"~"+data[i].Produk;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+        }
+        else{
+            produkSource.length = 0;
+        }
+    }
+
+
+    function cariKode(e){    
+        var data = document.getElementById('supplier').value;
+        if (data == "") {
+            $("#notif").empty();
+            // notif('warning', 'PERHATIAN! Mohon Pilih Pelanggan Terlebih Dahulu.', 'cariKode');
+            notif('warning', 'PERHATIAN! Mohon Pilih Prinsipal + Supplier Terlebih Dahulu');
+        }
+ 
+            $('#produk'+e).typeahead({
+                    source: produkSource
+                });
+    }
+    var diskon = [];
+    function getProduk(e){
+        var bucket =document.getElementById('bucket').value; 
+        var Value = document.getElementById('produk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+
+            $.ajax({
+                url : "{{ base_url }}getProdukUsulanBeli/" + Kode,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    if (data)
+                    {
+                        if (data.Data) {                            
+                            diskon = data.Diskon;
+                            $('#satuan'+e).val(data.Data.Satuan);
+                        }
+                    }
+                    else
+                    {                        
+                        $('#satuan'+e).val("");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    
+                }
+            });
+    }
+
+    function validateBatch(e) {
+        var batch = document.getElementById('batchno'+e).value;
+        var expdate = document.getElementById('expdate'+e).value;
+        var bucket = document.getElementById('bucket').value;
+
+        for (var i = 0; i < bucket; i++) {
+            var batch2 = document.getElementById('batchno'+i).value;
+            var expdate2 = document.getElementById('expdate'+i).value;
+            if (batch2 != '' && expdate2 != '' && i != e){
+                if (batch == batch2 && expdate == expdate2) 
+                { 
+                    notif('warning','PERHATIAN! Mohon periksa kembali No Batch & Exp Date, data tidak boleh sama');
+                    $('#batchno'+e).val('');
+                    $('#expdate'+e).val('');
+                }
+            }
+        }
+    }      
+
+    function hitung() {
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        var summary = 0;
+        var total1 = 0;
+        var total2 = 0;
+        var totpot = 0;
+        var totppn = 0;
+        for (var e = 0; e <= bucket; e++) {
+            var qty = ((document.getElementById('qtyterima'+e).value) ? document.getElementById('qtyterima'+e).value : 0);
+            var hargabeli = ((document.getElementById('hargabeli'+e).value) ? document.getElementById('hargabeli'+e).value : 0);
+            var diskon = ((document.getElementById('diskon'+e).value) ? document.getElementById('diskon'+e).value : 0);
+            var bonus = ((document.getElementById('bonus'+e).value) ? document.getElementById('bonus'+e).value : 0);
+            var hpc = ((document.getElementById('hpc'+e).value) ? document.getElementById('hpc'+e).value : 0);
+            var value = 0;
+            var banyak = 0;
+            var total = 0;
+
+            var disc = diskon/100;
+
+            // diskon HPC HPP
+            // hpp = HBP - (HBP*diskon);
+            diskon =( hargabeli * qty ) * ( diskon / 100 );
+            potongan = ( bonus * hargabeli ) + diskon;
+            if (hargabeli > 0) {                
+                value = ( qty * hargabeli ) - diskon;                         
+                hpc = hargabeli - (hargabeli*disc);
+            }
+            else
+            {
+                value = ( qty * hpc );
+            }
+            ppn = value * ( 10 / 100 );
+            total = ppn + value;            
+            banyak = parseInt(qty) + parseInt(bonus);
+            $('#hpc'+e).val(hpc);
+            $('#banyak'+e).val(banyak);
+            $('#potcabang'+e).val(potongan);
+            $('#ppncabang'+e).val(ppn);
+
+
+            // Nilai VALUE
+            total1 = parseInt(total1) + (qty * hargabeli);
+            totpot = totpot + potongan;
+            total2 = total2 + value;
+            totppn = totppn + ppn;
+            summary = summary + total;
+
+            $('#valuebpb'+e).val(total);
+        }
+            $('#total1').val(total1);
+            $('#potongan').val(totpot);
+            $('#total2').val(total2);
+            $('#ppn').val(totppn);
+            $('#totalvalue').val(summary);
+            // var sisa = parseInt(limit) - parseInt(po) - parseInt(summary);
+            // $('#SisaLimit').val(sisa);
+    }
+
+    function saveData() {        
+        $("#notif").empty();
+        var url = "{{ base_url }}saveDataBPB"; 
+
+        var formdata = new FormData();      
+            // append tipe file
+            var Dokumen = $('#Dokumen')[0].files[0];
+            formdata.append('Dokumen', Dokumen);
+
+            var Dokumen2 = $('#Dokumen2')[0].files[0];
+            formdata.append('Dokumen2', Dokumen2);
+
+            $.each($('#myForm').serializeArray(), function(a, b){
+                formdata.append(b.name, b.value);
+            });
+         
+            var formData = new FormData($('#myForm')[0]);
+
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil disimpan');   
+                    }
+                    clearRow();
+                    $('#myForm')[0].reset();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    // notif('danger', 'PERHATIAN! Save Data Order GAGAL.', 'gagal');
+                    notif('danger', 'PERHATIAN! Save Data GAGAL');
+                }
+            });
+    }
+    </script>
+{% endblock %}

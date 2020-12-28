@@ -1,0 +1,426 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+
+@font-face {
+font-family: "Fake-Receipt";
+src: url('{{ base_url }}assets/fonts/fake_receipt.ttf');
+}
+
+/*.button.disabled {
+  opacity: 0.65; 
+  cursor: not-allowed;
+}*/
+
+.modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.rata-kanan{
+    text-align: right;
+}
+.huruf-tebal{
+    font-weight: bold;
+}
+
+td.child ul li span.dtr-data{
+    display: inline-block;
+    min-width: 80px;
+    text-align: right;
+    text-align: right;
+}
+table tr td{
+    padding: 0 5px 0 5px;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+table tr td {
+    padding-left: 3px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    font-size: 10px;
+}
+.detail-item td{
+    border-right: solid 1px;
+    font-size: 10px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+    font-size: 10px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    html, body {
+        display: block; 
+        /*font-family: "Calibri";*/
+        margin: 0;
+    }
+
+    @page {
+      size: 21.59cm 13.97cm;
+    }
+
+    .style1 {
+        width: 100%;
+        border-top: 1px solid #000;
+        margin-bottom: 5px;
+    }
+
+    .style2 {
+        border-top: 4px double #000;
+    }
+
+    .atas{
+        border-top: solid 1px;
+    }
+    .bawah{
+        border-bottom: solid 1px;
+    }
+    .kiri{
+        border-left: solid 1px;
+    }
+    .kanan{
+        border-right: solid 1px;
+    }
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        display: table-footer-group;
+    } 
+
+    #content {
+        display: table;
+    }
+
+    #break2 {
+        display: table-footer-group;
+    }
+
+    #break2:after {
+        counter-increment: page;
+        content: counter(page);
+    }
+    /*tr.page-break  { display: block; page-break-before: always; }*/
+}
+</style>
+<div id="dvjson"></div>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Faktur</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="margin-bottom: 10px">
+            <!-- <button id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button> -->
+            <!-- <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button> -->
+        </div>
+        <div class="col-lg-6" style="margin-bottom: 10px; text-align: right;">
+            <!-- <button type="button" id="kirimFaktur" class="btn btn-warning" onclick="buatInkaso()"><i class="fa fa-check"></i> Buat Inkaso</button> -->
+        </div>
+        <div class="col-lg-12">
+            <table border="0">
+                <tr>
+                    <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px" colspan="2">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly style="margin:5px" value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    
+                                {% endif %}
+                            {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pelanggan</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px" colspan="2">
+                            
+                            <select class="form-control select2" id="pelanggan" name="pelanggan" multiple="multiple" style="margin:5px" >
+                                <!-- <option value="all">--- All Pelanggan ---</option> -->
+                                {% for pelanggan in pelanggan %}                                    
+                                    <option value="{{pelanggan.Kode}}">{{pelanggan.Kode}} | {{pelanggan.Pelanggan}}</option>
+                                {% endfor%}
+                            </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Periode</label></td>
+                    <td style="padding-left:10px">:</td>
+                    <td><input type="date" name="tgl1" class="form-control input-sm" style="margin:5px"></td>
+                    <td><input type="date" name="tgl2" class="form-control input-sm" style="margin:5px"></td>
+                    <td style="padding-left:10px"><button id="buttonload" class="btn btn-primary" onclick="load_data(event,this)">Tampilkan data</button></td>
+
+                </tr>
+            </table>
+        </div>
+        <!-- <div class="col-lg-12" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data
+        </div> -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Datatable List Rekap Piutang</b> 
+                            <!-- <button onclick="export_all(event)">all CSV</button> -->
+                            <!-- <button onclick="cetak_ulang(event)">cetak Ulang</button> -->
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table class="table table-striped table-bordered table-hover" id="dataTables-example" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2" valign="midle"><center>#<center></th>
+                                        <th rowspan="2" valign="midle"><center>Pelanggan<center></th>
+                                        <th rowspan="2" valign="midle"><center>Nama Pelanggan<center></th>
+                                        <th rowspan="2" valign="midle"><center>Saldo Awal Piutang<center></th>
+                                        <th rowspan="2" valign="midle"><center>Debet<center></th>
+                                        <th colspan="5" ><center>Kredit</center></th>
+                                        <th rowspan="2" valign="midle"><center>Saldo Akhir<center></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Cash</th>
+                                        <th>Transfer</th>
+                                        <th>Giro Cair</th>
+                                        <th>Retur</th>
+                                        <th>CN</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        $(".select2").select2({});
+
+        $('#dataTables-example').on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                // console.log('it is loadding');     // **I do not get this**
+                $("#buttonload").html('<i class="fa fa-refresh fa-spin"></i>&nbsp;silahkan tunggu Loading');
+                $("#buttonload").prop('disabled', true);
+            } else {
+                // console.log('it is not loadding'); // **I get this**
+                $("#buttonload").text('Tampilkan data');
+                $("#buttonload").prop('disabled', false);
+            }
+        });
+
+    });
+
+
+    function load_data(e,x){
+        e.preventDefault();
+
+        $("#notif").empty();
+        var status = 'Open';
+        var pelanggan = $("#pelanggan").val();
+
+        var tgl1 = $('[name=tgl1]').val();
+        var tgl2 = $('[name=tgl2]').val();
+        
+        if(pelanggan == "" || pelanggan == null){
+            notif("warning", "<h4>Mohon Pilih Pelanggan</h4>");
+            return;
+        }
+        
+        if(tgl1 == "" || tgl2 == ""){
+            notif("warning", "<h4>Mohon isi periode</h4>");
+            return;
+        }
+
+
+        
+        if ($.fn.dataTable.isDataTable('#dataTables-example')) {
+            tabel.destroy();
+            $('#tblRemittanceList tbody').empty();
+        }
+        
+        // $(x).prop('disabled', true);
+
+        tabel = $('#dataTables-example').DataTable({
+            
+            "ordering": false,
+            "processing": true,
+            /*"serverSide": true,
+            scrollX:        true,
+            scrollCollapse: true,*/
+            "ajax": {
+                "url": "{{ base_url }}listlaporanRekapPiutang",
+                "data":{
+                    tgl1: tgl1,
+                    tgl2: tgl2,
+                    pelanggan:pelanggan
+                }, 
+                "type": "POST"
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            // responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'excel',
+                // 'copy', 'csv', 'excel', 
+                {
+                    extend:'pdfHtml5',
+                    title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData Rekap Piutang ',
+                    exportOptions: {
+                        columns: [ 0, 1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    },
+                    download: 'open',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    customize: function (doc) {
+                        // doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                        doc.pageMargins = [20, 20, 10,10 ];
+                        doc.styles.tableHeader.fontSize = 8;
+                        doc.defaultStyle.fontSize = 8;
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                },
+                'pageLength', 'colvis'
+            ],
+
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+            }
+        });
+
+    }
+
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    
+</script>
+    {% endblock %}

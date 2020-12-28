@@ -1,0 +1,350 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Faktur</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    
+            <form role="form" method="post" id="myForm2" action="{{base_url}}main/order">  
+                <div class="row" id="divfilter">      
+                    <input type="hidden" name="filterbuck" id="filterbuck" value="0">
+                    <div class="col-sm-6" id="filterdiv0">
+                        <div class="form-sm-group">
+                            <label>Cabang</label>
+                            <input type="text" class="col-sm-12 form-control" id="cabang" name="cabang" placeholder="Masukan Nama Cabang" onchange="getSalesman()" autocomplete="off" {% if logs.usergroup == 'BM' or logs.usergroup == 'Salesman' or logs.usergroup == 'Cabang' %} readonly="" value="{{logs.cabang}}" {% endif %} value="{{cab}}">
+                        </div>
+                    </div>
+                    <div class="col-sm-6" id="filterdiv0">
+                        <div class="form-sm-group">
+                            <label >Salesman</label>
+                            <input type="text" id="salesman" class="col-sm-12 form-control" name="salesman" placeholder="Masukan Kode Salesman"  autocomplete="off" {% if logs.usergroup == 'Salesman' %} readonly="" value="{{logs.salesman}}" {% endif %} value="{{sal}}">
+                        </div>
+                    </div>
+                    <div class="col-sm-12" id="filterdiv0">
+                        <div class="form-sm-group">
+                            <label >Tanggal</label>
+                        </div>
+                    </div>   
+                    <div class="col-sm-6" id="filterdiv0">
+                        <div class="form-sm-group">
+                            <input type="text" class="col-sm-12 form-control" id="date1" name="date1" placeholder="2017-01-01"  value="{{date1}}">
+                        </div>
+                    </div>                    
+                    <div class="col-sm-6" id="filterdiv0">
+                        <div class="form-sm-group">
+                            <input type="text" class="col-sm-12 form-control" id="date2" name="date2" placeholder="2017-12-31"  value="{{date2}}">
+                        </div>
+                    </div>                                       
+                    <div class="col-sm-6" id="filterdiv0">
+                        <div class="form-sm-group">
+                            <label >Status</label>
+                            <select name="status" id="status" class=" form-control">
+                                <option>Order</option>
+                                <option>Proses</option>
+                                <option>Kirim</option>
+                                <option>Reject</option>
+                                <option>Semua</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12" style="text-align: center;">
+                        <button type="submit" id="btnSave" class="btn btn-primary col-sm-4" style="margin-top:10px;float: right;">Filter</button>
+                    </div>
+                </div>    
+            </form><br><br>
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <button id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        </div>      
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Datatable List Order</b>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="header-tabel">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Cabang</th>
+                                        <th>No Order</th>
+                                        <th>Salesman</th>
+                                        <th>Pelanggan</th>
+                                        <th>Detail</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail Order</h3>
+                <div id="subtitle"></div>
+                <div id="keteranganReject"></div>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto" id="modalBody">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="detail-tabel">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Kode Produk</th>
+                            <th>Nama Produk</th>
+                            <th>Qty</th>
+                            <th>Bonus</th>
+                            <th>Diskon</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailOrder">
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_reject" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Keterangan Reject</h3>
+                <div id="subtitle2"></div>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto" id="modalBody">
+                <textarea name="ketReject" id="ketReject" class="form-control" rows="5"></textarea>
+            </div>
+            <div class="modal-footer" id="btnReject">
+                
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+
+    var cabangSource = [];
+    var salesmanSource = [];
+    $(document).ready(function() { 
+        $( "#date1" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm-dd',
+        });
+        $( "#date2" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm-dd',
+        }); 
+        // START AUTOCOMPLETE PELANGGAN
+        {% if logs.usergroup == 'BM' or logs.usergroup == 'Salesman' or logs.usergroup == 'Cabang' %}
+            getSalesman();
+        {% else %}
+            $.ajax({
+                url : "{{ base_url }}main/getCabang",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        cabangSource[i] = data[i].Cabang;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data pelanggan');
+                }
+            });   
+            $('#cabang').typeahead({
+                        source: cabangSource
+                    });
+
+        {% endif %}
+
+        var date1 = '{{date1}}';
+        var date2 = '{{date2}}';
+        var sal = '{{sal}}';
+        var cab = '{{cab}}';
+        var status = '{{status}}';
+        tabel = $('#header-tabel').DataTable({
+
+            "ordering": false,
+            "processing": true,
+            "serverSide": true, 
+            "ajax": {
+                "url": "{{ base_url }}main/listOrder",
+                "data":{cab:cab, sal:sal, date1:date1, date2:date2, status:status}, 
+                "type": "POST"
+            },
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+        });
+    });
+
+    function getSalesman() {
+        var cab = document.getElementById('cabang').value;
+            $.ajax({
+                url : "{{ base_url }}main/getSalesman",
+                type: "POST",
+                data:{cab:cab},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        salesmanSource[i] = data[i].Kode+"-"+data[i].Nama;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data pelanggan');
+                }
+            });  
+            $('#salesman').typeahead({
+                    source: salesmanSource
+                });
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function view(no){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+        $.ajax({
+            url : "{{ base_url }}main/getOrder",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 0;
+                $("#detailOrder").empty();
+                $("#subtitle").empty();
+                $("#keteranganReject").empty();
+                for (var i in data) {
+                    x++;
+                    $("#detailOrder").append('<tr><td>'+x+'</td><td>'+data[i].KodeProduk+'</td><td>'+data[i].NamaProduk+'</td><td>'+((data[i].Qty) ? data[i].Qty: 0)+'</td><td>'+((data[i].Bonus) ? data[i].Bonus: 0)+'</td><td>'+((data[i].Diskon) ? data[i].Diskon: 0)+'</td></tr>')
+                }                
+                $("#subtitle").append('<span style="font-size:12px"> No Order: '+data[i].NoOrder+'</span>');
+                if (data[0].Status == 'Reject')
+                    $("#keteranganReject").append('<span style="font-size:12px"> Keterangan: <i>'+data[i].KeteranganProses+'</i></span>');
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function proses(no, val)
+    {
+        var ket = document.getElementById('ketReject').value;
+        var url = "{{ base_url }}main/prosesOrder"; 
+        var status = true;       
+        $("#subtitle2").empty(); 
+        $("#ketReject").val(''); 
+        $("#btnReject").empty(); 
+        if (val == 'rjt') {          
+            $('#modal_reject').modal('show'); // show bootstrap modal when complete loaded            
+            $("#subtitle2").append('<span style="font-size:12px"> No Order: '+no+'</span>');
+            $('#btnReject').append('<button type="button" onclick="proses('+"'"+no+"','Reject'"+')" class="btn btn-primary">Save</button>');
+                status = false;
+        }
+        else if (val == 'Reject') {   
+            if(confirm('Yakin ingin melakukan reject data order tersebut?'))
+                status = true;
+            else
+                status = false;
+        }
+
+        if (status == true) {
+            $.ajax({
+                url : url,
+                type: "POST",
+                data:{no:no, val:val, ket:ket},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Proses data order gagal');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Proses data berhasil disimpan');
+                        reloadTable();                                           
+                        $('#modal_reject').modal('hide'); // show bootstrap modal when complete loaded    
+                    }        
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('danger', 'PERHATIAN! Proses data order gagal');
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

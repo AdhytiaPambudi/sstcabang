@@ -1,0 +1,87 @@
+<!-- /.navbar-header -->
+<!-- <ul class="nav navbar-top-links navbar-right">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href="#"><i class="fa fa-user fa-fw"></i> {{ logs.nama_lengkap }}</a>
+            </li>
+            <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+            </li>
+            <li class="divider"></li>
+            <li><a href="{{ base_url }}auth/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+            </li>
+        </ul>
+    </li>
+</ul> -->
+{% if logs.userGroup == 'Cabang' %}
+<ul class="nav navbar-top-links navbar-right">
+<li>
+    <a href="{{ base_url }}main">Dashboard</a>
+</li>
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="{{ base_url }}usulanbeli">Buat Usulan Beli</a>
+        </li>
+        <li>
+            <a href="{{ base_url }}usulanbeliprinsipal">Buat Usulan Beli by Prinsipal</a>
+        </li>
+        <li>
+            <a href="{{ base_url }}buatbpb">Buat BPB</a>
+        </li>   
+        <li>
+            <a href="{{ base_url }}buatorder">Buat Order</a>
+        </li>   
+        <li>
+            <a href="{{ base_url }}datausulanbeli">Data Usulan Beli</a>
+        </li>                    
+        <li>
+            <a href="{{ base_url }}dataprpo">Data PR/PO</a>
+        </li>                   
+        <li>
+            <a href="{{ base_url }}databpb">Data BPB</a>
+        </li>
+    </ul>
+</li>
+<li>
+    <a href="{{ base_url }}auth/logout"></i>Logout</a>
+</li>
+</ul>
+{% elseif logs.userGroup == 'Apotik' %}
+<ul class="nav navbar-top-links navbar-right">
+<li>
+    <a href="{{ base_url }}main">Dashboard</a>
+</li>
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="{{ base_url }}approval">Approval</a>
+        </li>
+    </ul>
+</li>
+<li>
+    <a href="{{ base_url }}auth/logout"></i>Logout</a>
+</li>
+</ul>
+{% elseif logs.userGroup == 'BM' %}
+<ul class="nav navbar-top-links navbar-right">
+<li>
+    <a href="{{ base_url }}main">Dashboard</a>
+</li>
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Pembelian</a>
+    <ul class="dropdown-menu">
+        <li>
+            <a href="{{ base_url }}approval">Approval</a>
+        </li>
+    </ul>
+</li>
+<li>
+    <a href="{{ base_url }}auth/logout"></i>Logout</a>
+</li>
+</ul>
+{% endif %}

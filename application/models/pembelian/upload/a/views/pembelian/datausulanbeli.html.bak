@@ -1,0 +1,265 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Data Usulan Beli</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button>
+        </div>
+        <div class="col-lg-12" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" onclick="datatable()"> tampilkan semua data
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Usulan Beli
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr style="text-align: center;">
+                                        <th>No Usulan</th>
+                                        <th>Prinsipal</th>
+                                        <th>Supplier</th>
+                                        <th>Value Usulan</th>
+                                        <th>Status Usulan</th>                                        
+                                        <th>Detail</th>
+                                        <th>Status Pusat</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body form">
+                <form id="myform" method="POST">
+                <input type="text" name="usulan" id="usulan" size="45">
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="dataUsulan">
+                                <thead style="line-height: 2">
+                                    <tr>
+                                        <th width="100px">Cabang</th>
+                                        <th width="100px">Prinsipal</th>
+                                        <th width="100px">Supplier</th>
+                                        <th width="100px">Kategori</th>
+                                        <th width="100px">Produk</th>
+                                        <th width="100px">Nama Produk</th>
+                                        <th width="100px">Satuan</th>
+                                        <th width="100px">Keterangan</th>
+                                        <th width="100px">Penjelasan</th>
+                                        <th width="100px">No Usulan</th>
+                                        <th width="100px">Tanggal Usulan</th>
+                                        <th width="100px">Status Usulan</th>
+                                        <th width="100px">Qty</th>
+                                        <th width="100px">Diskon</th>
+                                        <th width="100px">Bonus</th>
+                                        <th width="100px">Harga Beli Cabang</th>
+                                        <th width="100px">Harga Deal</th>
+                                        <th width="100px">Value Usulan</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button> -->
+                <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        datatable()
+        
+    });
+
+    function datatable()
+    {
+            var all = document.getElementById('all').value;
+
+            if($("#all").is(':checked')){   
+                var type = 'all';
+            }else
+            {
+                var type = '';
+            }
+
+        $("#dataTables-example").dataTable().fnDestroy(); //reinisialisasi datatable
+        tabel = $('#dataTables-example').DataTable({
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataUsulanBeli",
+                "data":{ type:type }, //POST data ke controller
+                "type": "POST"
+            },
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    }
+
+    function prosesData(No)
+    {
+        var url = "{{ base_url }}prosesDataUsulanBeli"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function view(no){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+        $('.modal-title').text('Detail Usulan'); // Set title to Bootstrap modal title
+
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}dataDetailUsulan",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                $('#usulan').val(no);
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#dataUsulan').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td><input tipe="text" readonly="readonly" value="'+data[i].Cabang+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Prinsipal+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Supplier+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Kategori+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Produk+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Nama_Produk+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Satuan+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Keterangan+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Penjelasan+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].No_Usulan+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Tgl_Usulan+'"></td><td><input tipe="text" readonly="readonly" value="'+data[i].Status_Usulan+'"></td><td><input tipe="text" value="'+data[i].Qty+'"></td><td><input tipe="text" value="'+data[i].Disc_Deal+'"></td><td><input tipe="text" value="'+data[i].Bonus+'"></td><td align="right"><input tipe="text" value="'+nf.format(data[i].Harga_Beli_Cab)+'"></td><td align="right"><input tipe="text" value="'+nf.format(data[i].Harga_Deal)+'"></td><td align="right"><input tipe="text" value="'+nf.format(data[i].Value_Usulan)+'"></td></tr>'));
+                        x++;
+                    }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+    }
+
+    function updateData()
+    {
+        var url = "{{ base_url }}updateDataPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+</script>
+
+{% endblock %}

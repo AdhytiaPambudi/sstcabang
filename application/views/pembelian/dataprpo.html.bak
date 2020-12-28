@@ -1,0 +1,722 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 12px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Data PR/PO</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Data PR/PO
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>Tipe</th>
+                                        <th>No PO</th>
+                                        <th>No PR</th>
+                                        <th>No Usulan</th>
+                                        <th>Prinsipal</th>
+                                        <th>Supplier</th>
+                                        <th>Total PO</th>
+                                        <th>Status</th>
+                                        <th>View</th>
+                                        <th>Print</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto">
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="dataUsulan">
+                                <thead style="line-height: 2">
+                                    <tr>
+                                        <th width="100px">Cabang</th>
+                                        <th width="100px">Prinsipal</th>
+                                        <th width="100px">Supplier</th>
+                                        <th width="100px">Kategori</th>
+                                        <th width="100px">Produk</th>
+                                        <th width="100px">Nama Produk</th>
+                                        <th width="100px">Satuan</th>
+                                        <th width="100px">Keterangan</th>
+                                        <th width="100px">Penjelasan</th>
+                                        <th width="100px">No Usulan</th>
+                                        <th width="100px">No PR</th>
+                                        <th width="100px">No PO</th>
+                                        <th width="100px">Tanggal PO</th>
+                                        <th width="100px">Qty</th>
+                                        <th width="100px">Diskon</th>
+                                        <th width="100px">Bonus</th>
+                                        <th width="100px">Harga Beli Cabang</th>
+                                        <th width="100px">Harga Deal</th>
+                                        <th width="100px">Value PO</th>
+                                    </tr>
+                                </thead>
+                            </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" role="dialog"  id="example-cetak" role="dialog">
+    <div class="modal-content">
+    <div class="modal-body form">
+    <div id ="print_out">
+    <table  border="0" cellspacing="0">
+        <tr>
+            <td height="80px" width="80px" valign="top">
+                <div id="logo"><img src="{{base_url}}assets/logo/1489135837049.jpg"></div>
+            </td>
+            <td width="270px" valign="top">
+                PT. SAPTA SARITAMA<br>
+                Jl. Caringin No. 254 A BABAKAN, BANDUNG
+            </td>
+            <td rowspan="3" valign="top">
+                <table cellspacing="0">
+                    <tr>
+                        <td>No.PR &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="No_PR"></td>
+                    </tr>
+                    <tr>
+                        <td>No.PO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="No_PO"></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Tgl_PO"></td>
+                    </tr>
+                    <tr>
+                        <td>Cabang &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Cabang"></td>
+                    </tr>
+                    <tr>
+                        <td>Total PO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Total_PO | currencyDisplay"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>Tipe PO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="tipe"></td>  
+                    </tr>
+                    <tr>
+                        <td>Status PO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Status_PO"></td>  
+                    </tr>
+                    <tr>
+                        <td>No ID Paket &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="NoIDPaket"></td>  
+                    </tr>
+                </table>
+            </td>
+             <td valign="top">
+                    <H5>PURCHASE ORDER</H5>
+            </td>
+            <!-- <td valign="top" width="150px">Barcode</td> -->
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>Prinsipal</td>
+                        <td>: <span v-html='Prinsipal'></span> - <span v-html='Supplier'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Alamat</td>
+                        <td>: - </td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <table cellspacing="0">
+    <thead>
+        <tr class="detail atas" align="center">
+            <td rowspan="2" width="20" class="awal">No.</td>
+            <td rowspan="2" width="80">ID PRODUK</td>
+            <td rowspan="2" width="220">NAMA PRODUK</td>
+            <td colspan="2">DATA</td>
+            <td colspan="3" width="80">HARGA</td>
+            <td colspan="3" width="80">DISKON</td>
+            <td rowspan="2" width="80">Value PO</td>
+        </tr>
+        <tr class="detail" align="center">
+            <td width="40">Qty</td>
+            <td width="30">Satuan</td>
+            <td width="50">Pusat</td>
+            <td width="50">Cabang</td>
+            <td width="50">Deal</td>
+            <td width="50">Pusat</td>
+            <td width="50">Cabang</td>
+            <td width="50">Deal</td>
+        </tr>
+    </thead>
+         <tbody class="report-body">
+        <tr v-for = "(index,datas) in data_detail" class="detail-item" style="font-size: 11px; page-break-after: always;" >
+            <td v-html='index + 1' class='awal'> {{ index }}</td>
+            <td v-html='datas.Produk' style='padding-left:5px;'></td>
+            <td v-html='datas.Nama_Produk' style='padding-left:2px;'></td>
+            <td v-html='datas.Qty_PO | currencyDisplay' style='padding-right:2px;' align='right'> </td>
+            <td v-html='datas.Satuan' style='padding-left:2px;'></td>
+            <td v-html='datas.Harga_Beli_Pst | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Harga_Beli_Cab | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Harga_Deal | currencyDisplay' style='padding-right:2px;' align="right"></td>
+            <td v-html='datas.Disc_Pst | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Disc_Cab | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Disc_Deal | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Value_PO | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+        </tr>
+    </tbody>
+    <!-- <tr class="page-break"> -->
+    <tr v-if="data_detail.length > 10">
+        <td>
+            <div></div>
+            <div style="page-break-before:always"></div>
+        </td>
+    </tr>
+        <!-- <td colspan="11">s</td> -->
+    </tr>
+    <!-- <tfoot class="report-footer"> -->
+        <tr class="detail atas" style="font-size: 11px;">
+            <td class='awal' colspan="3" valign="top">Jumlah</td>
+            <td align='right' v-html='total_qty | currencyDisplay' style='padding-right:2px;'></td>
+            <td></td>
+            <td align='right' v-html='total_Harga_Beli_Pst | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Harga_Beli_Cab | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Harga_Deal | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Disc_Pst | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Disc_Cab | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Disc_Deal | currencyDisplay' style='padding-right:2px;'></td>
+            <td id ='total_Value' align='right' v-html='total_Value_PO | currencyDisplay' style='padding-right:2px;'>{{ total_Value_PO }}</td>
+        </tr>
+        <tr class="detail atas">
+            <td style='padding-left:5px;' colspan="9" rowspan='4' valign="top" class="awal">Terbilang : <br> <span id ="terbilang_value"></span></td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Pembulatan / Uang Muka / Ongkir</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPN</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPn BM</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="3" rowspan="4" class="awal"></td>
+            <td colspan="2" rowspan="4"></td>
+            <td colspan="4" rowspan="4"></td>
+            <td colspan="2">Jumlah Tagihan</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Dasar Pengenaan Pajak</td>
+            <td></td>
+        </tr>
+    <!-- </tfoot> -->
+    </table>
+    <table width="840px;">
+        <tr>
+            <td>
+                Pembayaran harap di transfer ke rekening {....................} BCA cabang {---------------------} A/C : {-----------};
+                Pembayaran dengan cek dan giro dianggap sah setelah diuangkan <br>
+                * Sesuai PER. DJP /16/PJ/2014 e-faktur Pajak tidak perlu di cek hard copy. Jika diperlukan e-faktur Pajak dapat
+                dicetak sendiri dengan memindai kode QRCODE dikiri bawah dokumen ini.
+            </td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    </div>
+</div>
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                jml_halaman : 1,
+                Tgl_PO      :'',
+                No_PO       : '',
+                Supplier    :'',
+                Prinsipal   :'',
+                Cabang      : '',
+                No_PR       :'',
+                tipe        :'',
+                Status_PO   :'',
+                NoIDPaket   :'',
+                Total_PO    :'',
+                total_qty : 0,
+                total_Disc_Cab : 0,
+                total_Disc_Pst : 0,
+                total_Disc_Deal : 0,
+                total_Harga_Beli_Cab : 0,
+                total_Harga_Beli_Pst : 0,
+                total_Harga_Deal : 0,
+                total_Value_PO : 0,
+                data_detail : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Qty_PO);
+                    });
+                    return gross;
+                },
+                total_Disc_Pst:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Disc_Pst);
+                    });
+                    return gross;
+                },
+                total_Disc_Cab:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Disc_Cab);
+                    });
+                    return gross;
+                },
+                total_Disc_Deal:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Disc_Deal);
+                    });
+                    return gross;
+                },
+                total_Harga_Beli_Cab:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga_Beli_Cab);
+                    });
+                    return gross;
+                },
+                total_Harga_Beli_Pst:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga_Beli_Pst);
+                    });
+                    return gross;
+                },
+                total_Harga_Deal:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga_Deal);
+                    });
+                    return gross;
+                },
+                total_Value_PO:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Value_PO);
+                    });
+                    return gross;
+                },
+            }
+        });
+        Vue.filter('currencyDisplay',{
+                read: function(val){
+                    return accounting.formatNumber(val);
+                },
+                write: function(val,oldVal){
+                    return accounting.unformat(val,",")
+                }
+        });
+
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataPRPO",
+                "type": "POST"
+            },
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function view(no){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+        $('.modal-title').text('Detail PR'); // Set title to Bootstrap modal title
+
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}dataDetailPRPO",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#dataUsulan').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td>'+data[i].Cabang+'</td><td>'+data[i].Prinsipal+'</td><td>'+data[i].Supplier+'</td><td>'+data[i].Kategori+'</td><td>'+data[i].Produk+'</td><td>'+data[i].Nama_Produk+'</td><td>'+data[i].Satuan+'</td><td>'+data[i].Keterangan+'</td><td>'+data[i].Penjelasan+'</td><td>'+data[i].No_Usulan+'</td><td>'+data[i].No_PR+'</td><td>'+data[i].No_PO+'</td><td>'+data[i].Tgl_PO+'</td><td>'+data[i].Qty_PO+'</td><td>'+data[i].Disc2+'</td><td>'+data[i].Bonus+'</td><td align="right">'+nf.format(data[i].Harga_Beli_Cab)+'</td><td align="right">'+nf.format(data[i].Harga_Deal)+'</td><td align="right">'+nf.format(data[i].Value_PO)+'</td></tr>'));
+                        x++;
+                    }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function cetak(no){
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}printdataPO",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {
+                // console.log(data);
+                // $('#example-cetak').modal('show');
+                // $('.modal-title').text('Print Transaksi'); 
+                vue_cetak.Tgl_PO     = data[0].Tgl_PO,
+                vue_cetak.No_PO      = data[0].No_PO,
+                vue_cetak.No_PR      = data[0].No_PR,
+                vue_cetak.tipe       = data[0].tipe,
+                vue_cetak.Status_PO  = data[0].Status_PO,
+                vue_cetak.Supplier   = data[0].Supplier,
+                vue_cetak.Prinsipal  = data[0].Prinsipal,
+                vue_cetak.Cabang     = data[0].Cabang,
+                vue_cetak.Total_PO   =data[0].Total_PO,
+                vue_cetak.NoIDPaket  =data[0].NoIDPaket,
+                vue_cetak.data_detail = data;
+                var total_value = Math.round(data[0].Total_PO);
+                document.getElementById("terbilang_value").innerHTML = terbilang(total_value);
+                setTimeout(function(){
+                    $('#print_out').print();
+                },1000);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+       
+    }
+
+    function updateData()
+    {
+        var url = "{{ base_url }}updateDataPOPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+    function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+</script>
+
+{% endblock %}

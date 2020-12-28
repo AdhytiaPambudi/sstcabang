@@ -1,0 +1,643 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+        padding-right: 20px;
+    }
+    td{
+        padding-right: 20px;
+    }
+    .hide{
+        display: none;
+    }
+
+    
+</style>
+<div id="app">
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+
+<form role="form" method="post" id="myForm" enctype="multipart/form-data">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+             <!-- /.panel -->
+            <span>Ket: F1(Tambah Baris), F2(Save Data), F4(Hapus Baris)</span>	
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading">
+                    <b>Header Data</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                	<div class="form-group-sm">
+                    	<div class="table-responsive">
+                    		<table style="margin: 5px;">
+                    			<!-- <thead> -->
+                                    <!-- <tr>
+                                        <th>No Relokasi</th>
+                                        <th>Cabang</th>
+                                        <th>Cabang Tujuan</th>
+                                        <th>Tanggal Kirim</th>
+                                        <th>Dokumen 1</th>
+                                        <th>Dokumen 2</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Value Relokasi</th>
+                                        <th>Biaya Kirim</th>
+                                        <th>Cost Rasio</th>
+                                    </tr> -->
+                                <!-- </thead> -->
+                                <!-- <tbody> -->
+                                	<tr>
+                                        <td>No Relokasi</td>
+                                        <td>:</td>
+                                		<td><input type="text" class="form-control" name="no_relokasi" id="no_relokasi" readonly value="{{no}}"></td>
+                                        <td style="padding-left:10px;">Cabang</td>
+                                        <td>:</td>
+                                		<td><input type="text" class="form-control" name="cabang1" id="cabang1" readonly="" value="{{logs.cabang}}"></td>
+                                        <td style="padding-left:10px;">Cabang Tujuan</td>
+                                        <td>:</td>
+                                		<td>
+                                			<select name="cabang2" id="cabang2" class="form-control">
+                                				<option value="">Choose</option>
+                                				<option v-for="Cab in cabang" :value="Cab.Cabang" v-text="Cab.Cabang">
+                                				</option>
+                                			</select>
+                                		</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>Value Relokasi</td>
+                                        <td>:</td>
+                                        <td><input type="text" class="form-control" name="totalvalue" id="totalvalue" readonly value="0" style="text-align:right;"></td>
+                                        <td style="padding-left:10px;padding-top:10px">Biaya Kirim</td>
+                                        <td>:</td>
+                                        <td><input type="text" class="form-control" name="biayakirim" id="biayakirim" value="0" style="text-align:right;" onkeyup="hitung()" onchange="hitung()"></td>
+                                        <td style="padding-left:10px;">Cost Rasio (%)</td>
+                                        <td>:</td>
+                                        <td><input type="text" class="form-control" name="valCR" id="valCR" readonly value="0" style="text-align:right;"></td>
+                                	</tr>
+                                    <tr>
+                                        <td>Total Value Relokasi</td>
+                                        <td>:</td>
+                                        <td><input type="text" class="form-control" name="totalvalue1" id="totalvalue1" readonly value="0" style="text-align:right;"></td>
+                                        <td style="padding-left:10px;">Dokumen 1</td>
+                                        <td>:</td>
+                                        <td><input type="File" class="form-control" id="Dokumen1" name="Dokumen1" title="Lampiran 1"></td>
+                                        <td style="padding-left:10px;">Tanggal Kirim</td>
+                                        <td>:</td>
+                                        <td><input type="text" class="form-control" name="tgl_kirim" id="tgl_kirim" value="" readonly></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Keterangan</td>
+                                        <td>:</td>
+                                        <td colspan="4" style="padding-top:10px;"><select name="keterangan" id="keterangan" class="form-control">
+                                                <option value="">Pilih Keterangan</option>
+                                                <option value="Barang over di cabang pengirim">Barang over di cabang pengirim
+                                                </option>
+                                                <option value="Barang Non Moving di cabang pengirim">Barang Non Moving di cabang pengirim
+                                                </option>
+                                                <option value="Ada kebutuhan di cabang penerima">Ada kebutuhan di cabang penerima
+                                                </option>
+                                                <option value="Pemerataan Stock">Pemerataan Stock
+                                                </option>
+                                                <option value="Barang ED dekat, direlokasi ke cabang yang membutuhkan">Barang ED dekat, direlokasi ke cabang yang membutuhkan
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                <!-- </tbody> -->
+                    		</table>
+                    	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+        <div class="col-lg-12">
+             <!-- /.panel -->
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading">
+                    <b>Detail Data (Item)</b> &nbsp; &nbsp; <span class="btn btn-success" v-on:click="Add_item()" title="Tambah">&nbsp;Tambah Item&nbsp;</span>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                	<div class="form-group-sm">
+                    	<div class="table-responsive">
+                    		<table style="width: 1700px;" id="table-barang">
+                    			<thead>
+                                    <tr>
+                                        <th width="300" nowrap="">Produk</th>
+                                        <th width="100" nowrap>Batch No.</th>
+                                        <th width="100" nowrap>Stok Batch</th>
+                                        <th width="150" nowrap>Prinsipal</th>
+                                        <th width="150" nowrap>Supplier</th>
+                                        <th width="80" nowrap>Qty</th>
+                                        <th width="80" nowrap>Satuan</th>
+                                        <th width="80" nowrap>Harga</th>
+                                        <th width="80" nowrap>Disc</th>
+                                        <th width="80" nowrap>Bonus</th>
+                                        <th width="100" nowrap>Gross</th>
+                                        <th width="80" nowrap>Potongan</th>
+                                        <th width="80" nowrap>Value</th>
+                                        <th width="80" nowrap>PPN</th>
+                                        <th width="100" nowrap>Total</th>
+                                        <th width="100" nowrap>Exp. Date</th>
+                                        <th width="100" nowrap>Dokumen Batch</th>
+                                        <th>-</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                	<tr v-for="item in detail">
+                                		<td>
+                                			<select :name="'kode_produk['+$index+']'" class="form-control" v-on:change="nama_produk($index)" v-model=item.Produk>
+											  <option value="">Pilih</option>
+											  <option v-for="item in produkInStok" :value="item.Kode_Produk" v-text="item.Produk"></option>
+											</select>
+											<input type="hidden" class="form-control" :name="'namaproduk['+$index+']'"  v-model="item.NamaProduk">
+                                		</td>
+                                		<td>
+                                			<select style="width:150px" :name="'batch['+$index+']'"  class="form-control" v-on:change=get_qty($index) v-model="item.BatchNo">
+                                				<option v-for="data_batch in batch[$index]" :value="data_batch.BatchNo+'~'+data_batch.UnitStok+'~'+data_batch.ExpDate+'~'+data_batch.NoDokumen" v-text="data_batch.BatchNo+'~'+data_batch.UnitStok+'~'+data_batch.ExpDate+'~'+data_batch.NoDokumen"></option>
+                                			</select>
+                                             <input type="hidden" :name="'stokdoc['+$index+']'" :id="'stokdoc'+$index+''" v-model="item.stokdoc">
+                                            <!-- <input type="text" :name="'batchNo['+$index+']'" :id="'batchNo'+$index+''" > -->
+                                        </td>
+                                        <td>
+                                            <input type="text" :name="'stok['+$index+']'" :id="'stok'+$index+''" style="background-color:#ccc;" readonly="" v-model="item.stok" class="form-control">
+                                        </td>
+                                        
+                                		<td><input type="text" class="form-control" :name="'Nama_Prinsipal['+$index+']'" v-model="item.Nama_Prinsipal" readonly></td>
+                                		<td><input type="text" class="form-control" :name="'Supplier['+$index+']'" v-model="item.Supplier" readonly></td>
+                                		<td><input type="text" class="form-control" :name="'Qty['+$index+']'" :id="'Qty'+$index+''" v-model="item.Qty" v-on:change="Hitung($index)" v-on:keyup="Hitung($index)" value="0" onkeypress="return isNumberKey(event)" style="text-align: right;"onkeyup="hitung()" onchange="hitung()"></td>
+                                		<td><input type="text" class="form-control" :name="'Satuan['+$index+']'" v-model="item.Satuan" readonly></td>
+                                		<td><input type="text" class="form-control" :name="'Harga['+$index+']'" :id="'Harga'+$index+''" v-model="item.Harga" v-on:change="currencyDisplay($index,'Harga') Hitung($index)" style="text-align:right;" v-on:keyup="currencyDisplay($index,'Harga')" value="0" onkeyup="hitung()" onchange="hitung()"></td>
+                                		<td><input type="text" class="form-control" :name="'Disc['+$index+']'" :id="'Disc'+$index+''" v-model="item.Disc" v-on:change="currencyDisplay($index,'Disc') Hitung($index)" v-on:keyup="Hitung($index)" style="text-align:right;" v-on:keyup="currencyDisplay($index,'Disc')" value="0" onkeyup="hitung()" onchange="hitung()" readonly=""></td>
+                                		<td><input type="text" class="form-control" :name="'Bonus['+$index+']'" :id="'Bonus'+$index+''" v-model="item.Bonus" v-on:change="currencyDisplay($index,'Bonus')" style="text-align:right;" v-on:keyup="currencyDisplay($index,'Bonus')" value="0" onkeyup="hitung()" onchange="hitung()"></td>
+                                		<td><input type="text" class="form-control" :name="'Gross['+$index+']'" :id="'Gross'+$index+''" v-model="item.Gross" v-on:change="currencyDisplay($index)" value="0" style="text-align:right;" readonly></td>
+                                        <td><input type="text" class="form-control" :name="'T_potongan['+$index+']'" :id="'T_potongan'+$index+''" v-model="item.T_potongan" v-on:change="currencyDisplay($index,'Potongan')" style="text-align:right;" v-on:keyup="currencyDisplay($index,'T_potongan')" value="0" readonly></td>
+                                        <td><input type="text" class="form-control" :name="'Value['+$index+']'" :id="'Value'+$index+''" v-model="item.Value" v-on:change="currencyDisplay($index,'Value')" style="text-align:right;" v-on:keyup="currencyDisplay($index,'Value')" value="0" readonly></td>
+                                        <td><input type="text" class="form-control" :name="'PPN['+$index+']'" :id="'PPN'+$index+''" v-model="item.PPN" v-on:change="currencyDisplay($index,'PPN')" style="text-align:right;" v-on:keyup="currencyDisplay($index,'PPN')" value="0" readonly></td>
+                                		<td align="right"><span class="form-control" v-text="item.Total" disabled></span><input type="hidden" :name="'Total['+$index+']'" :id="'Total'+$index+''" v-model="item.Total" readonly></td>
+                                		<td><input type="text" class="form-control" :name="'ExpDate['+$index+']'" v-model="item.ExpDate" style="width:100px" readonly=""></td>
+                                        <td><input type="text" class="form-control" :name="'BatchDoc['+$index+']'" v-model="item.BatchDoc" style="width:100px" readonly=""></td>
+                                        <td>
+                                            <span class="glyphicon glyphicon-trash" v-on:click="removeElement($index)" title="Hapus!"></span>
+                                            <span class="form-control" v-text="item.UnitCOGS" disabled style="display:none"></span><input type="hidden" :name="'UnitCOGS['+$index+']'" v-model="item.UnitCOGS" style="display:none">
+                                            <span class="form-control" v-text="item.TotalCOGS" disabled style="display:none"></span><input type="hidden" :name="'TotalCOGS['+$index+']'" v-model="item.TotalCOGS">
+                                        </td>
+                                	</tr>
+                                </tbody>
+                    		</table>
+                    	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div align="center" class="col-lg-12"><span class="btn btn-primary btn-lg" onclick="savedata()" title="Simpan">Save</span>&nbsp;&nbsp;&nbsp;<span class="btn btn-danger btn-lg" onclick="reset_form()">Reset</span></div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$.get( "{{ base_url }}listCabang/", function( data ) {
+            if(data.substr(0,2) != "[{"){
+                var data = data.substr(1);
+                var data = JSON.parse(data); 
+            }else{
+                var data = JSON.parse(data);
+            }
+			vuejs.cabang = data;
+		});
+
+		$.get( "{{ base_url }}produkInStok/", function( data ) {
+            if(data.substr(0,2) != "[{"){
+                var data = data.substr(1);
+                var data = JSON.parse(data); 
+            }else{
+                var data = JSON.parse(data);
+            }
+			vuejs.produkInStok = data;
+		});
+
+        var d = new Date();
+
+var today = d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+        $("#tgl_kirim").val(today);
+
+	});
+
+	vuejs = new Vue({
+		el: '#app',
+		data: {
+			detail : [{
+				"Prinsipal"			:"",
+				"Nama_Prinsipal" 	:"",
+				"Supplier"			:"",
+				"Produk"			:"",
+				"NamaProduk"		:"",
+				"Qty"				:"",
+                "stok"              :"",
+                "stokdoc"           :"",
+				"Satuan"			:"",
+				"Harga"				:0,
+				"Disc"				:0,
+				"Bonus"				:0,
+				"Gross"				:0,
+                "Potongan"          :0,
+                "Value"             :0,
+                "PPN"               :0,
+				"Total"				:0,
+				"BatchNo"			:"",
+                "Batchdetail"       :"",
+                "ExpDate"           :"",
+                "UnitCOGS"          :0,
+                "TotalCOGS"         :0,
+				"BatchDoc"			:""
+			}],
+			cabang 		: [],
+			produkInStok: [],
+			prinsipal 	: [],
+			batch 		: [],
+		},
+		ready: function() {
+	  //       $.each(this.detail, function( index, value ) {
+	  //       	console.log(value);
+			// });
+	    },
+		computed: {
+		    // a computed getter
+		    // b: function () {
+		    //   // `this` points to the vm instance
+		    //   return this.a + 1
+		    // }
+		},
+		methods:{
+			nama_produk:function(posisi){
+				var self = this;
+				var x = this.detail[posisi].Produk;
+                // console.log(x);
+				var x2 = vuejs.produkInStok.filter(function (person) { return person.Kode_Produk == x });
+				this.detail[posisi].NamaProduk = x2[0].Produk;
+                this.detail[posisi].Prinsipal = x2[0].KodePrinsipal;
+				this.detail[posisi].Supplier = x2[0].Supplier;
+				this.detail[posisi].Nama_Prinsipal = x2[0].NamaPrinsipal;
+                this.detail[posisi].Harga = accounting.formatNumber(x2[0].UnitCOGS);
+				this.detail[posisi].ExpDate = "";
+				this.detail[posisi].BatchNo = "";
+                this.detail[posisi].Qty = 0;
+                this.detail[posisi].Disc = 0;
+                this.detail[posisi].Bonus = 0;
+                this.detail[posisi].Potongan = 0;
+
+                 $.get( "{{ base_url }}batchInStokRelokasi/" + x, function( data ) {
+                        var data = JSON.parse(data);
+                        if(data==false){
+                            notif("danger","<h2>Terdapat Selisih Stok</h2><br><h3>Cek Stok Summary dan detail di kartu stok</h3>");
+                        }else{
+                            self.batch.splice(posisi, 1, data);
+                        }    
+                });
+				$.get( "{{ base_url }}getSatuan/" + x, function( data ) {
+					self.detail[posisi].Satuan = data;
+				});
+
+                $.get( "{{ base_url }}getHargaBeli/" + x, function( data1 ) {
+                    var data1 = JSON.parse(data1);
+                    self.detail[posisi].Disc = data1.Dsc_Beli_Cab;
+                });
+				
+                this.Hitung(posisi);
+			},
+			get_qty:function(posisi){
+				var x = this.detail[posisi].BatchNo;
+                var x1 = x.split("~");
+                var batchNo = x1[0];
+                var stok = x1[1];
+                var expdate = x1[2];
+                var stokdoc = x1[3];
+				// var x2 = this.batch[posisi].filter(function (person) { return person.BatchNo == x });
+                this.detail[posisi].stok = stok;
+                this.detail[posisi].Qty = stok;
+                this.detail[posisi].stokdoc = stokdoc;
+                this.detail[posisi].ExpDate = expdate;
+                this.detail[posisi].BatchDoc = stokdoc;
+                this.Hitung(posisi);
+			},
+			currencyDisplay: function(posisi,nama){
+				switch(nama){
+					case 'Harga':
+						this.detail[posisi].Harga = accounting.formatNumber(this.detail[posisi].Harga);
+						break;
+					case 'Disc':
+						this.detail[posisi].Disc = accounting.formatNumber(this.detail[posisi].Disc);
+						break;
+					case 'Bonus':
+						this.detail[posisi].Bonus = accounting.formatNumber(this.detail[posisi].Bonus);
+						break;
+					case 'Potongan':
+						this.detail[posisi].Potongan = accounting.formatNumber(this.detail[posisi].Potongan);
+						break;
+				}
+				this.Hitung(posisi);
+			},
+			Hitung:function(posisi){
+				var harga = accounting.unformat(this.detail[posisi].Harga);
+                var qty = accounting.unformat(this.detail[posisi].Qty);
+                var bonus = accounting.unformat(this.detail[posisi].Bonus);
+
+                if (qty <= 0 || isNaN(qty)) {
+                    $("#Disc"+posisi).val(0);
+                    var disc = 0;
+                }else{
+                    $("#Disc"+posisi).val(this.detail[posisi].Disc);
+                    var disc = accounting.unformat(this.detail[posisi].Disc);
+
+                }
+
+                var disc_value = Math.round((harga * qty) * (disc/100));
+                var potongan = bonus * harga;
+                var banyak = qty + bonus;
+                // console.log(potongan);
+                var gross = harga * banyak;
+                var t_potongan = disc_value + potongan;
+                var value = gross - t_potongan;
+                var ppn = value * 0.1;
+                var total = value + ppn;
+
+                var unitcogs = value / banyak;
+                var totalcogs = unitcogs * banyak;
+
+                this.detail[posisi].Gross = gross;
+                this.detail[posisi].T_potongan = t_potongan;
+                this.detail[posisi].Value = value;
+                this.detail[posisi].PPN = ppn;
+                this.detail[posisi].Total = total;
+                this.detail[posisi].UnitCOGS = unitcogs;
+                this.detail[posisi].TotalCOGS = totalcogs;
+			},
+            Add_item:function(){
+                var breakOut = "";
+                $.each(this.detail, function( index, value ) {
+                    if(value.Produk==""||value.BatchNo==""||value.Gross == 0){
+                        alert("baris ke "+(index+1)+" belum lengkap");
+                        breakOut = false;
+                        return false;
+                    }
+                });
+                if(breakOut === false) {
+                    return false;
+                }
+                this.detail.push(
+                {
+                "Prinsipal"         :"",
+                "Nama_Prinsipal"    :"",
+                "Supplier"          :"",
+                "Produk"            :"",
+                "NamaProduk"        :"",
+                "Qty"               :"",
+                "stok"              :"",
+                "stokdoc"           :"",
+                "Satuan"            :"",
+                "Harga"             :0,
+                "Disc"              :0,
+                "Bonus"             :0,
+                "Potongan"          :0,
+                "Gross"             :0,
+                "Total"             :0,
+                "BatchNo"           :"",
+                "Batchdetail"       :"",
+                "ExpDate"           :"",
+                "UnitCOGS"          :0,
+                "TotalCOGS"         :0,
+                "BatchDoc"          :""
+                })
+            },
+            removeElement: function (index) {
+                this.detail.splice(index, 1);
+                this.batch.splice(index, 1);
+            }
+
+		}
+	});
+
+	Vue.filter('currencyDisplay',{
+            read: function(val){
+                return accounting.formatNumber(val);
+            },
+            write: function(val,oldVal){
+                return accounting.unformat(val,",")
+            }
+    });
+
+	document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            vuejs.Add_item();
+            // addRow();
+            // var b = document.getElementById('bucket').value;
+            // $('#Produk'+b).focus();
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }
+
+// ===================================================
+ //    $( "#tgl_kirim" ).datepicker({
+	//     changeMonth: true,
+	//     changeYear: true,
+	//     showButtonPanel: true,
+	//     format: 'yyyy-mm-dd',
+	//     onClose: function(dateText, inst) { 
+	//         $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+	//     }
+	// });
+
+    function reset_form(){
+        vuejs.detail = [{
+                "Prinsipal"         :"",
+                "Nama_Prinsipal"    :"",
+                "Supplier"          :"",
+                "Produk"            :"",
+                "NamaProduk"        :"",
+                "Qty"               :"",
+                "stok"              :"",
+                "stokdoc"           :"",
+                "Satuan"            :"",
+                "Harga"             :0,
+                "Disc"              :0,
+                "Bonus"             :0,
+                "Potongan"          :0,
+                "Gross"             :0,
+                "Total"             :0,
+                "BatchNo"           :"",
+                "Batchdetail"       :"",
+                "ExpDate"           :"",
+                "UnitCOGS"          :0,
+                "TotalCOGS"         :0,
+                "BatchDoc"          :""
+            }];
+        $('#myForm')[0].reset();
+
+    }
+
+    function savedata(){
+
+        no_relokasi = $("#no_relokasi").val();
+        var cabang1 = $("#cabang1").val();
+        var cabang2 = $("#cabang2").val();
+        var tanggal = $("#tgl_kirim").val();
+        var biayakirim = $("#biayakirim").val();
+        var keterangan = $("#keterangan").val();
+        if(cabang2==""){
+            notif("warning","Cabang tujuan belum dipilih");
+            return false;
+        }
+        if(cabang1==cabang2){
+            notif("warning","Maaf tidak bisa mengirim ke cabang yang sama, silahkan lakukan mutasi gudang");
+            return false;
+        }
+        if(tanggal==""){
+            notif("warning","Tanggal Kiriman belum diisi");
+            return false;
+        }
+        if(biayakirim=="" || biayakirim == 0){
+            notif("warning","Biaya kirim belum diisi");
+            return false;
+        }
+
+        if(keterangan=="" ){
+            notif("warning","Keterangan belum diisi");
+            return false;
+        }
+        var breakOut = "";
+        $.each(vuejs.detail, function( index, value ) {
+            if(value.Produk==""||value.BatchNo==""||value.Gross == 0 || value.BatchDoc==""){
+                notif("warning","baris ke "+(index+1)+" belum lengkap");
+                breakOut = false;
+                return false;
+            }
+            if(parseInt(value.stok) < (parseInt(value.Qty)+parseInt(value.Bonus))){
+                notif("warning","Qty Relokasi Tidak Boleh Melebihi Qty Stok");
+                breakOut = false;
+                return false;
+            }
+            if(parseInt(value.stok) == 0 || (parseInt(value.Qty)+parseInt(value.Bonus)) <= 0){
+                notif("warning","Qty Relokasi Tidak Boleh 0 atau minus");
+                breakOut = false;
+                return false;
+            }
+        });
+        if(breakOut === false) {
+            return false;
+        }
+
+        $('#progressGIF').show();
+        
+        var formdata = new FormData();
+        $.each($('#myForm').serializeArray(), function(a, b){
+            formdata.append(b.name, b.value);
+        });
+
+        var Dokumen1 = $('#Dokumen1')[0].files[0];
+            formdata.append('Dokumen1', Dokumen1);
+
+        var formData = new FormData($('#myForm')[0]);
+
+        $.ajax({
+                    url : "{{ base_url }}saveUsulanRelokasi",
+                    type: "POST",
+                    data: formData,
+                    contentType: false, 
+                    processData: false,
+                    dataType: "JSON",
+                    success: function(data){
+                        if (data.status == false) {
+                            // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                            notif('danger', '<h2>Relokasi tidak bisa di save</h2><br><h3>item produk ada yg selisih Stok Summary dan Detailnya</h3>');
+                        }
+                        else{
+                            notif('success', 'SUKSES! Data berhasil disimpan');
+                            location.reload();
+                        }
+                        $('#progressGIF').hide();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown){
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                        // notif('danger', 'PERHATIAN! Save Data Usulan Beli GAGAL');
+                        // location.reload();
+                        $('#progressGIF').hide();
+                    }
+        });
+
+    }
+    function hitung(){
+        var banyak = 0;
+        var value_bonus = 0;
+        var harga = 0;
+        var diskon = 0;
+        var diskon_value = 0;
+        var total_harga = 0;
+        var total_value = 0;
+        var valheader = 0;
+        var gross = 0;
+        var potongan = 0;
+        var PPN = 0;
+        var summary = 0;
+        var bucket = $('#table-barang tbody tr').length;
+        for (var e = 0; e < bucket; e++) {
+            var qty = ((document.getElementById('Qty'+e).value) ? document.getElementById('Qty'+e).value : 0);
+            var harga = ((document.getElementById('Harga'+e).value) ? document.getElementById('Harga'+e).value : 0);
+            var disc = ((document.getElementById('Disc'+e).value) ? document.getElementById('Disc'+e).value : 0);
+            var bonus = ((document.getElementById('Bonus'+e).value) ? document.getElementById('Bonus'+e).value : 0);
+            banyak = parseInt(accounting.unformat(qty)) + parseInt(accounting.unformat(bonus));
+
+            value_bonus = parseInt(accounting.unformat(bonus)) * parseInt(accounting.unformat(harga));
+
+            gross = parseInt(accounting.unformat(harga)) * parseInt(banyak);
+            total_harga =parseInt(accounting.unformat(harga)) * parseInt(accounting.unformat(qty));
+            diskon = total_harga * disc/100;
+            potongan = diskon + value_bonus;
+            total_value = (gross - potongan);
+            PPN = total_value * 0.1;
+            var total = total_value + PPN;
+            valheader = valheader + total_value;
+            summary = summary + total;
+        }
+        document.getElementById('totalvalue').value = valheader.toFixed(2);
+        document.getElementById('totalvalue1').value = summary.toFixed(2);
+        var biayakirim = document.getElementById('biayakirim').value;
+        var valcr = (parseInt(biayakirim) / valheader) * 100;
+        /*console.log((parseInt(biayakirim) / valheader) );
+        console.log(valcr);*/
+        document.getElementById('valCR').value = valcr.toFixed(2);
+    }
+
+</script>
+
+{% endblock %}

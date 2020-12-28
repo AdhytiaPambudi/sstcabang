@@ -1,0 +1,835 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    <style type="text/css">
+        .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Terima Kiriman</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Pelunasan Parsial
+
+                </div>
+                <div class="panel-body"> 
+                    <input type="hidden" name="bucket" id="bucket" class="newRow" value="{{total}}" readonly="">  
+                    <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover" id="table-faktur-dih">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tipe</th>
+                                        <th>Cash</th>
+                                        <th>Transfer</th>
+                                        <th>Giro</th>
+                                        <th>No DIH</th>
+                                        <th>No Faktur</th>
+                                        <th>Tipe Dokumen</th>
+                                        <th>Pelanggan</th>
+                                        <th>Penagih</th>
+                                        <th>Salesman</th>
+                                        <th>Tanggal DIH</th>
+                                        <th>Tanggal Faktur</th>
+                                        <th>Total</th>
+                                        <th>Saldo</th>
+                                        <th>Value Pelunasan/Giro</th>
+                                        <th>Bank</th>
+                                        <th>Titipan</th>
+                                        <th>No Titipan</th>
+                                        <th>Status Tambahan</th>
+                                        <th>Add SSP</th>
+                                        <th>SSP</th>
+                                        <th>Value Pembulatan</th>
+                                        <th>Biaya Transfer</th>
+                                        <th>Value Materai</th> 
+                                        <th>Add Giro</th>
+                                        <th>Keterangan</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for data in datas %}
+                                    <tr>
+                                        <td>{{data.0}}</td>
+                                        <td> <select name="tipe" id="tipe{{data.0}}" onchange="pilih_bank({{data.0}},this)">
+                                             <option value="" selected>-- select one -- </option>
+                                             <option value="Cash">Cash </option>
+                                             <option value="Transfer">Transfer </option>
+                                             <option value="Giro">Giro </option>
+                                        </td>
+                                        <td><button type="button" id="btn_cash{{data.0}}" class="btn btn-sm btn-success" title="Cash" onclick="prosesFakturDIH({{data.0}},'Cash')" disabled>Cash</button></td><td> <button type="button" id="btn_transfer{{data.0}}" class="btn btn-sm btn-warning"  title="Transfer" onclick="prosesFakturDIH({{data.0}},'Transfer')" disabled>Transfer</button></td><td><button type="button" id="btn_giro{{data.0}}" class="btn btn-sm btn-danger"  title="Giro" onclick="prosesFakturDIH({{data.0}},'Giro')" disabled>Giro</button></td>
+                                        <td id = 'NoDIH{{data.0}}'>{{data.1}}</td>
+                                        <td id = 'nofaktur{{data.0}}'>{{data.2}}</td>
+                                        <td id = 'TipeDokumen{{data.0}}'>{{data.10}}</td>
+                                        <td id = 'Pelanggan{{data.0}}'>{{data.3}}~{{data.11}}</td>
+                                        <td id = 'Penagih{{data.0}}'>{{data.4}}</td>
+                                        <td id = 'Salesman{{data.0}}'>{{data.5}}</td>
+                                        <td id = 'TglDIH{{data.0}}'>{{data.6}}</td>
+                                        <td id = 'TglFaktur{{data.0}}'>{{data.7}}</td>
+                                        <td id = 'Total{{data.0}}'>{{data.8}}</td>
+                                        <td id = 'Saldo{{data.0}}'>{{data.9}}</td>
+                                        <td><input type="text" name="value" id="value{{data.0}}" class="newRow" style="width:120px" ><input type="text" name="giro" id="giro{{data.0}}" class="newRow" style="display:none" placeholder="Nomor Giro"></td>
+                                        <td>
+                                            <select name="bank_transfer" id="bank_transfer{{data.0}}" onchange="pilih_titipan({{data.0}},this)" style="display:none">
+                                                <option value="" selected>-- select one -- </option>
+                                                {% for databank in data_bank %}
+                                                <option value="{{ databank.perkiraan }}">{{ databank.perkiraan }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td><select name="titipan" id="titipan{{data.0}}" style="display:none"><option value="">-- select one -- </option></select></td>
+                                        <td><input type="text" name="notitipan" id="notitipan{{data.0}}" class="newRow" style="display:none;width:75px"></td>
+                                        <td><select name="status_tambahan" id="status_tambahan{{data.0}}" onchange="pilih_tambahan(this,{{data.0}})"><option value="">-- select one -- </option><option value="kelebihan">Kelebihan </option><option value="potongan">Potongan </option><option value="ssp">SSP </option></select></td>
+                                        <td><button type="button" id="btnAddssp{{data.0}}" onclick="addSsp('{{data.1}}','{{data.2}}','{{data.6}}','{{data.7}}',{{data.0}})" class="btn btn-primary" style="display:none">Add SSP</button></td>
+                                        <td><input type="text" name="ssp" id="ssp{{data.0}}" class="newRow" style="display:none;width:75px" placeholder="ssp" onfocus="valssp({{data.0}})" onchange="valssp({{data.0}})"></td>
+                                        <td><input type="text" name="pembulatan" id="pembulatan{{data.0}}" class="newRow" placeholder="pembulatan" style="display: none;width:75px"></td>
+                                        <td><input type="text" name="biaya_transfer" id="biaya_transfer{{data.0}}" class="newRow" placeholder="biaya_transfer" style="display: none;width:75px"></td>
+                                        <td><input type="text" name="materai" id="materai{{data.0}}" class="newRow"  placeholder="materai" style="display: none;width:75px" autocomplete="off"></td>
+                                        <td><button type="button" id="btnAdd" onclick="addGiro('{{data.3}}',{{data.0}})" class="btn btn-primary">Add Giro</button></td>
+                                        <td><input type="text" name="keterangan" id="keterangan{{data.0}}" class="newRow"  placeholder="keterangan" autocomplete="off"></td> 
+                                    </tr>
+                                {% endfor %}
+                                <!-- onkeypress="return isNumberKey(event)" -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <form role="form" method="post" id="myForm2">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Form Add Giro</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <input type="hidden" name="row" id="row">
+                        <table class="table" id="table-giro">
+                            <thead>
+                                <tr>
+                                    <th>Bank</th>
+                                    <th>Giro</th>
+                                    <th>Tanggal JTO</th>
+                                    <th>Value Giro</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="hidden" name="pelanggan" id="pelanggan" class="form-control"><input type="text" name="bank" id="bank" class="form-control"></td>
+                                    <td><input type="text" name="giro" id="giro" class="form-control"></td>
+                                    <td><input type="text" name="tgljto" id="tgljto" class="form-control"></td>
+                                    <td><input type="text" name="valuegiro" id="valuegiro" class="form-control"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer form">
+                <input type="hidden" name="bucket" id="bucket">
+                <button type="button" id="btnSaveG" onclick="saveDataGiro()" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="modal_formssp" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <form role="form" method="post" id="form_ssp">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Form Add SSP</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <input type="hidden" name="row" id="row">
+                        <table class="table" id="table-giro">
+                            <thead>
+                                <tr>
+                                    <th>No DIH</th>
+                                    <th>Tgl DIH</th>
+                                    <th>No Faktur</th>
+                                    <th>Tgl Faktur</th>
+                                    <th>No NTPN</th>
+                                    <th>NTB</th>
+                                    <th>STAN</th>
+                                    <th>Tgl Bayar</th>
+                                    <th>Mata Anggaran</th>
+                                    <th>Jenis Setoran</th>
+                                    <th>Masa Pajak</th>
+                                    <th>Jumlah Setoran</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" name="ssp_dih" id="ssp_dih" class="form-control" readonly=""></td>
+                                    <td><input type="text" name="ssp_tgldih" id="ssp_tgldih" class="form-control" readonly=""></td>
+                                    <td><input type="text" name="ssp_nofaktur" id="ssp_nofaktur" class="form-control" readonly=""></td>
+                                    <td><input type="text" name="ssp_tglfaktur" id="ssp_tglfaktur" class="form-control" readonly=""></td>
+                                    <td><input type="text" name="nontpn" id="nontpn" class="form-control" required></td>
+                                    <td><input type="text" name="ntb" id="ntb" class="form-control" required></td>
+                                    <td><input type="text" name="stan" id="stan" class="form-control" required></td>
+                                    <td><input type="text" name="tglbayar" id="tglbayar" class="form-control" required></td>
+                                    <td><input type="text" name="mata_anggaran" id="mata_anggaran" class="form-control" required></td>
+                                    <td><input type="text" name="jenis_setoran" id="jenis_setoran" class="form-control" required></td>
+                                    <td><input type="text" name="masa_pajak" id="masa_pajak" class="form-control" required></td>
+                                    <td><input type="text" name="jumlah_setoran" id="jumlah_setoran" class="form-control" required></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer form">
+                <input type="hidden" name="bucket" id="bucket">
+                <button type="button" id="btnSaveG" onclick="saveDataSSP()" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    var tabel;
+    $(document).ready(function() {
+        tabel = $('#table-faktur-dih').DataTable({
+
+        responsive: false,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+        });
+        $( "#tglbayar").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            format: 'yyyy-mm-dd',
+            onClose: function(dateText, inst) { 
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+    function valssp(e){
+        var ssp = document.getElementById("ssp"+e).value;
+        var expld = ssp.split(" | ");
+        var val_ssp = expld[1];
+        if(ssp != ''){
+            $('#pembulatan'+e).val(val_ssp);
+        }
+    }
+
+    function pilih_titipan(row,x){
+        var baris = x.parentNode.parentNode.rowIndex;
+        if(x.value == ''){
+            $("#titipan"+row).html("<option value=''>--------</option>");
+        }else{
+            $("#titipan"+row).html("<option value=''>--Select One-- </option><option value='titipan'>Titipan</option><option value='bukan'>Bukan</option>");
+        }   
+    }
+
+    function pilih_tambahan(x,key){
+        var baris = x.parentNode.parentNode.rowIndex;
+        var ssp_dih = document.getElementById("NoDIH"+key).innerText;
+        var ssp_nofaktur = document.getElementById("nofaktur"+key).innerText;
+        if(x.value == 'kelebihan'){
+            $("#pembulatan"+key).show();
+            $("#biaya_transfer"+key).hide();
+            $("#materai"+key).hide();
+            $("#btnAddssp"+key).hide();
+            $("#ssp"+key).hide();
+            $("#pembulatan"+key).val(0);
+            $("#biaya_transfer"+key).val(0);
+            $("#materai"+key).val(0);
+            $('#ssp'+key).val('');
+        }else if(x.value == 'potongan'){
+            $("#pembulatan"+key).show();
+            $("#biaya_transfer"+key).show();
+            $("#materai"+key).show();
+            $("#btnAddssp"+key).hide();
+            $("#ssp"+key).hide();
+            $("#pembulatan"+key).val(0);
+            $("#biaya_transfer"+key).val(0);
+            $("#materai"+key).val(0);
+            $('#ssp'+key).val('');
+        }else if(x.value == 'ssp'){
+            $("#pembulatan"+key).show();
+            $("#biaya_transfer"+key).show();
+            $("#materai"+key).show();
+            $("#btnAddssp"+key).show();
+            $("#ssp"+key).show();
+            $("#pembulatan"+key).val(0);
+            $("#biaya_transfer"+key).val(0);
+            $("#materai"+key).val(0);
+            $('#ssp'+key).val('');
+            getSSP(ssp_dih,ssp_nofaktur,key)
+        }else{
+            $("#pembulatan"+key).hide();
+            $("#biaya_transfer"+key).hide();
+            $("#materai"+key).hide();
+            $("#btnAddssp"+key).hide();
+            $("#ssp"+key).hide();
+            $("#pembulatan"+key).val(0);
+            $("#biaya_transfer"+key).val(0);
+            $("#materai"+key).val(0);
+            $('#ssp'+key).val('');
+        } 
+    }
+
+    function addSsp(nodih,NoFaktur,TglDIH,TglFaktur,i) {
+        $('#modal_formssp').modal('show');
+        $('#ssp_dih').val(nodih);
+        $('#ssp_tgldih').val(TglDIH);
+        $('#ssp_nofaktur').val(NoFaktur);
+        $('#ssp_tglfaktur').val(TglFaktur);
+        $('#row').val(i);
+    }
+
+    function saveDataSSP()
+    {
+        var row             = document.getElementById('row').value;
+        var ssp_dih         = document.getElementById('ssp_dih').value;
+        var ssp_tgldih      = document.getElementById('ssp_tgldih').value;
+        var ssp_nofaktur    = document.getElementById('ssp_nofaktur').value;
+        var ssp_tglfaktur   = document.getElementById('ssp_tglfaktur').value;
+        var nontpn          = document.getElementById('nontpn').value;
+        var ntb             = document.getElementById('ntb').value;
+        var stan            = document.getElementById('stan').value;
+        var tglbayar        = document.getElementById('tglbayar').value;
+        var mata_anggaran   = document.getElementById('mata_anggaran').value;
+        var jenis_setoran   = document.getElementById('jenis_setoran').value;
+        var masa_pajak      = document.getElementById('masa_pajak').value;
+        var bayar           = $('#jumlah_setoran').val();
+
+        if(ssp_dih == '' || ssp_tgldih == '' || ssp_nofaktur == '' || ssp_tglfaktur == '' || ntb == '' || stan == '' || tglbayar == '' || mata_anggaran == '' || jenis_setoran == '' || masa_pajak == '' || bayar == '' || bayar == 0){
+            notif('warning', 'PERHATIAN! Terdapat Data Inputa yg masih Kosong atau Jumlah Setoran masih 0');
+            return;
+        }
+        $('#progressGIF').show();
+            $.ajax({
+                url : "{{ base_url }}saveDataSSP",
+                type: "POST",
+                data: $('#form_ssp').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {        
+                    notif('success', 'SUKSES! Data berhasil disimpan');
+                    document.getElementById('ssp'+row).value = nontpn +' | '+ bayar;
+                    document.getElementById('pembulatan'+row).value = bayar;
+                    $('#progressGIF').hide();
+                    getSSP(ssp_dih,ssp_nofaktur);
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Data gagal disimpan');
+                   $('#progressGIF').hide();
+                }
+            });
+        $('#modal_formssp').modal('hide');
+        $('#form_ssp')[0].reset();
+    }
+
+    function prosesFakturDIH(row, tipe)
+    {  
+        $("#notif").empty();
+        var data = {};
+        var NoDIH           = $("#NoDIH"+row).html();
+        var NoFaktur        = $("#nofaktur"+row).html();
+        var Pelanggan       = $("#Pelanggan"+row).html();
+        var Penagih         = $("#Penagih"+row).html();
+        var Salesman        = $("#Salesman"+row).html();
+        var TglDIH          = $("#TglDIH"+row).html();
+        var TglFaktur       = $("#TglFaktur"+row).html();
+        var Total           = $("#Total"+row).html();
+        var Saldo           = $("#Saldo"+row).html();
+        var value           = $("#value"+row).val();
+        var bank_transfer   = $("#bank_transfer"+row).val();
+        var titipan         = $("#titipan"+row).val();
+        var notitipan       = $("#notitipan"+row).val();
+        var status_tambahan = $("#status_tambahan"+row).val();
+        var pembulatan      = $("#pembulatan"+row).val();
+        var biaya_transfer  = $("#biaya_transfer"+row).val();
+        var materai         = $("#materai"+row).val();
+        var giro            = $("#giro"+row).val();
+        var dokumen         = $("#TipeDokumen"+row).html();
+        var bank_transfer   = $('#bank_transfer'+row).val();
+        var ssp             = $('#ssp'+row).val();
+        var keterangan      = $('#keterangan'+row).val();
+        var total_lunas     = parseInt(value) + parseInt(pembulatan) + parseInt(biaya_transfer) + parseInt(materai);
+        if (tipe == 'Giro') {
+                if (giro == "") {
+                    notif('warning', 'PERHATIAN! Kolom Value/Giro Tidak boleh kosong');
+                    // status = false;
+                    return;
+                }
+            }
+            else{
+                if (value == "") {
+                    notif('warning', 'PERHATIAN! Kolom Value/Giro Tidak boleh kosong');
+                    // status = false;
+                    return;
+                }
+                else if ((parseInt(value) + parseInt(pembulatan) + parseInt(biaya_transfer) + parseInt(materai)) > parseInt(Saldo)) {
+                    notif('warning', 'PERHATIAN! Jumlah Total value Pelunasan('+total_lunas+') tidak boleh lebih besar dari saldo sisa faktur('+Saldo+').');
+                    // status = false;
+                    return;
+                }
+                var total_lunas = parseInt(value) + parseInt(pembulatan) + parseInt(biaya_transfer) + parseInt(materai);
+            }
+            if(tipe == 'Transfer'){
+                if(bank_transfer == ""){
+                    notif('warning', 'PERHATIAN! Kolom Bank wajib di isi');
+                    // status = false;
+                    return;
+                }
+            }else{
+                    bank_transfer    = "";
+                    titipan = "";
+            }                        
+            if(status_tambahan == "" ){
+                var pembulatan = 0;
+                var biaya_transfer = 0;
+                var materai = 0;
+            }else if(status_tambahan == 'kelebihan'){
+                // var pembulatan = document.getElementById('pembulatan'+i).value;
+                var biaya_transfer = 0;
+                var materai = 0;
+                if(pembulatan == ""){
+                    pembulatan = 0;
+                }
+
+            }else if(status_tambahan == 'potongan' || status_tambahan == 'ssp'){
+                if(pembulatan == ""){
+                    pembulatan = 0;
+                }
+                if(biaya_transfer == ""){
+                    biaya_transfer = 0;
+                }
+                if(materai == ""){
+                    materai = 0;
+                }
+            }
+        data.NoDIH          = NoDIH, 
+        data.nofaktur       = NoFaktur, 
+        data.tipe           = tipe,
+        data.Pelanggan      = Pelanggan, 
+        data.Penagih        = Penagih,
+        data.Salesman       = Salesman, 
+        data.TglDIH         = TglDIH,
+        data.TglFaktur      = TglFaktur, 
+        data.Total          = Total,
+        data.Saldo          = Saldo, 
+        data.value          = value,
+        data.bank_transfer  = bank_transfer, 
+        data.titipan        = titipan,
+        data.notitipan      = notitipan, 
+        data.status_tambahan= status_tambahan,
+        data.pembulatan     = pembulatan, 
+        data.biaya_transfer = biaya_transfer,
+        data.materai        = materai,
+        data.giro           = giro,
+        data.dokumen        = dokumen,
+        data.ssp            = ssp,
+        data.keterangan     =keterangan
+        var dataDIH = [];
+        dataDIH.push(data);
+        var url = "{{ base_url }}prosesFakturDIH"; 
+        // ajax adding data to database
+        if(confirm('Apakah kamu yakin ingin melunasi faktur tersebut dengan pembayaran '+tipe+'?'))
+        {  
+            $('#progressGIF').show();
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: {dataDIH},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    console.log(data);
+                    if (data.ket == 'GAGAL') {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                    }
+                    // tabel.ajax.reload(null,false);
+                    location.reload();
+                    $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    // tabel.ajax.reload(null,false);
+                    location.reload();
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    $('#progressGIF').hide();
+                }
+            });            
+        }
+    }
+
+    function pilih_bank(row,x){
+        var baris = x.parentNode.parentNode.rowIndex-1;
+        var baris = baris + 1;
+        var gl_bank = []; 
+         $.ajax({
+            url : "{{ base_url }}get_gl_bank",
+            type: "POST",
+            // dataType: "JSON",
+            success: function(data)
+            {
+                switch(x.value){
+                    case "Transfer":
+                         $('#btn_cash'+row).prop('disabled', true);
+                         $('#btn_giro'+row).prop('disabled', true);
+                         $('#btn_transfer'+row).prop('disabled', false);
+                        var response = JSON.parse(data);
+                        $.each(response,function(key, value){
+                            $("#bank_transfer"+row).append('<option value="'+ value.perkiraan +'">' + value.perkiraan + '</option>');
+                        });
+                        $('#value'+row).val(0);
+                        $('#value'+row).show();
+                        $("#giro"+row).val('');
+                        $('#giro'+row).hide();
+                        $("#bank_transfer"+row).show();
+                        $("#titipan"+row).show();
+                        $("#notitipan"+row).show();
+                        break;
+                    case "Giro" :
+                        $('#btn_cash'+row).prop('disabled', true);
+                        $('#btn_giro'+row).prop('disabled', false);
+                        $('#btn_transfer'+row).prop('disabled', true);
+                        // $('#value'+row).val(0);
+                        $('#value'+row).hide();
+                        $('#giro'+row).show();
+                        $("#bank_transfer"+row).hide();
+                        $("#titipan"+row).hide();
+                        $("#notitipan"+row).hide();
+                        $("#notitipan"+row).val('');
+                        $("#bank_transfer"+row).html("<option value =''>--------</option>");
+                        tipe(row);
+                        break;
+                    case "Cash" :
+                        $('#btn_cash'+row).prop('disabled', false);
+                        $('#btn_giro'+row).prop('disabled', true);
+                        $('#btn_transfer'+row).prop('disabled', true);
+                        $('#value'+row).val(0);
+                        $('#value'+row).show();
+                        $("#giro"+row).val('');
+                        $('#giro'+row).hide();
+                        $("#bank_transfer"+row).hide();
+                        $("#titipan"+row).hide();
+                        $("#notitipan"+row).hide();
+                        $("#notitipan"+row).val('');
+                        $("#bank_transfer"+row).html("<option value =''>--------</option>");
+                        break;
+                    default:
+                        $('#btn_cash'+row).prop('disabled', true);
+                        $('#btn_giro'+row).prop('disabled', true);
+                        $('#btn_transfer'+row).prop('disabled', true);
+                        $('#value'+row).val(0);
+                        $('#value'+row).show();
+                        $("#giro"+row).val('');
+                        $('#giro'+row).hide();
+                        $("#bank_transfer"+row).hide();
+                        $("#titipan"+row).hide();
+                        $("#notitipan"+row).hide();
+                        $("#notitipan"+row).val('');
+                        $("#bank_transfer"+row).html("<option value =''>--------</option>");
+                        break;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal ');
+            }
+        });   
+    }
+    function tipe(e) {
+        var tipe = document.getElementById('tipe'+e).value;
+        console.log(tipe);
+        var dokumen = $("#TipeDokumen"+e).html();//document.getElementById('dokumen'+e).value;
+        var pelanggan = $("#Pelanggan"+e).html();
+        if(dokumen == "Faktur"){
+            if (tipe == 'Giro') {
+                getGiro(pelanggan,e);
+                $("#giro"+e).show();
+                $("#value"+e).hide();
+            }else{
+                $("#giro"+e).hide();
+                $("#value"+e).show();   
+            }
+        }
+        else{
+            if (tipe == 'Giro') {
+                $("#tipe"+e).val('Cash');
+                notif("warning", "PERHATIAN! Pelunasan retur tidak bisa menggunakan giro");
+            }
+        }
+    }
+    function getGiro(pelanggan,e) {
+        console.log(pelanggan);
+        $xpld = pelanggan.split("~");
+        KodePelanggan = $xpld[0];
+        var giroSource = [];
+        $.ajax({
+            url : "{{ base_url }}listGiro/"+KodePelanggan,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    giroSource[i] = data[i].NoGiro+' | '+data[i].SisaGiro;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data giro');
+            }
+        }); 
+        // var bucket = document.getElementById('bucket').value; 
+        // for (var i = 1; i <= bucket; i++) {
+        //     var p = $("#Pelanggan"+i).html();
+        //     if (pelanggan == p) {
+                $('#giro'+e).typeahead('destroy');
+                $('#giro'+e).typeahead({
+                    source: giroSource,
+                });
+        //     }
+        // }        
+    }
+
+    function addGiro(pelanggan, i) {
+        $('#modal_form').modal('show');
+        $('#pelanggan').val(pelanggan);
+        $('#row').val(i);
+    }
+    function saveDataGiro()
+    {
+        var row = document.getElementById('row').value;
+        var pelanggan = document.getElementById('pelanggan').value;
+        $('#progressGIF').show();
+            $.ajax({
+                url : "{{ base_url }}saveDataGiro",
+                type: "POST",
+                data: $('#myForm2').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {        
+                    if(data.status == 'SudahAda'){
+                    notif('warning', 'No Giro Sudah Ada Mohon Input Ulang, Dengan No Giro yg Berbeda');
+                    $('#progressGIF').hide();
+                    }else{
+                    notif('success', 'SUKSES! Data berhasil disimpan');
+                    $('#progressGIF').hide();
+                    getGiro(pelanggan);
+                }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Data gagal disimpan');
+                   $('#progressGIF').hide();
+                }
+            });
+        $('#modal_form').modal('hide');
+        $('#myForm2')[0].reset();
+    }
+
+    function getSSP(ssp_dih,ssp_nofaktur,e) {
+        var sspSource = [];
+        $.ajax({
+            url : "{{ base_url }}listSSP/",
+            type: "POST",
+            data:{dih:ssp_dih,nofaktur:ssp_nofaktur},
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    sspSource[i] = data[i].NoNTPN+' | '+data[i].JumlahSetoran;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data giro');
+            }
+        }); 
+        $('#ssp'+e).typeahead('destroy');
+            $('#ssp'+e).typeahead({
+                source: sspSource,
+        });
+    }
+</script>
+{% endblock %}

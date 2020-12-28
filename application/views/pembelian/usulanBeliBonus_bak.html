@@ -1,0 +1,1123 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+    }
+    .hide{
+        display: none;
+    }
+    
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Buat Usulan Beli</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <form role="form" method="post" id="myForm" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="min-height: 35px">
+                    <div style="width:50%;float:left;">
+                        <b>Buat Usulan Beli Bonus by Prinsipal</b>
+                    </div>
+                    <div style="width:50%;float:right;" class="form-group-sm">
+                        <table align="right">
+                            <tr>
+                                <td><b>Tipe : </b></td>
+                                <td>
+                                    <select class="form-control" name="tipe" id="tipe" onchange="setTipe()">
+                                        <option>Usulan Beli</option>
+                                        <option>ID Paket</option>
+                                    </select>
+                                </td>
+                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                <td><b id="titletipefaktur" style="display: none;">No ID Paket</b></td>
+                                <td><input type="text" class="form-control" name="idpaket" id="idpaket" placeholder="No ID Paket" style="display: none;"></td>
+                                <td><input type="text" class="form-control" name="pelanggan" id="pelanggan" onfocus="getPelanggan()" placeholder="List Pelanggan" style="display: none;"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12"> 
+                    <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                                {% for cabang in cabang %}
+                                    {% if cabang.Cabang == logs.cabang %} 
+                                        <input style="width:100px" class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    {% endif %}
+                                {% endfor %}
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </td>
+                        <td style="padding-left:10px">Tanggal</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input style="width:100px" class="form-control" type="text" name="Tanggal" id="Tanggal" value="{{tgl}}" readonly>
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </td>
+                        <td style="padding-left:10px">Limit</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input class="form-control" type="text" name="limitbeli" id="limitbeli" readonly>
+                            <input class="form-control" type="hidden" name="limitx" id="limitx" readonly>
+                            <input class="form-control" type="hidden" name="limit" id="limit" readonly>
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </td>
+                        
+                        <td style="padding-left:10px">Sisa Limit</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input class="form-control" type="hidden" name="SisaLimit" id="SisaLimit" readonly>
+                            <input class="form-control" type="text" name="SisaLimitx" id="SisaLimitx" readonly>
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </td>
+
+                       <!--  <td style="padding-left:10px">Lead Time</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input class="form-control" type="hidden" name="SisaLimit" id="SisaLimit" readonly>
+                            <input class="form-control" type="text" name="ltime" id="letime">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        <!-- </td> -->
+                        
+                    </tr style="padding-bottom:10px">
+             <!--        <tr style="padding-top:10px">
+                        <td >No PO</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input class="form-control" type="text" name="pox" id="pox" readonly>
+                            <input class="form-control" type="hidden" name="po" id="po" readonly>
+                           
+                        </td>
+                        <td style="padding-left:10px">Total Value</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input class="form-control" name="TotalValueMaskx" id="TotalValueMaskx" readonly>
+                            <input class="form-control" type="hidden" name="TotalValueMask" id="TotalValueMask" readonly>
+                            <input class="form-control" type="hidden" name="TotalValue" id="TotalValue">
+                        
+                        </td>
+                        <td style="padding-left:10px">Dokumen</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            <input type="file" class="form-control" name="Dokumen" id="Dokumen">
+                           
+                        </td>
+                        <td style="padding-left:10px">Dokumen 2</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="file" class="form-control" name="Dokumen2" id="Dokumen2">
+                            
+                        </td>
+                    </tr> -->
+                </table> 
+                        <br>
+                        <div class="form-group">
+                                <table>
+                                    <tr>
+                                        <td width="300"><label class="control-label">Prinsipal</label></td>
+                                        <td width="300" style="padding-left:10px"><label class="control-label">Supplier</label></td>
+                                        <td width="300" style="padding-left:10px"><label class="control-label">No</label></td>
+                                        <td style="padding-left:10px;width:100px" >Total Value</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control" name="Prinsipal" id="Prinsipal" onfocus="getPrinsipal()" onchange="prinsipal()" autocomplete="off" style="width:300px">  
+                                        </td>
+                                        <td style="padding-left:10px">
+                                            <input type="text" class="form-control" name="Supplier" id="Supplier" onchange="loadProduk()" style="width:300px">
+                                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                                        </td> 
+                                        <td style="padding-left:10px">
+                                            <input class="form-control" type="text" name="NoUsulan" id="NoUsulan" readonly>
+                                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                                        </td>
+                                        <td style="padding-left:10px">
+                                            <input class="form-control" style="width:200px" name="TotalValueMaskx" id="TotalValueMaskx" readonly>
+                                            <input class="form-control" type="hidden" name="TotalValueMask" id="TotalValueMask" readonly>
+                                            <input class="form-control" type="hidden" name="TotalValue" id="TotalValue">
+                                                <input class="form-control" type="hidden" name="TotalGross" id="TotalGross">
+                                                <input class="form-control" type="hidden" name="Totalppn" id="Totalppn">
+                                                <input class="form-control" type="hidden" name="Totalpotongan" id="Totalpotongan">
+                                                <input class="form-control" type="hidden" name="TotalAll" id="TotalAll">
+                                        
+                                        </td>
+                                    </tr>
+                                </table>
+                                </div>
+                                <div class="form-group">
+                                    <div class="table-responsive">
+                                        <table class="table" id="table-barang">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Produk</th>
+                                                    <th>Qty</th>
+                                                    <th>Disc</th>
+                                                    <th>Bonus</th>
+                                                    <th>Harga Deal</th>
+                                                    <th>HPC</th>
+                                                    <th>Disc Cab</th>
+                                                    <th>Value</th>
+                                                    <th>Qty REC</th>
+                                                    <th>Satuan</th>
+                                                    <th>Keterangan</th>
+                                                    <th>Ket.Internal</th>
+                                                    <th>Kategori</th>
+                                                    <th>Stok</th>
+                                                    <th>GIT</th>
+                                                    <th>Avg</th>
+                                                    <!-- <th>indeks</th> -->
+                                                    <!-- <th>View GIT</th> -->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr id="itemRow0">
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="text" name="Produk[0]" id="Produk0" style="
+                                                        width:250px"  class="delRow" onkeyup="cariKode(0)" onchange="getProduk(0)" autocomplete="off">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Qty[0]" id="Qty0" style="background-color: #eee; width: 50px" step="0.01" min="0" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" step="0.01" min="0" name="Diskon[0]" id="Diskon0"  onkeyup="hitung()" onchange="hitung()"  readonly style="background-color: #eee; width: 50px">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Bonus[0]" id="Bonus0" style="width: 50px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)">
+                                                    </td>
+                                                    <td>    
+                                                        <input type="text" name="HargaDeal[0]" id="HargaDeal0" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)" readonly style="background-color: #eee; width: 50px">
+                                                        </td>
+                                                    <td>
+                                                        <input type="hidden" name="HPCx[0]" id="HPCx0" readonly style="background-color: #eee; width: 75px">
+                                                        <input type="hidden" name="HPC[0]" id="HPC0" readonly style="background-color: #eee; width: 75px">
+                                                        <input type="hidden" name="VBELI[0]" id="VBELI0" readonly style="background-color: #eee; width: 75px">
+                                                        <input type="hidden" name="LMB[0]" id="LMB0" readonly style="background-color: #eee; width: 75px">
+                                                        <input type="hidden" name="sLMB[0]" id="sLMB0" readonly style="background-color: #eee; width: 75px">
+                                                        <input type="text" name="HBC[0]" id="HBC0">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0" name="DiscCab[0]" id="DiscCab0" readonly style="background-color: #eee; width: 50px">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Value[0]" id="Value0" readonly style="background-color: #eee; width: 75px">
+                                                        <input type="hidden" name="Valuex[0]" id="Valuex0" readonly style="background-color: #eee; width: 75px">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="QtyRec[0]" id="QtyRec0" readonly style="background-color: #eee; width: 50px">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Satuan[0]" id="Satuan0" readonly style="background-color: #eee; width: 100px">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Keterangan[0]" id="Keterangan0" style="
+                                                        width:150px">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="KetInternal[0]" id="KetInternal0" style="width: 300px;" class="newRow">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Kategori[0]" id="Kategori0" readonly style="background-color: #eee; width: 100px"></td>
+                                                    <td>
+                                                        <input type="text" name="Stok[0]" id="Stok0"  readonly="" style="background-color: #eee; width: 50px"></td>
+                                                    <td>
+                                                        <input type="text" name="GIT[0]" id="GIT0" readonly="" style="background-color: #eee; width: 50px"></td>
+                                                    <td>
+                                                        <input type="text" name="Avg[0]" id="Avg0" readonly="" style="background-color: #eee; width: 50px"></td>
+                                                    <td>
+                                                    {% for cabang in cabang %}
+                                                        {% if cabang.Cabang == logs.cabang %} 
+                                                        <input type="hidden" step="0.01" name="Indeks[0]" id="Indeks0" readonly style="background-color: #eee; width: 50px" value={{cabang.Indeks_Pesan}} >
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        <input type="hidden" name="HPP[0]" id="HPP0" readonly style="background-color: #eee; width: 50px">
+                                                        <input type="hidden" name="HBP[0]" id="HBP0">
+                                                        <input type="hidden" step="0.01" min="0" name="DscPst[0]" id="DscPSt0"  readonly="" style="background-color: #eee; width: 50px">
+                                                        <input type="hidden" name="ValuePO[0]" id="ValuePO0" readonly style="background-color: #eee; width: 50px">
+                                                        <input type="hidden" name="No[0]" id="No0" readonly style="background-color: #eee; width: 50px">
+                                                        <input type="hidden" name="PotonganCab[0]" id="PotonganCab0" readonly style="background-color: #eee; width: 50px">
+                                                        <input type="hidden" name="gross[0]" id="gross0">
+                                                        <input type="hidden" name="ppn[0]" id="ppn0">
+                                                        <input type="hidden" name="total[0]" id="total0">
+                                                        <input type="hidden" name="val_disc[0]" id="val_disc0">
+                                                        <input type="hidden" name="val_bonus[0]" id="val_bonus0">
+                                                    </td>
+                                                    <!-- <td>
+                                                        <button tipe="button" style="width: 75px; height: 20px">View GIT</button>
+                                                    </td> -->
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                    <div align="center">
+                                        <input type="hidden" name="bucket" id="bucket" value="0">
+                                        <a href="javascript:void(0)" type="submit" class="btn btn-success" onclick="addRow(this.form);">Tambah Barang</a>                                        
+                                        <button type="reset" class="btn btn-default">Reset Form</button>
+                                        <a href="javascript:void(0)" type="submit" class="btn btn-danger" id="removeRow" onclick="removeRow();">Hapus Baris</a>
+                                    </div>
+                                </div>                                
+                                <div class="form-group" id="frmKeperluan" style="display: none;">
+                                    <label class="control-label">Keperluan</label>
+                                    <input class="form-control" type="text" name="Keperluan" id="Keperluan">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group" id="frmNamaKep" style="display: none;">
+                                    <label class="control-label">Nama Keperluan</label>
+                                    <input class="form-control" type="text" name="NamaKep" id="NamaKep">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group" id="frmAlamatKep" style="display: none;">
+                                    <label class="control-label">Alamat Keperluan</label>
+                                    <input class="form-control" type="text" name="AlamatKep" id="AlamatKep">
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>
+                                <div class="form-group" align="center">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger">Cancel</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                                </div>
+                                </div>
+                                <hr>
+                                <!-- <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                                <button type="button" class="btn btn-danger">Cancel</button> -->
+                        </div>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    
+    </form>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+$(document).on('keydown', '.newRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (keyCode == 9) { 
+    addRow();
+    // call custom function here
+  } 
+});
+
+$(document).on('keydown', '.delRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (e.shiftKey && keyCode === 9) { 
+    removeRow();
+    // call custom function here
+  } 
+});
+
+
+document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+            $('#Produk'+b).focus();
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }
+$(document).ready(function() {        
+        $('#removeRow').hide();
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+});
+
+    // START TAMBAH & HAPUS ROW BARANG
+    var rowNum = 0;
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        var s = document.getElementById('Satuan'+b).value;
+        if (s) {
+            $('#removeRow').show();
+            rowNum ++;
+
+            $('#table-barang').append($('<tr id="itemRow'+rowNum+'"><td></td><td><input type="text" name="Produk['+rowNum+']" id="Produk'+rowNum+'" style="width:250px" class="delRow" onkeyup="cariKode('+rowNum+')" onchange="getProduk('+rowNum+')" autocomplete="off"></td><td><input type="text" name="Qty['+rowNum+']" id="Qty'+rowNum+'" style="width: 50px" onkeyup="hitung()" onchange="hitung()" readonly="" onkeypress="return isNumberKey(event)"></td><td><input type="number" step="0.01" min="0" readonly="" name="Diskon['+rowNum+']" id="Diskon'+rowNum+'" style="width: 50px;" onkeyup="hitung()" onchange="hitung()"></td><td><input type="text" name="Bonus['+rowNum+']" id="Bonus'+rowNum+'" style="width: 50px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)"></td><td><input type="text" name="HargaDeal['+rowNum+']" id="HargaDeal'+rowNum+'" style="width: 75px" onkeyup="hitung()" onchange="hitung()" onkeypress="return isNumberKey(event)"></td><td><input type="hidden" name="HPCx['+rowNum+']" id="HPCx'+rowNum+'" readonly="" style="background-color: #eee; width: 75px"><input type="hidden" name="HPC['+rowNum+']" id="HPC'+rowNum+'" readonly="" style= "background-color: #eee; width: 75px"><input type="hidden" name="VBELI['+rowNum+']" id="VBELI'+rowNum+'" readonly="" style="background-color: #eee; width: 75px"><input type="hidden" name="LMB['+rowNum+']" id="LMB'+rowNum+'" readonly="" style="background-color: #eee; width: 75px"><input type="hidden" name="sLMB['+rowNum+']" id="sLMB'+rowNum+'" readonly="" style="background-color: #eee; width: 75px"><input type="text" name="HBC['+rowNum+']" id="HBC'+rowNum+'"></td><td><input type="number" step="0.01" min="'+rowNum+'" name="DiscCab['+rowNum+']" id="DiscCab'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"></td><td><input type="hidden" name="Valuex['+rowNum+']" id="Valuex'+rowNum+'" readonly="" style="background-color: #eee; width: 75px"><input type="text" name="Value['+rowNum+']" id="Value'+rowNum+'" readonly="" style="background-color: #eee; width: 75px"></td><td><input type="text" name="QtyRec['+rowNum+']" id="QtyRec'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"></td><td><input type="text" name="Satuan['+rowNum+']" id="Satuan'+rowNum+'" readonly="" style="background-color: #eee; width: 100px"></td><td><input type="text" name="Keterangan['+rowNum+']" id="Keterangan'+rowNum+'" style="width:150px"></td><td><input type="text" name="KetInternal['+rowNum+']" id="KetInternal'+rowNum+'" style="width: 300px;" class="newRow"></td><td><input type="text" name="Kategori['+rowNum+']" id="Kategori'+rowNum+'" readonly="" style="background-color: #eee; width: 100px"></td><td><input type="text" name="Stok['+rowNum+']" id="Stok'+rowNum+'"  readonly="" style="background-color: #eee; width: 50px"></td><td><input type="text" name="GIT['+rowNum+']" id="GIT'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"></td><td><input type="text" name="Avg['+rowNum+']" id="Avg'+rowNum+'" readonly="" style="background-color: #eee; width: 50px">{% for cabang in cabang %}{% if cabang.Cabang == logs.cabang %}<input type="hidden" step="0.01" name="Indeks['+rowNum+']" id="Indeks'+rowNum+'" readonly="" style="background-color: #eee; width: 50px" value={{cabang.Indeks_Pesan}} >{% endif %}{% endfor %}</td><td><input type="hidden" name="HPP['+rowNum+']" id="HPP'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"><input type="hidden" name="HBP['+rowNum+']" id="HBP'+rowNum+'"><input type="hidden" step="0.01" min="0" name="DscPst['+rowNum+']" id="DscPSt'+rowNum+'"  readonly="" style="background-color: #eee; width: 50px"><input type="hidden" name="ValuePO['+rowNum+']" id="ValuePO'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"><input type="hidden" name="No['+rowNum+']" id="No'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"><input type="hidden" name="PotonganCab['+rowNum+']" id="PotonganCab'+rowNum+'" readonly="" style="background-color: #eee; width: 50px"><input type="hidden" name="gross['+rowNum+']" id="gross'+rowNum+'"><input type="hidden" name="ppn['+rowNum+']" id="ppn'+rowNum+'"><input type="hidden" name="total['+rowNum+']" id="total'+rowNum+'"><input type="hidden" name="val_disc['+rowNum+']" id="val_disc'+rowNum+'"><input type="hidden" name="val_bonus['+rowNum+']" id="val_bonus'+rowNum+'"></td><!--<td><button tipe="button" style="width: 75px; height: 20px">View GIT</button></td>--></tr>'));
+
+            $('#bucket').val(rowNum);
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning', 'PERHATIAN! Isi form diatas terlebih dahulu');
+        }
+    }
+
+    function removeRow() 
+    {
+        jQuery('#itemRow'+rowNum).remove();
+        rowNum--;
+        if (rowNum==0) {
+            $('#removeRow').hide();
+        }
+        $('#bucket').val(rowNum);
+        hitung();
+    }
+
+    function clearRow() 
+    {
+        var bucket = document.getElementById('bucket').value;
+        for (var e = bucket; e > 0; e--) {            
+            jQuery('#itemRow'+e).remove();            
+            rowNum--;
+        }
+        $('#Produk'+e).val("");
+        $('#Kategori'+e).val("");
+        $('#Satuan'+e).val("");
+        $('#HPC'+e).val("");
+        $('#HPCx'+e).val("");
+        $('#HPP'+e).val("");
+        $('#HBC'+e).val("");
+        $('#HBP'+e).val("");
+        $('#Qty'+e).val("");
+        $('#Bonus'+e).val("");
+        $('#Diskon'+e).val("");
+        $('#HargaDeal'+e).val("");
+        $('#Value'+e).val("");
+        $('#Valuex'+e).val("");
+        $('#Keterangan'+e).val("");
+        $('#KetInternal'+e).val("");
+
+        $('#removeRow').hide();
+        $('#bucket').val(rowNum);
+    }
+
+    function setTipe() {
+        var tipe = document.getElementById('tipe').value;
+        clearRow('all');
+        $('#myForm')[0].reset(); 
+        $('#tipe').val(tipe);
+        if (tipe == 'ID Paket') {
+            $('#idpaket').css("display", "block");
+            $('#pelanggan').css("display", "block");
+        }
+        else {
+            $('#idpaket').css("display", "none");
+            $('#pelanggan').css("display", "none");
+        }
+    }
+
+    var pelangganSource = [];
+    function getPelanggan() {
+        var i = 0;
+        {% for pelanggan in pelanggan %}
+            pelangganSource[i] = '{{pelanggan.Kode}}~{{pelanggan.Pelanggan}}';
+            i++;
+        {% endfor %}
+        $('#pelanggan').typeahead({
+                    source: pelangganSource
+                });
+    }
+
+    var prinsipalSource = [];
+    function getPrinsipal() {
+        var i = 0;
+        $('#Prinsipal').typeahead('destroy');
+        prinsipalSource.length = 0;
+        var tipe = document.getElementById('tipe').value;
+            if (tipe == 'Usulan Beli') {
+                {% for prinsipal in prinsipal %}
+                    {% if prinsipal.Prinsipal != 'E-KAT'%}
+                        prinsipalSource[i] = '{{prinsipal.Prinsipal}}~{{prinsipal.Supplier}}';                
+                        i++;
+                    {% endif %}      
+                {% endfor %}      
+            }
+            else{
+                    prinsipalSource[0] = 'E-KAT~';
+                    loadProduk();
+             }
+        $('#Prinsipal').typeahead({
+                    source: prinsipalSource
+                });
+    }
+
+    var supplierSource = [];
+    function prinsipal() {
+        var data = document.getElementById('Prinsipal').value;
+        var split = data.split("~");
+        var prinsipal = split[0];
+        var supplier = split[1];
+        if (supplier != '') 
+        {            
+            $('#Supplier').val('');
+            $('#Supplier').attr("readonly","readonly");
+            $('#Supplier').val(supplier);
+        }
+        else
+        {
+            $('#Supplier').val('');
+            $('#Supplier').removeAttr("readonly");
+            var i = 0;
+            {% for supplier in supplier %}
+                supplierSource[i] = '{{supplier.Supplier}}';
+                i++;
+            {% endfor %}
+
+            $('#Supplier').typeahead({
+                    source: supplierSource
+                });
+        }
+        clearRow();
+        setNo();
+        loadProduk();  
+        getprinsipallimit();      
+    }
+
+    function getprinsipallimit(){
+        var Prinsipal = document.getElementById('Prinsipal').value;
+        $.ajax({
+                url : "{{ base_url }}getprinsipallimit/",
+                type: "POST",
+                data:{Prinsipal:Prinsipal},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    $("#notif").empty();
+                    $('#limitx').val(data.LmtP);
+                    $('#limitbeli').val(numberWithCommas(data.LmtP));
+                    // if(data.LmtP == ""){
+                    //     notif('warning','Limit Beli Prinsipal Masih Kosong');
+                    // }
+                    $('#SisaLimit').val(data.vBeli);
+                    // $('#po').val(data.po);
+                    // setNo();
+                    // hitung();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+
+    }
+    function setNo() {
+        var cabang = document.getElementById('Cabang').value;
+        var prinsipal = document.getElementById('Prinsipal').value;
+        if (cabang == "" || prinsipal == "") {
+            
+        }
+        else
+        {
+            var currentdate = new Date();
+            var datetime = currentdate.getDate() + "-"
+                    + (currentdate.getMonth()+1)  + "-" 
+                    + currentdate.getFullYear() + "/"  
+                    + currentdate.getHours() + ":"  
+                    + currentdate.getMinutes() + ":" 
+                    + currentdate.getSeconds();
+
+            var split = cabang.split("-");
+            var Kode = split[1];
+            var split2 = prinsipal.split("~");
+            var prinspl = split2[0];
+
+            $('#NoUsulan').val(Kode+'/'+prinspl+'/'+datetime);
+        }
+    }
+
+    function getLimit() {
+        var cabang = document.getElementById('Cabang').value;
+        var split = cabang.split("-");
+        var cab = split[0];
+
+        $.ajax({
+                url : "{{ base_url }}getLimit/",
+                type: "POST",
+                data:{cab:cab},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    $('#limit').val(data.limit);
+                    $('#po').val(data.po);
+                    setNo();
+                    hitung();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+    }
+
+    var produkSource = [];
+    function loadProduk() {
+        var Prinsipal = document.getElementById('Prinsipal').value;
+        var Supplier = document.getElementById('Supplier').value;
+        var split2 = Prinsipal.split("~");
+            var prinspl = split2[0];
+            produkSource.length = 0;
+        if ((Prinsipal)) {
+            $.ajax({
+                url : "{{ base_url }}listProdukUsulanBeli/",
+                type: "POST",
+                data:{prinsipal:prinspl, supplier:Supplier},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        produkSource[i] = data[i].Kode_Produk+"~"+data[i].Produk;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+        }
+    }
+
+
+    function cariKode(e){    
+        var data = document.getElementById('Prinsipal').value;
+        if (data == "") {
+            $("#notif").empty();
+            // notif('warning', 'PERHATIAN! Mohon Pilih Pelanggan Terlebih Dahulu.', 'cariKode');
+            notif('warning', 'PERHATIAN! Mohon Pilih Prinsipal + Supplier Terlebih Dahulu');
+        }
+ 
+            $('#Produk'+e).typeahead({
+                    source: produkSource
+                });
+    }
+    var diskon = [];
+    function getProduk(e){
+        var bucket =document.getElementById('bucket').value; 
+        var Value = document.getElementById('Produk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+        var Status = true;
+        if (bucket > 0) {
+            for (var i = 0; i < bucket; i++) {
+                var Value2 = document.getElementById('Produk'+i).value;
+                var split2 = Value2.split("~");
+                var Kode2 = split2[0];
+                if (Kode === Kode2) 
+                { 
+                    Status = false;
+                    break;
+                }
+            }
+        }
+
+        if (Status == true) {
+            $.ajax({
+                url : "{{ base_url }}getProdukUsulanBeli/" + Kode,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    if (data)
+                    {
+                        if (data.Data) {                          
+                            diskon = data.Diskon;
+                            $('#Kategori'+e).val(data.Data.Kategori);
+                            $('#Satuan'+e).val(data.Data.Satuan);
+                            $('#HPCx'+e).val(numberWithCommas(data.HBC));
+                            $('#HPC'+e).val(data.HBC);
+                            $('#HPP'+e).val(data.HBP);
+                            $('#HBC'+e).val(data.HBC);
+                            $('#HBP'+e).val(data.HBP);
+                            $('#Bonus'+e).val(0);
+                            $('#Diskon'+e).val(0);
+                            $('#HargaDeal'+e).val(0);
+                            $('#Gross'+e).val("");
+                            $('#PotonganCab'+e).val("");
+                            $('#Value'+e).val("");
+                            $('#Valuex'+e).val("");
+                            $('#PPN'+e).val("");
+                            $('#Total'+e).val("");
+                            $('#DiscCab'+e).val(data.DBC);
+                            $('#DscPSt'+e).val(data.DBP);
+                            $('#Stok'+e).val(data.STK);
+                            $('#GIT'+e).val(data.GIT);
+                            $('#Avg'+e).val(data.AMS3);
+                            $('#LMB'+e).val(data.LmtP);
+                            $('#VBELI'+e).val(data.vBeli);
+                            cekHarga(e);
+                            // cekHarga(e);
+                            if (data.Data.Kategori == 'Precursor' || data.Data.Kategori == 'Psikotropika' || data.Data.Kategori == 'OOT') 
+                            {
+                                $('#Keperluan'+e).show();
+                                $('#NamaKep'+e).show();
+                                $('#AlamatKep'+e).show();
+                            }
+                        }
+                        
+                        else{                            
+                            $('#Qty'+e).val("");
+                            $('#Bonus'+e).val("");
+                            $('#Diskon'+e).val("");
+                            $('#maxDiskon'+e).val("");
+                            $('#Satuan'+e).val("");
+                            $('#Harga'+e).val("");
+                            $('#HPCx'+e).val("");
+                            $('#Gross'+e).val("");
+                            $('#PotonganCab'+e).val("");
+                            $('#Value'+e).val("");
+                            $('#Valuex'+e).val("");
+                            $('#PPN'+e).val("");
+                            $('#Total'+e).val("");
+                            $('#DiscCab'+e).val("");
+                            $('#Stok'+e).val("");
+                            $('#GIT'+e).val("");
+                            $('#Avg'+e).val("");
+                            $('#LMB'+e).val("");
+                            $('#VBELI'+e).val("");
+                        }
+                    }
+                    else
+                    {                        
+                        $('#Satuan'+e).val("");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    
+                }
+            });
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning','Duplikat Produk');
+            $('#KodeProduk'+e).val("");
+        }
+    }
+
+    function cekHarga(e) {
+        var Satuan = document.getElementById('Satuan'+e).value;
+        var HBC = document.getElementById('HBC'+e).value;
+        var HBP = document.getElementById('HBP'+e).value;
+        var Kategori = document.getElementById('Kategori'+e).value;
+        //cek Qty Rekomendasi --start
+        var GIT = ((document.getElementById('GIT'+e).value) ? document.getElementById('GIT'+e).value : 0);
+        var STOK = ((document.getElementById('Stok'+e).value) ? document.getElementById('Stok'+e).value : 0);
+        var AVG = ((document.getElementById('Avg'+e).value) ? document.getElementById('Avg'+e).value : 0);
+        var Ind = ((document.getElementById('Indeks'+e).value) ? document.getElementById('Indeks'+e).value : 0);
+        var ltime = 7;
+        var qtyRec = 0;
+        var rasio = 0.75 + (parseFloat(ltime)/30);
+        var SL    = (parseFloat(STOK) + parseFloat(GIT))/parseFloat(AVG);
+        qtyRec = (rasio-SL) * (AVG);
+        $('#QtyRec'+e).val(Math.round(qtyRec.toFixed(2)));
+
+        if (Satuan != "") {
+            if (HBC == "" || HBP == "") {
+                $("#notif").empty();
+                notif('warning', 'PERHATIAN! Data Harga Beli Cabang & Harga Beli Pusat kosong.');
+                // $('#Produk'+e).val("");
+                // $('#Satuan'+e).val("");
+                // $('#Kategori'+e).val("");
+                $('#HPCx'+e).val("");
+                $('#HPC'+e).val("");
+                $('#HPP'+e).val("");
+                $('#HBC'+e).val("");
+                $('#HBP'+e).val("");
+
+            }
+            else{
+                if (Kategori == "Psikotropika" || Kategori == 'Precursor' || Kategori == 'OOT') 
+                {
+                    $('#frmKeperluan').show();
+                    $('#frmNamaKep').show();
+                    $('#frmAlamatKep').show();
+                }
+            }
+        }
+    }
+
+    function saveData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}saveDataUsulanBeliBonusPrinsipal"; 
+        var status = true;
+        var bucket = document.getElementById('bucket').value;
+        var cabang = document.getElementById('Cabang').value;
+        var limitx = document.getElementById('limitx').value;
+        var Sisalimitx = document.getElementById('SisaLimitx').value;
+        var Keperluan = document.getElementById('Keperluan').value;
+        var NamaKep = document.getElementById('NamaKep').value;
+        var AlamatKep = document.getElementById('AlamatKep').value;
+        var Prinsipal = document.getElementById('Prinsipal').value;
+
+        if (cabang == "") {
+            notif('warning', 'PERHATIAN! Data Cabang Belum Dipilih');
+            // alert('PERHATIAN! Data Cabang Belum Dipilih');
+            status=false;
+        }
+
+        if (tipe == 'ID Paket' && (idpaket == '' || pelanggan == '')) 
+        {            
+            notif('warning', 'PERHATIAN! ID Paket atau Pelanggan masih kosong');
+            status=false;
+        }
+
+        if (Prinsipal == "") {
+            notif('warning', 'PERHATIAN! Data Prinsipal Belum Dipilih');
+            // alert('PERHATIAN! Data Prinsipal Belum Dipilih');
+            status=false;
+        }
+        
+        if(limitx == ""){
+            notif('warning', 'Value Prinsipal Limit Masih Kosong');
+            status=false;
+        }
+        // if(limitx < Sisalimitx){
+        //     notif('warning', 'Sisa Limit Melebihi Batas Maksimal Limit Pembelian');
+        //     status=false;
+        // }
+        for (var i = 0; i <= bucket; i++) {
+            var Produk = document.getElementById('Produk'+i).value;
+            var Satuan = document.getElementById('Satuan'+i).value;   
+            var Kategori = document.getElementById('Kategori'+i).value;  
+            var Qty = document.getElementById('Qty'+i).value;  
+            var Bonus = document.getElementById('Bonus'+i).value; 
+            var Diskon = document.getElementById('Diskon'+i).value; 
+            var Harga = document.getElementById('HargaDeal'+i).value;  
+            var number=/^[0-9]+$/;
+            if (Produk == "" || Satuan == "" || Bonus == "" || Bonus == 0) 
+            {
+                // notif('warning', 'PERHATIAN! Data Barang Belum Lengkap. Hapus Baris Jika Tidak Diperlukan.', 'produk');
+                notif('warning', 'PERHATIAN! Data Barang Belum Lengkap. Hapus Baris Jika Tidak Diperlukan');
+                status=false;
+            } 
+
+            if(!Bonus.match(number) || !Diskon.match(number) || !Harga.match(number)){
+                notif('warning', 'PERHATIAN! Qty / Bonus / Diskon / Harga Harus diisi Angka');
+                status=false;
+            }
+
+            if (Kategori == 'Psikotropika' || Kategori == 'Precursor' || Kategori == 'OOT') 
+            {
+                if (Keperluan == '' || NamaKep == '' || AlamatKep == '') 
+                {
+                    notif('warning', 'PERHATIAN! Terdapat Produk dengan kategori "Psikotropika", "Precursor", "OOT". Keperluan, Nama Keperluan dan Alamat Keperluan WAJIB diisi.');
+                    status=false;
+                }
+            }
+        }
+        // ajax adding data to database
+        if (status==true) {
+            $('#progressGIF').show();
+            var formdata = new FormData();      
+            // append tipe file
+            // var Dokumen = $('#Dokumen')[0].files[0];
+            // formdata.append('Dokumen', Dokumen);
+
+            // var Dokumen2 = $('#Dokumen2')[0].files[0];
+            // formdata.append('Dokumen2', Dokumen2);
+
+            $.each($('#myForm').serializeArray(), function(a, b){
+                formdata.append(b.name, b.value);
+            });
+         
+            var formData = new FormData($('#myForm')[0]);
+
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil disimpan');                          
+                        clearRow();
+                        $('#myForm')[0].reset(); 
+                    }
+                    $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                    // notif('danger', 'PERHATIAN! Save Data Usulan Beli GAGAL');
+                    clearRow('all');
+                    $('#myForm')[0].reset();
+                    $('#progressGIF').hide();
+                }
+            });
+        }
+    }
+
+function vieworder(){
+    var Prinsipal = document.getElementById('Prinsipal').value;
+    var split2 = Prinsipal.split("~");
+    var prinspl = split2[0];
+    var ltime = document.getElementById('ltime').value;
+    if ((prinspl)) {
+        $.ajax({
+            url : "{{ base_url }}listProdukOrderMonitor/",
+            type: "POST",
+            data:{prinsipal:prinspl, ltime:ltime},
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk+"~"+data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $("#notif").empty();
+                notif('danger','Error get list Produk from ajax');
+            }
+        });
+    }
+    
+}
+
+
+function hitung() {
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        var limit = ((document.getElementById('limit').value) ? document.getElementById('limit').value : 0);
+        var po = $('#po').val(0);
+        var summary = 0;
+        var totgross = 0;
+        var totpotongan = 0;
+        var totppn = 0;
+        var totAll = 0;
+        for (var e = 0; e <= bucket; e++) {
+            var Qty = ((document.getElementById('Qty'+e).value) ? document.getElementById('Qty'+e).value : 0);
+            var Diskon = ((document.getElementById('Diskon'+e).value) ? document.getElementById('Diskon'+e).value : '');
+            var DiskonMC = ((document.getElementById('DiscCab'+e).value) ? document.getElementById('DiscCab'+e).value : 0);
+            var DiskonMP = ((document.getElementById('DscPSt'+e).value) ? document.getElementById('DscPSt'+e).value : 0);
+            var Bonus = ((document.getElementById('Bonus'+e).value) ? document.getElementById('Bonus'+e).value : 0);
+            var HargaDeal = ((document.getElementById('HargaDeal'+e).value) ? document.getElementById('HargaDeal'+e).value : 0);
+
+            var HBP = ((document.getElementById('HBP'+e).value) ? document.getElementById('HBP'+e).value : 0);
+            var HBC = ((document.getElementById('HBC'+e).value) ? document.getElementById('HBC'+e).value : 0);
+
+            var prins = ((document.getElementById('Prinsipal').value) ? document.getElementById('Prinsipal').value : '');
+
+            var hpc = 0;
+            var hpp = 0;
+            var value = 0;
+            var valueP = 0;
+            var gros = 0;
+            var grosP = 0;
+
+            var limitB = ((document.getElementById('LMB'+e).value) ? document.getElementById('LMB'+e).value : 0);
+            var valBeli = ((document.getElementById('VBELI'+e).value) ? document.getElementById('VBELI'+e).value : 0);
+            var sLimB = 0;
+
+            var valuePrins = 0;
+
+            if(Diskon == '')
+            {
+                var diskon = DiskonMC/100;
+            }else
+            {
+                var diskon = Diskon/100;
+            }
+
+            var diskonP = DiskonMP/100;
+
+
+            // Nilai VALUE Usulan Cabang
+            // if (HargaDeal == 0) {
+            //     gros = Qty * HBC;                               
+            //     var disc = ( HBC * Qty ) * ( diskon );
+            //     var bns = ( Bonus * HBC) - ( Bonus * HBC * diskon);                 
+            //     var potongan = bns + disc;     
+            //     value = gros - potongan;
+            //     var ppn = (value) * ( 10 / 100 );
+            //     var TotValue = value + ppn;
+            // }
+            // else
+            // {
+            //     gros = Qty * HargaDeal;  
+            //     var disc = ( HargaDeal * Qty ) * ( diskon );
+            //     var bns = ( Bonus * HargaDeal) - ( Bonus * HargaDeal * diskon); 
+            //     var potongan = bns + disc;  
+            //     value = gros - potongan;
+            //     var ppn = (value) * ( 10 / 100 );
+            //     var TotValue = value + ppn;
+            // }
+
+            // //value usulan PO
+            // grosP = Qty * HBP;
+            // var discP = ( HBP * Qty ) * ( diskonP );
+            // var bnsP = ( Bonus * HBP) - ( Bonus * HBP * diskonP);                 
+            // var potonganP = bnsP + discP;     
+            // valueP = grosP - potonganP;
+            // var ppnP = (valueP) * ( 10 / 100 );
+            // var TotValueP = valueP + ppn;
+            if (HargaDeal == 0) {
+                gros = (parseInt(Qty)+parseInt(Bonus)) * HBC;                               
+                var disc = ( HBC * parseInt(Qty) ) * ( diskon );
+                var bns = ( parseInt(Bonus) * HBC);                 
+                var potongan = parseInt(bns) + parseFloat(disc);     
+                value = gros - potongan;
+                var ppn = (value) * ( 10 / 100 );
+                var TotValue = value + ppn;
+            }
+            else
+            {
+                gros = (parseInt(Qty)+parseInt(Bonus)) * HargaDeal;  
+                var disc = ( HargaDeal * parseInt(Qty) ) * ( diskon );
+                var bns = ( Bonus * HargaDeal); 
+                 var potongan = parseInt(bns) + parseFloat(disc);  
+                value = gros - potongan;
+                var ppn = (value) * ( 10 / 100 );
+                var TotValue = value + ppn;
+            }
+            //value usulan PO
+            grosP = (parseInt(Qty)+parseInt(Bonus)) * HBP;
+            var discP = ( HBP * parseInt(Qty) ) * ( diskonP );
+            var bnsP = ( parseInt(Bonus) * HBP);                 
+            var potonganP = bnsP + discP;     
+            valueP = grosP - potonganP;
+            var ppnP = (valueP) * ( 10 / 100 );
+            var TotValueP = valueP + ppn;
+            // notif ('warning',Qty + "~" + Bonus + "~"+ HBP+ "~"+ valueP+ "~"+ diskonP);
+
+            // diskon HPC HPP
+            if(parseInt(value) == 0 && parseInt(Qty) == 0 && parseInt(Bonus)==0){
+                $('#HPC'+e).val(0);  
+            }else{
+                var hpc = parseInt(value) / (parseInt(Qty)+parseInt(Bonus));
+                $('#HPCx'+e).val(numberWithCommas(hpc.toFixed(2)));
+                $('#HPC'+e).val(hpc.toFixed(2));
+            }
+            if(parseInt(valueP) == 0 && parseInt(Qty) == 0 && parseInt(Bonus)==0){
+                $('#HPP'+e).val(0);
+            }else{
+                var hpp = parseInt(valueP) / (parseInt(Qty)+parseInt(Bonus));
+                $('#HPP'+e).val(hpp.toFixed(2));
+            }
+
+            $('#gross'+e).val(gros);
+            $('#ppn'+e).val(ppn);
+            $('#total'+e).val(TotValue);
+            $('#val_disc'+e).val(disc);
+            $('#val_bonus'+e).val(bns);
+            $('#PotonganCab'+e).val(potongan);
+            summary = summary + value;
+            totgross = totgross + gros;
+            totpotongan = totpotongan + potongan;
+            totppn = totppn + ppn;
+            totAll = totAll + TotValue;
+            
+
+            //total
+            $('#ValuePO'+e).val(valueP.toFixed(2));
+
+            $('#Value'+e).val(value.toFixed(2));
+            $('#Valuex'+e).val(numberWithCommas(value.toFixed(2)));
+            $('#PotonganCab'+e).val(potongan.toFixed(2));
+
+            // notif ('warning', potongan);
+
+                for (var ei = 0; ei <= bucket; ei++) {
+
+                    var prinsC = ((document.getElementById('Prinsipal').value) ? document.getElementById('Prinsipal').value : '');
+        
+                    if(prinsC === prins)
+                    {
+                    var valC = ((document.getElementById('Value'+ei).value) ? document.getElementById('Value'+ei).value : 0);
+                        valuePrins = parseInt(valuePrins) + parseInt(valC); 
+                    }
+
+                sLimB = limitB - valuePrins;
+                }
+
+             sLimB = sLimB - parseInt(valBeli);
+            $('#sLMB'+e).val(Math.round(sLimB.toFixed(2)));
+
+            // if(parseInt(sLimB) < 0)
+            // {
+            //     notif('warning', 'PERHATIAN! Limit '+ prins +', Tidak Cukup, Limit= ' + numberWithCommas(limitB) + ' Beli =' + numberWithCommas(valBeli) + ' value = ' + numberWithCommas(valBeli) + ' Sisa = ' + numberWithCommas(sLimB));
+            //     clearRow(e);
+            // }
+
+        }
+            $('#TotalValue').val(summary.toFixed(2));
+            $('#TotalGross').val(totgross.toFixed(2));
+            $('#Totalpotongan').val(totpotongan.toFixed(2));
+            $('#Totalppn').val(totppn.toFixed(2));
+            $('#TotalAll').val(totAll.toFixed(2));
+            $('#TotalValueMask').val(summary.toFixed(2));
+            $('#TotalValueMaskx').val(numberWithCommas(summary.toFixed(2)));
+
+            $('#limit').val(limitB);
+            $('#limitx').val(numberWithCommas(limitB));
+            $('#po').val(valBeli);
+            $('#pox').val(numberWithCommas(valBeli));
+
+            var sisa = parseInt(limit) - parseInt(po) - parseInt(summary);
+            $('#SisaLimit').val(Math.round(sLimB.toFixed(2)));
+            $('#SisaLimitx').val(numberWithCommas(Math.round(sLimB.toFixed(2))));
+
+    }
+    
+</script>
+{% endblock %}

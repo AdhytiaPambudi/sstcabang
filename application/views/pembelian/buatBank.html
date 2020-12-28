@@ -1,0 +1,889 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.hide{
+    display: none;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>                       
+<form role="form" method="post" id="myForm">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Order</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <span>Ket: F1(Tambah Baris), F2(Save Data), F4(Hapus Baris)</span>
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading">
+                    <b>Form Transaksi Bank</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body"> 
+                    <!-- <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px"> 
+                        <div class="form-group-sm">
+                            <label class="control-label">Approval</label>
+                            <table width="100%">
+                                <tr>
+                                    <td width="90%"><input class="form-control" name="approval" id="approval"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div> -->
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px"> 
+                        <input type="hidden" name="kategori" id="kategori" value="Bank">                   
+                        <div class="form-group-sm">
+                            <label class="control-label">Cabang</label>
+                            <input class="form-control ignore" type="text" name="cabang" id="cabang" value = "{{logs.cabang}}" readonly="">
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Tanggal</label>
+                            <input class="form-control ignore" type="text" name="tanggal" id="tanggal" value="{{tgl}}" readonly="">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">No Voucher</label>
+                            <input class="form-control ignore" type="text" name="voucher" id="voucher" value="{{no}}" readonly="">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Bank Transaksi</label>
+                            <select class="form-control" id="bank_trans" name="bank_trans" onchange="getsaldoawal();">
+                                <option value="">--- Silahkan Pilih Bank ---</option>
+                                    {% for bank in bank %}
+                                    <option value="{{ bank.Bank }}">{{ bank.Bank }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Jenis Transaksi</label>
+                            <select class="form-control" name="jtransaksi" id="jtransaksi" onchange="clearRow();getKatagoriTransaksi();">
+                                <option value="">Pilih</option>
+                                <option value="Keluar">Keluar</option>
+                                <option value="Masuk">Masuk</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Saldo Awal</label>
+                            <input class="form-control ignore" type="text" name="saldoawal" id="saldoawal" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Total</label>
+                            <input class="form-control ignore" type="text" name="total" id="total" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">                    
+                        <div class="form-group-sm">
+                            <label class="control-label">Saldo Akhir</label>
+                            <input class="form-control ignore" type="text" name="saldoakhir" id="saldoakhir" readonly="" style="text-align:right;">
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>Detail</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">  
+                    <div class="form-group-sm">
+                        <div>
+                            <table class="table" id="table-produk">
+                                <thead>
+                                    <tr>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Transaksi</th>
+                                        <th>Katagori</th>
+                                        <th>Tipe</th>
+                                        <th colspan='3'>Pilih Transaksi</th>
+                                        <th colspan='4'>Keterangan</th>
+                                       <!--  <th>DR</th>
+                                        <th>CR</th>
+                                        <th>Jurnal ID</th> -->
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <!-- <td width="200px"><input type="text" class="form-control" name="katagori[0]" id="katagori0" onfocus="setKat(0)" onchange="getKatagoriTransaksi(0)"></td> -->
+                                        <td width="300px"><input type="text" class="form-control" name="transaksi[0]" id="transaksi0" onfocus="setTrans(0)" onchange="getDetailTransaksi(0)" placeholder="Transaksi"><input type="hidden" class="form-control" name="katagori[0]" id="katagori0"></td>
+                                        <td width="200px"><input type="text" class="form-control" name="kategori3[0]" id="kategori30" readonly="" placeholder="Kategori"></td>
+                                         <td width="130px"><input type="text" class="form-control" name="tipe[0]" id="tipe0" readonly="" style = 'width:100px' placeholder="Tipe"></td>
+                                        <td><input type="text" class="form-control hide" onfocus="setKar(0)" name="karyawan[0]" id="karyawan0" onchange="getDIH(0)" style="width:100px" placeholder="karyawan"><input type="text" class="form-control hide" name="bank[0]" id="bank0" onfocus="setBank(0)" placeholder="Bank"><input type='text' class="form-control hide" name="giro[0]" id="giro0" style = 'width:250px' onchange="valgiro(0)" placeholder="Pilih No Giro"></td><td width="150px"><input type="text" class="form-control hide" name="notitipan[0]" id="notitipan0" placeholder="No Titipan" readonly=""></td><td width="150px"><input type="text" onfocus="setDIH(0)" class="form-control hide" name="NoDIH[0]" id="NoDIH0" onchange="getket(0)" placeholder="NoDIH"></td>
+                                        <td width="150px"><input type="text" class="form-control" name="keterangan[0]" id="keterangan0" style="text-transform:uppercase" placeholder="Keterangan" style = "width:200px"></td>
+                                        <td><input type="text" class="form-control hide" readonly="" name="Status[0]" id="Status"></td>
+                                        <td><input type="text" class="form-control hide" readonly="" name="cr[0]" id="cr0"></td>
+                                         <td><input type="text" class="form-control hide" readonly="" name="dr[0]" id="dr0"></td>
+                                      <!--   <td><input type="text" class="form-control hide" readonly="" name="jurnalid[0]" id="jurnalid0"></td> -->
+                                        <td><input type="text" class="form-control newRow" name="jumlah[0]" id="jumlah0" onkeyup="hitung()" onchange="hitung()" placeholder="Value" style = 'width:200px;text-align:right;'></td>
+                                    </tr>
+                                </tbody>
+                            </table>   
+                            <input type="hidden" name="bucket" id="bucket" value="0">   
+                        </div>
+                    </div>                    
+                    <div class="form-group" align="center">
+                        <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->   
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+</form>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+     var katagoriSource = [];
+    var transaksiSource = [];
+    var transdihSource = [];
+    var cabangSource = [];
+    var bankSource = [];
+    var karSource = [];
+    $(document).ready(function() {      
+        // START AUTOCOMPLETE NOVOUCHER
+            // $.ajax({
+            //     url : "{{ base_url }}listGLNoVoucher",
+            //     type: "GET",
+            //     dataType: "JSON",
+            //     success: function(data)
+            //     {
+            //         for (var i in data) {
+            //             transaksiSource[i] = data[i].Transaksi;
+            //         }
+
+            //     },
+            //     error: function (jqXHR, textStatus, errorThrown)
+            //     {
+            //         notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+            //     }
+            // }); 
+
+
+        // START AUTOCOMPLETE CABANG
+        //     $.ajax({
+        //         url : "{{ base_url }}listCabang",
+        //         type: "GET",
+        //         dataType: "JSON",
+        //         success: function(data)
+        //         {
+        //             for (var i in data) {
+        //                 cabangSource[i] = data[i].Cabang;
+        //             }
+
+        //         },
+        //         error: function (jqXHR, textStatus, errorThrown)
+        //         {
+        //             notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+        //         }
+        //     }); 
+
+        // $('#cabang').typeahead({
+        //     source: cabangSource,
+        // });
+    });  
+
+
+    // $( "#tanggal" ).datepicker({
+    //     changeMonth: true,
+    //     changeYear: true,
+    //     showButtonPanel: true,
+    //     format: 'yyyy-mm-dd',
+    //     onClose: function(dateText, inst) { 
+    //         $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+    //     }
+    // });
+
+    $(document).on('keydown', '.newRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (keyCode == 9 && e.shiftKey == false) { 
+        addRow();
+        // call custom function here
+      } 
+    });
+
+    $(document).on('keydown', '.delRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (e.shiftKey && keyCode === 9) { 
+        removeRow();
+        // call custom function here
+      } 
+    });
+
+    document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }
+
+    function clearRow() {
+        var b = document.getElementById('bucket').value;
+        for (var i = b; i > 0; i--) {
+            $("#itemRow"+i).remove();
+        }
+        $('#transaksi0').val('');
+        $('#kategori30').val('');
+        $('#tipe0').val('');
+        $('#karyawan0').val('');
+        $('#bank0').val('');
+        $('#giro').val('');
+        $('#keterangan0').val('');
+        $('#dr0').val('');
+        $('#cr0').val('');
+        $('#jurnalid0').val('');
+        $('#jumlah0').val('');
+        $('#notitipan0').val('');
+        $('#NoDIH0').val('');
+        rowNum = 1;
+        $("#bucket").val(0);
+        // addRow();
+    }
+
+     function clear(e) {
+        // $('#transaksi'+e).val('');
+        $('#kategori3'+e).val('');
+        $('#tipe'+e).val('');
+        $('#karyawan'+e).val('');
+        $('#bank'+e).val('');
+        $('#giro'+e).val('');
+        $('#keterangan'+e).val('');
+        $('#dr'+e).val('');
+        $('#cr'+e).val('');
+        $('#notitipan'+e).val('');
+        $('#jumlah'+e).val('');
+        $('#NoDIH'+e).val('');
+    }
+
+    var rowNum = 1;
+    function addRow(frm)
+    {
+        $("#notif").empty();
+        var b = document.getElementById('bucket').value;
+        var cek = (document.getElementById('transaksi'+b).value) ? document.getElementById('transaksi'+b).value : "";
+        if (cek != "") {
+            var x = parseInt(rowNum) + 1;
+           $('#table-produk').append('<tr id="itemRow'+rowNum+'"><td>'+x+'</td> <td width="300px"><input type="text" class="form-control delRow" name="transaksi['+rowNum+']" id="transaksi'+rowNum+'" onfocus="setTrans('+rowNum+')" onchange="getDetailTransaksi('+rowNum+')"><input type="hidden" class="form-control" name="katagori['+rowNum+']" id="katagori'+rowNum+'"></td> <td width="200px"><input type="text" class="form-control" name="kategori3['+rowNum+']" id="kategori3'+rowNum+'" readonly="" placeholder="Kategori"></td> <td><input type="text" class="form-control" name="tipe['+rowNum+']" id="tipe'+rowNum+'" readonly placeholder="Tipe"></td> <td><input type="text" onfocus="setKar('+rowNum+')" class="form-control hide" name="karyawan['+rowNum+']" id="karyawan'+rowNum+'" onchange="getDIH('+rowNum+')"><input type="text" class="form-control hide" name="bank['+rowNum+']" id="bank'+rowNum+'" onfocus="setBank('+rowNum+')"><input type="text" class="form-control hide" name="giro['+rowNum+']" id="giro'+rowNum+'" placeholder="giro" style="width:250px" onchange="valgiro('+rowNum+')" placeholder="Pilih No Giro"></td><td width="150px"><input type="text" class="form-control hide" name="notitipan['+rowNum+']" id="notitipan'+rowNum+'" readonly=""></td><td width="150px"><input type="text" onfocus="setDIH('+rowNum+')" class="form-control hide" name="NoDIH['+rowNum+']" id="NoDIH'+rowNum+'" onchange="getket('+rowNum+')"></td><td width="150px"><input type="text" class="form-control" name="keterangan['+rowNum+']" id="keterangan'+rowNum+'" style="text-transform:uppercase" placeholder="Keterangan" style = "width:200px"></td><td><input type="text" class="form-control hide" readonly="" name="Status['+rowNum+']" id="Status'+rowNum+'"></td><td><input type="text" class="form-control hide" readonly="" name="cr['+rowNum+']" id="cr'+rowNum+'"></td><td><input type="text" class="form-control hide" readonly="" name="dr['+rowNum+']" id="dr'+rowNum+'"></td><td><input type="text" class="form-control newRow" name="jumlah['+rowNum+']" id="jumlah'+rowNum+'" onkeyup="hitung()" onchange="hitung()" style = "width:200px;text-align:right;"></td></tr>');         
+
+            $("#bucket").val(rowNum);
+            rowNum++;            
+        }
+        else{
+            notif('warning', 'PERHATIAN! Baris terakhir belum lengkap terisi');
+        }
+    }
+
+    function removeRow()
+    {        
+        if (rowNum>0) {
+            rowNum--;
+            $('#itemRow'+rowNum).remove();
+        }
+        else{
+            notif('warning', 'PERHATIAN! Baris tidak bisa dihapus');
+        }
+        var b = rowNum - 1;
+        $('#bucket').val(b);
+    }
+
+    function getTransaksi() { 
+        transaksiSource.length = 0;       
+        var trans = document.getElementById('jtransaksi').value;
+        // START AUTOCOMPLETE TRANSAKSI
+        if (trans != "") {
+            $.ajax({
+                url : "{{ base_url }}listGLTransaksi",
+                type: "POST",
+                data:{jenis:trans, kat:'BANK'},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    transaksiSource=[];
+                    for (var i in data) {
+                        transaksiSource[i] = data[i].kode+'~'+data[i].Transaksi;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+        }
+    }
+
+    function getKatagori() { 
+        katagoriSource.length = 0;       
+        var trans = document.getElementById('jtransaksi').value;
+        // START AUTOCOMPLETE TRANSAKSI
+        if (trans != "") {
+            $.ajax({
+                url : "{{ base_url }}listGLKatagori",
+                type: "POST",
+                data:{jenis:trans, kat:'BANK'},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    katagoriSource=[];
+                    for (var i in data) {
+                        katagoriSource[i] = data[i].Kategori2;
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+        }
+    }
+
+    function setTrans(e) {
+        if (transaksiSource == ""){
+            notif('warning', 'PERHATIAN! Silahkan pilih dahulu jenis transaksi');
+            $("#jtransaksi").focus();
+        }
+        else{
+            clear(e);
+            $('#transaksi'+e).typeahead('destroy');
+            $('#transaksi'+e).val("");
+            $('#transaksi'+e).typeahead({
+                source: transaksiSource,
+            });
+        }
+    }
+
+     function setKat(e) {
+        if (katagoriSource == ""){
+            notif('warning', 'PERHATIAN! Silahkan pilih dahulu jenis transaksi');
+            $("#jtransaksi").focus();
+        }
+        else{
+            $('#katagori'+e).typeahead({
+                source: katagoriSource,
+            });
+        }
+    }
+
+    function setKar(e) {
+        if (karSource == ""){
+            notif('warning', 'PERHATIAN! Silahkan pilih dahulu jenis transaksi');
+            $("#jtransaksi").focus();
+        }
+        else{
+            $('#karyawan'+e).typeahead({
+                source: karSource,
+            });
+        }
+    }
+
+     function setDIH(e) {
+        if (transdihSource == ""){
+            notif('warning', 'PERHATIAN! No DIH tidak ditemukan');
+            // $("#karyawan"+e).focus();
+        }
+        else{
+            $('#NoDIH'+e).typeahead({
+                source: transdihSource,
+            });
+        }
+    }
+
+    function setBank(e) {
+        if (bankSource == ""){
+            notif('warning', 'PERHATIAN! Silahkan pilih dahulu jenis transaksi');
+            $("#karyawan"+e).focus();
+        }
+        else{
+            $('#bank'+e).typeahead({
+                source: bankSource,
+            });
+        }
+    }
+
+    function getket(e) {
+        var kary = document.getElementById('karyawan'+e).value;
+        var kary = kary.split("~");
+        var karyawan = kary[0];
+        var jabatan = kary[2];
+        var NoDIH = document.getElementById('NoDIH'+e).value;  
+        document.getElementById('keterangan'+e).value = "DIH/"+NoDIH+" - "+"Salesman : "+karyawan+" - "+"Jabatan : "+jabatan;
+    }
+
+    function getKatagoriTransaksi() {
+        var jenis = document.getElementById('jtransaksi').value;
+        var bank_trans = document.getElementById('bank_trans').value;
+        if(bank_trans == ""){
+            notif("warning","Silahkan pilih Bank Transaksi terlebih dahulu");
+            return;
+        }
+            $.ajax({
+                url : "{{ base_url }}listGLTransaksi",
+                type: "POST",
+                data:{jenis:jenis,kat:'BANK',tipe:""},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    transaksiSource=[];
+                    for (var i in data) {
+                        transaksiSource[i] = data[i].NamaTransaksi;
+                    }
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+    }
+
+   function getDetailTransaksi(e) {
+        var jenis = document.getElementById('jtransaksi').value;
+        // var tipe = document.getElementById('katagori'+e).value; 
+        var trans = document.getElementById('transaksi'+e).value; 
+        clear(e);
+        var a = transaksiSource.indexOf(trans);
+        if (a >= 0) {
+            $.ajax({
+                url : "{{ base_url }}detailGLTransaksi",
+                type: "POST",
+                data:{trans:trans,jenis:'BANK'},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        $("#katagori"+e).val(data[i].Kategori2);
+                        $("#kategori3"+e).val(data[i].Kategori3);
+                        $("#Status"+e).val(data[i].Status);
+                        $("#cr"+e).val(data[i].CR);
+                        $("#dr"+e).val(data[i].DR);
+                        $('#tipe'+e).val(data[i].Kategori6+'~'+data[i].Kategori7);
+                        setTipe(e,data[i].Kategori6,data[i].Kategori7);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+        } 
+    }
+
+    function setTipe(e,tipe,tipe1) {   
+        if (tipe == 'Bank'){
+            $('#bank'+e).empty();
+            $('#bank'+e).removeClass('hide');
+            $('#NoDIH'+e).addClass('hide');
+            $('#karyawan'+e).addClass('hide');
+            $('#giro'+e).addClass('hide');
+            $('#notitipan'+e).val('');
+            $.ajax({
+                url : "{{ base_url }}listGLBank",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    bankSource=[];
+                    for (var i in data) {
+
+                        bankSource[i] = data[i].Bank;
+                        // $('#bank'+e).append('<option>'+data[i].Bank+'</option>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Bank');
+                }
+            }); 
+        }
+        else if(tipe == 'Karyawan'){
+            $('#karyawan'+e).empty();
+            $('#karyawan'+e).removeClass('hide');
+            $('#bank'+e).addClass('hide');
+            $('#giro'+e).addClass('hide');
+            $.ajax({
+                url : "{{ base_url }}listGLKaryawan",
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    karSource=[];
+                    for (var i in data) {
+                         karSource[i] = data[i].Kode+'~'+data[i].Nama+'~'+data[i].Jabatan;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Karyawan');
+                }
+            }); 
+            if(tipe1 == 'DIH'){
+                $('#NoDIH'+e).removeClass('hide');
+            }else{
+                $('#NoDIH'+e).addClass('hide');
+            }
+        }else if(tipe == 'Giro'){
+            $('#giro'+e).removeClass('hide');
+            $('#karyawan'+e).addClass('hide');
+            $('#NoDIH'+e).addClass('hide');
+            $('#bank'+e).addClass('hide');
+            $('#notitipan'+e).val('');
+            getGiro(e);
+        }
+        else{
+            console.log("kesini");
+            $('#karyawan'+e).addClass('hide');
+            $('#NoDIH'+e).addClass('hide');
+            $('#bank'+e).addClass('hide');
+            $('#giro'+e).addClass('hide');
+            $('#notitipan'+e).val('');
+        }
+        if(tipe1 == 'Titipan'){
+            $('#notitipan'+e).removeClass('hide');
+            $.ajax({
+                url : "{{ base_url }}getNoTitipan",
+                type: "POST",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    $('#notitipan'+e).val(data);
+                    $("#keterangan"+e).focus();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            });
+
+        }else{
+            $('#notitipan'+e).addClass('hide');
+            $('#notitipan'+e).val('');
+        }
+    }
+
+    function getDIH(e) {
+        var karyawan = document.getElementById("karyawan"+e).value;
+        var explode = karyawan.split('~');
+        var transaksi = document.getElementById("transaksi"+e).value;
+        var tipe = document.getElementById("tipe"+e).value;
+        var xpl = tipe.split('~');
+        var tipe1 = xpl[0];
+        var tipe2 = xpl[1];
+        var karyawan = explode[0];
+        if(tipe2 == 'DIH'){
+            $.ajax({
+                url : "{{ base_url }}getNoDIH",
+                type: "POST",
+                data:{karyawan:karyawan,transaksi:transaksi,jenis:'Bank'},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    // transdihSource=[];
+                    for (var i in data) {
+                        transdihSource[i] = data[i].NoDIH;
+                        // $('#NoDIH'+e).append('<option>'+data[i].NoDIH+'</option>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            });
+            $('#NoDIH'+e).removeClass('hide'); 
+        }else{
+            $('#NoDIH'+e).addClass('hide');
+        }
+    }
+    var transgiroSource =[];
+    function getGiro(e) {
+        var tipe = document.getElementById("tipe"+e).value;
+        var transaksi = document.getElementById("transaksi"+e).value;
+        var xpl = tipe.split('~');
+        var tipe1 = xpl[0];
+        var tipe2 = xpl[1];
+        var tipegiro ="";
+        if(transaksi == 'Pencairan Giro'){
+            tipegiro ="cair"
+        }else if(transaksi == 'Tolakan Giro'){
+            tipegiro ="tolak"
+        }else if(transaksi == 'Pembatalan Giro'){
+            tipegiro ="batal"
+        }
+        //console.log(tipegiro);
+        if(tipe1 == 'Giro'){
+            $.ajax({
+                url : "{{ base_url }}listGLGiro",
+                type: "POST",
+                dataType: "JSON",
+                data:{tipegiro:tipegiro},
+                success: function(data)
+                {
+                    // transgiroSource=[];
+                    for (var i in data) {
+                        transgiroSource[i] = data[i].NoGiro+'~'+data[i].ValueGiro+'~'+data[i].StatusGiro+'~'+data[i].Bank;
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            });
+            $('#giro'+e).typeahead({
+                source: transgiroSource
+            });
+            $('#NoDIH'+e).addClass('hide'); 
+        }else{
+            $('#NoDIH'+e).removeClass('hide');
+        }
+    }
+
+    function valgiro(e){
+        var giro = document.getElementById("giro"+e).value;
+        var xpld = giro.split('~');
+        var nogiro = xpld[0];
+        var valgiro = xpld[1];
+        var statusgiro = xpld[2];
+        var bankgiro = xpld[3];
+
+        document.getElementById("jumlah"+e).value = valgiro;
+    }
+
+    function getDIHByBank(e) {
+        // $('#karyawan'+e).val('');
+        // var myselect = document.getElementById("bank"+e);
+        var bank = document.getElementById("bank"+e).value;
+        // var bank = myselect.options[myselect.selectedIndex].value;
+        // var explode = bank.split('~');
+        var transaksi = document.getElementById("transaksi"+e).value;
+        // var karyawan = explode[0];
+        // alert(bank);
+            $.ajax({
+                url : "{{ base_url }}getNoDIHByBank",
+                type: "POST",
+                data:{bank:bank,transaksi:transaksi},
+                dataType: "JSON",
+                success: function(data)
+                { 
+                    transdihSource=[];
+                    for (var i in data) {
+                        transdihSource[i] = data[i].NoDIH;
+                        // $('#NoDIH'+e).append('<option>'+data[i].NoDIH+'</option>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+        // }
+    }
+
+   function hitung() {
+        var e = document.getElementById('bucket').value;
+        var j = document.getElementById('jtransaksi').value;
+        var saldoawal = document.getElementById('saldoawal').value;
+        saldoawal = saldoawal.replace(/,/g,'');
+        var total = 0;
+        for (var i = 0; i <= e; i++) {
+            var jumlah = (document.getElementById('jumlah'+i).value) ? document.getElementById('jumlah'+i).value : 0;
+            total = parseInt(total) + parseInt(jumlah);
+        }
+        if (j == 'Masuk')
+            saldoakhir = parseInt(saldoawal) + parseInt(total);
+        else
+            saldoakhir = parseInt(saldoawal) - parseInt(total);
+
+        $("#total").val(numberWithCommas(total));
+        $("#saldoakhir").val(numberWithCommas(saldoakhir));
+    }
+
+    function saveData()
+    {
+        $("#notif").empty();
+        hitung();
+        var status = true
+        var saldoakhir = (document.getElementById('saldoakhir').value) ? document.getElementById('saldoakhir').value : -1;
+        var banktrans = document.getElementById('bank_trans').value;
+        var saldo = saldoakhir.replace(/,/g,'');
+        if (saldo < 0) {
+            status = false;
+            notif('warning', 'PERHATIAN! Saldo akhir tidak boleh lebih kecil dari 0');
+        }
+        var arr_batch=[];
+        var e = document.getElementById('bucket').value;
+        for (var i = 0; i <= e; i++) {
+            var dr = document.getElementById('dr'+i).value;
+            var jumlah = document.getElementById('jumlah'+i).value;
+            var bankref = document.getElementById('bank'+i).value;
+            var giro = document.getElementById('giro'+i).value;
+            var transaksi = document.getElementById("transaksi"+i).value;
+            var tipe = document.getElementById("tipe"+i).value;
+            var noDih = document.getElementById("NoDIH"+i).value;
+            var xpl = tipe.split('~');
+            var tipe1 = xpl[0];
+            var tipe2 = xpl[1];
+            if(banktrans == bankref){
+                var n = i+1;
+                notif('warning', 'PERHATIAN! Bank transaksi dan Bank Referensi ke '+n+' sama');
+                status = false;
+            }
+            if (dr == "" || jumlah == "") {
+                status = false;
+                var n = i+1;
+                notif('warning', 'PERHATIAN! Baris ke '+n+' belum lengkap');
+            }
+
+            if(transaksi == ""){
+                status = false;
+                var n = i+1;
+                notif('warning', 'PERHATIAN! Baris ke '+n+' nama transaksi kosong');
+            }
+            if(tipe2=='DIH'){
+                if(noDih == ''){
+                    status = false;
+                    var n = i+1;
+                    notif('warning', 'PERHATIAN! No DIH di baris  ke '+n+' masih kosong');
+                }
+            }
+            
+            if(transaksi =='Pencairan Giro' || transaksi =='Tolakan Giro' || transaksi =='Pembatalan Giro'){
+                if(giro == ""){
+                    status = false;
+                    var n = i+1;
+                    notif('warning', 'PERHATIAN! Giro Baris ke '+n+' Kosong');
+                }
+
+                var xx = arr_batch.findIndex(x => x.giro==giro);
+                if (xx === -1){
+                    arr_batch.push({
+                        giro : giro
+                    });
+                }
+                else {
+                   var jj = arr_batch.findIndex(x => x.giro==giro);
+                   if(jj === -1){
+                        arr_batch.push({
+                            giro : giro
+                        });
+                   }else{
+                        notif("warning","PERHATIAN! Ada Pemilihan Giro yg sama.");
+                        status = false;
+                   }
+                }
+            }
+            
+        }
+        if (status == true) {
+            $('#progressGIF').show();
+            $.ajax({
+                url : "{{ base_url }}saveGLTransaksi/",
+                type: "POST",
+                data: $('#myForm').serialize(),
+                dataType: "JSON",
+                success: function(data)
+                {                
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil disimpan');  
+                        // $('#myForm')[0].reset();
+                    }
+                    $('#progressGIF').hide();
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                   $('#progressGIF').hide();
+                   location.reload();
+                }
+            });
+        }
+    }
+
+    function getsaldoawal(){
+        $('#saldoawal').val(0);
+        var bank_trans = document.getElementById('bank_trans').value;
+        $.ajax({
+                url : "{{ base_url }}getsaldoawalbank",
+                type: "POST",
+                data:{bank_trans:bank_trans},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    for (var i in data) {
+                        if(data.saldo == null || data.saldo == ""){
+                            var saldo = 0;
+                        }else{
+                            var saldo = data.saldo;
+                        }
+                        $('#saldoawal').val(numberWithCommas(saldo));
+                        // transdihSource[i] = data[i].NoDIH;
+                        // $('#NoDIH'+e).append('<option>'+data[i].NoDIH+'</option>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Gagal tarik data Transaksi');
+                }
+            }); 
+    }
+</script>
+
+{% endblock %}

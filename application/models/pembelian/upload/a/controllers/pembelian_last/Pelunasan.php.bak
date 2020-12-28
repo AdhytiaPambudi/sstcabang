@@ -1,0 +1,457 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Pelunasan extends CI_Controller {
+
+	var $content;
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->model('Model_main');
+		$this->load->model('pembelian/Model_pelunasan');
+		$this->load->model('pembelian/Model_faktur');
+		$this->logs = $this->session->all_userdata();
+		$this->logged = $this->session->userdata('userLogged');
+		$this->userGroup = $this->session->userdata('userGroup');
+		$this->content = array(
+			"base_url" => base_url(),
+			"tgl" => date("Y-m-d"),
+			"logs" => $this->session->all_userdata(),
+			"logged" => $this->session->userdata('userLogged'),
+		);
+	}
+
+	public function buatpelunasan()
+	{	
+		if ( $this->logged ) 
+		{
+			$this->content['dih'] = $this->Model_pelunasan->listNoDIH();
+			$this->twig->display('pembelian/buatpelunasan.html', $this->content);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function getDataDIH()
+	{
+		if ($this->logged) 
+		{
+			$nodih = $_POST['nodih'];
+			$data = $this->Model_pelunasan->getDataDIH($nodih);
+			echo json_encode($data);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function saveDataPelunasan()
+	{          
+        if ($this->logged) 
+		{	
+			$params = (object)$this->input->post();
+			foreach ($params->nofaktur as $key => $value) 
+        	{ 
+				$this->Model_pelunasan->saveDataPelunasan($params, $key);
+				$status = $this->Model_pelunasan->prosesDataPelunasan($params->nodih, $params->nofaktur[$key]);
+				$status = $this->Model_faktur->prosesDataFaktur($params->nofaktur[$key]);
+			}
+			echo json_encode(array("status" => $status));
+		}
+		else 
+		{	
+			redirect("auth/logout");
+		}
+    }
+
+    public function datadih()
+	{	
+		if ( $this->logged ) 
+		{
+			$this->twig->display('pembelian/datadih.html', $this->content);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function listDataDIH($cek = null)
+	{	
+		if ($this->logged) 
+		{
+			/*Menagkap semua data yang dikirimkan oleh client*/
+
+			/*Sebagai token yang yang dikrimkan oleh client, dan nantinya akan
+			server kirimkan balik. Gunanya untuk memastikan bahwa user mengklik paging
+			sesuai dengan urutan yang sebenarnya */
+			$data = "";
+
+			$bySearch = "";
+			$byLimit = "";
+			$draw=$_REQUEST['draw'];
+
+			/*Jumlah baris yang akan ditampilkan pada setiap page*/
+			$length=$_REQUEST['length'];
+
+			/*Offset yang akan digunakan untuk memberitahu database
+			dari baris mana data yang harus ditampilkan untuk masing masing page
+			*/
+			$start=$_REQUEST['start'];
+
+			/*Keyword yang diketikan oleh user pada field pencarian*/
+			$search=$_REQUEST['search']["value"];
+
+
+			/*Menghitung total data didalam database*/
+			if($cek=='all')
+				$total = $this->Model_pelunasan->listDataDIH()->num_rows();
+			else
+				$total = $this->Model_pelunasan->listDataDIH('','','Open')->num_rows();
+
+			/*Mempersiapkan array tempat kita akan menampung semua data
+			yang nantinya akan server kirimkan ke client*/
+			$output=array();
+
+			/*Token yang dikrimkan client, akan dikirim balik ke client*/
+			$output['draw']=$draw;
+
+			/*
+			$output['recordsTotal'] adalah total data sebelum difilter
+			$output['recordsFiltered'] adalah total data ketika difilter
+			Biasanya kedua duanya bernilai sama, maka kita assignment 
+			keduaduanya dengan nilai dari $total
+			*/
+			$output['recordsTotal']=$output['recordsFiltered']=$total;
+
+			/*disini nantinya akan memuat data yang akan kita tampilkan 
+			pada table client*/
+			$output['data']=array();
+
+
+			/*Jika $search mengandung nilai, berarti user sedang telah 
+			memasukan keyword didalam filed pencarian*/
+			if($search!=""){
+			$bySearch = " and (NoDIH like '%".$search."%' or NoFaktur like '%".$search."%' or Pelanggan like '%".$search."%' or Penagih like '%".$search."%' or Salesman like '%".$search."%' or Status like '%".$search."%' or Total like '%".$search."%' or Saldo like '%".$search."%' or TglDIH like '%".$search."%' or TglFaktur like '%".$search."%')";
+			}
+
+
+			/*Lanjutkan pencarian ke database*/
+			$byLimit = " LIMIT ".$start.", ".$length;
+			/*Urutkan dari alphabet paling terkahir*/
+			// $this->db->order_by('name','asc');
+			if($cek=='all')
+				$query=$this->Model_pelunasan->listDataDIH($bySearch, $byLimit)->result();
+			else
+				$query=$this->Model_pelunasan->listDataDIH($bySearch, $byLimit, "Open")->result();
+
+
+			/*Ketika dalam mode pencarian, berarti kita harus
+			'recordsTotal' dan 'recordsFiltered' sesuai dengan jumlah baris
+			yang mengandung keyword tertentu
+			*/
+			if($search!=""){			
+				if($cek=='all')
+					$output['recordsTotal']=$output['recordsFiltered'] = $this->Model_pelunasan->listDataDIH($bySearch)->num_rows();
+				else
+					$output['recordsTotal']=$output['recordsFiltered'] = $this->Model_pelunasan->listDataDIH($bySearch, '', "Open")->num_rows();
+			}
+			$x = 0;
+			$i = 0;
+			$countCetak = 1;
+
+			foreach ($query as $baris) {
+				$x++;
+				$row = array();
+				$row[] = $x;
+				$row[] = '<button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Lihat" onclick="view('."'".$baris->NoFaktur."'".')"><i class="fa fa-eye"></i> Lihat</button>';
+				$row[] = (!empty($baris->Cabang) ? $baris->Cabang : "");
+	 			$row[] = (!empty($baris->NoDIH) ? $baris->NoDIH : "");
+	 			$row[] = (!empty($baris->NoFaktur) ? $baris->NoFaktur : "");
+	 			$row[] = (!empty($baris->Pelanggan) ? $baris->Pelanggan : "");
+	 			$row[] = (!empty($baris->Penagih) ? $baris->Penagih : "");
+	 			$row[] = (!empty($baris->Salesman) ? $baris->Salesman : "");
+	 			$row[] = (!empty($baris->Status) ? $baris->Status : "");
+	 			$row[] = (!empty($baris->Total) ? $baris->Total : "");
+	 			$row[] = (!empty($baris->Saldo) ? $baris->Saldo : "");
+	 			$row[] = (!empty($baris->TglDIH) ? $baris->TglDIH : "");
+	 			$row[] = (!empty($baris->TglFaktur) ? $baris->TglFaktur : "");
+	 			
+				$data[] = $row;
+				$i++;
+			}
+			$output['data'] = $data;
+			//output to json format
+			echo json_encode($output);
+		}
+		else 
+		{	
+			redirect("auth/logout");
+		}
+	}
+
+	public function listGiro($pelanggan)
+	{
+		if ($this->logged) 
+		{
+			$data = $this->Model_pelunasan->listGiro($pelanggan);
+			echo json_encode($data);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function saveDataGiro()
+	{          
+        if ($this->logged) 
+		{	
+			$params = (object)$this->input->post();
+			$status = $this->Model_pelunasan->saveDataGiro($params);
+			echo json_encode(array("status" => $status));
+		}
+		else 
+		{	
+			redirect("auth/logout");
+		}
+    }
+
+    public function getFakturDIH()
+	{
+		if ($this->logged) 
+		{
+			$nodih = $_POST['nodih'];
+			$nofaktur = $_POST['nofaktur'];
+			$data = $this->Model_pelunasan->getFakturDIH($nodih, $nofaktur);
+			echo json_encode($data);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function datapelunasan()
+	{	
+		if ( $this->logged ) 
+		{
+			$this->twig->display('pembelian/datapelunasan.html', $this->content);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function listDataPelunasan($tipe = null)
+	{	
+		if ($this->logged) 
+		{
+			$data = array();        
+			$list = $this->Model_pelunasan->listDataPelunasan($tipe);
+			$x = 0;
+			$i = 0;
+			$countCetak = 1;
+
+			foreach ($list as $baris) {
+				$x++;
+				$row = array();
+				$row[] = $x;
+				$row[] = '<button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Lihat" onclick="view('."'".$baris->NomorFaktur."'".')"><i class="fa fa-eye"></i> Lihat</button>';
+				$row[] = (!empty($baris->Cabang) ? $baris->Cabang : "");
+	 			$row[] = (!empty($baris->TglPelunasan) ? $baris->TglPelunasan : "");
+	 			$row[] = (!empty($baris->UmurLunas) ? $baris->UmurLunas : "");
+	 			$row[] = (!empty($baris->NoDIH) ? $baris->NoDIH : "");
+	 			$row[] = (!empty($baris->NomorFaktur) ? $baris->NomorFaktur : "");
+	 			$row[] = (!empty($baris->TglFaktur) ? $baris->TglFaktur : "");
+	 			$row[] = (!empty($baris->UmurFaktur) ? $baris->UmurFaktur : "");
+	 			$row[] = (!empty($baris->KodePenagih) ? $baris->KodePenagih : "");
+	 			$row[] = (!empty($baris->KodePelanggan) ? $baris->KodePelanggan : "");
+	 			$row[] = (!empty($baris->KodeSalesman) ? $baris->KodeSalesman : "");
+	 			$row[] = (!empty($baris->ValueFaktur) ? $baris->ValueFaktur : "");
+	 			$row[] = (!empty($baris->Cicilan) ? $baris->Cicilan : "");
+	 			$row[] = (!empty($baris->SaldoFaktur) ? $baris->SaldoFaktur : "");
+	 			$row[] = (!empty($baris->TipePelunasan) ? $baris->TipePelunasan : "");
+	 			$row[] = (!empty($baris->Status) ? $baris->Status : "");
+	 			$row[] = (!empty($baris->ValuePelunasan) ? $baris->ValuePelunasan : "");
+	 			$row[] = (!empty($baris->SaldoAkhir) ? $baris->SaldoAkhir : "");
+	 			$row[] = (!empty($baris->Giro) ? $baris->Giro : "");
+	 			$row[] = (!empty($baris->TglGiroCair) ? $baris->TglGiroCair : "");
+	 			$row[] = (!empty($baris->ValueGiro) ? $baris->ValueGiro : "");
+	 			
+				$data[] = $row;
+				$i++;
+			}
+			$output = array(
+							"data" => $data,
+					);
+			//output to json format
+			echo json_encode($output);
+		}
+		else 
+		{	
+			redirect("auth/logout");
+		}
+	}
+
+	public function datagiro()
+	{	
+		if ( $this->logged ) 
+		{
+			$this->twig->display('pembelian/datagiro.html', $this->content);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function listDataGiro($cek = null)
+	{	
+		if ($this->logged) 
+		{
+			$data = array();   
+			$list = $this->Model_pelunasan->listDataGiro();
+			$x = 0;
+			$i = 0;
+			$countCetak = 1;
+
+			foreach ($list as $baris) {
+				$x++;
+				$row = array();
+				$row[] = $x;
+				if ($baris->StatusGiro == "Aktif") {
+					if($baris->Giro == ""){ 
+						$row[] = '<button type="button" class="btn btn-sm btn-success" href="javascript:void(0)" title="Kliring" onclick="prosesGiro('."'".$baris->NoGiro."','Kliring'".')" disabled><i class="fa fa-check"></i> Kliring</button> <button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" title="Batal" onclick="prosesGiro('."'".$baris->NoGiro."','Batal'".')" disabled><i class="fa fa-trash"></i> Batal</button>'; 
+					}else { 
+						$row[] = '<button type="button" class="btn btn-sm btn-success" href="javascript:void(0)" title="Kliring" onclick="prosesGiro('."'".$baris->NoGiro."','Kliring'".')"><i class="fa fa-check"></i> Kliring</button> <button type="button" class="btn btn-sm btn-danger" href="javascript:void(0)" title="Batal" onclick="prosesGiro('."'".$baris->NoGiro."','Batal'".')"><i class="fa fa-trash"></i> Batal</button>'; 
+					}
+				}
+				else if($baris->StatusGiro == "Cair") {
+					$row[] = '<button type="button" class="btn btn-sm btn-warning" href="javascript:void(0)" title="Tolak" onclick="prosesGiro('."'".$baris->NoGiro."','Tolak'".')"><i class="fa fa-trash"></i> Tolak</button> ';
+				}
+				else{
+					$row[] = '-';
+				}
+				$pelunasan = $baris->ValueGiro - $baris->SisaGiro;
+				$row[] = (!empty($baris->cabangG) ? $baris->cabangG : "");
+	 			$row[] = (!empty($baris->StatusGiro) ? $baris->StatusGiro : "");
+	 			$row[] = (!empty($baris->Tolak) ? $baris->Tolak : "");
+	 			$row[] = (!empty($baris->KodePelanggan) ? $baris->KodePelanggan : "");
+	 			$row[] = (!empty($baris->Bank) ? $baris->Bank : "");
+	 			$row[] = (!empty($baris->NoGiro) ? $baris->NoGiro : "");
+	 			$row[] = (!empty($baris->TglJTO) ? $baris->TglJTO : "");
+	 			$row[] = (!empty($baris->TglCair) ? $baris->TglCair : "");
+	 			$row[] = (!empty($baris->ValueGiro) ? number_format($baris->ValueGiro) : number_format(0));
+	 			$row[] = number_format($pelunasan);
+	 			$row[] = (!empty($baris->SisaGiro) ? number_format($baris->SisaGiro) : number_format(0));
+	 			
+				$data[] = $row;
+				$i++;
+			}
+			$output = array(
+							"data" => $data,
+					);
+			//output to json format
+			echo json_encode($output);
+		}
+		else 
+		{	
+			redirect("auth/logout");
+		}
+	}
+
+	public function prosesGiro()
+	{
+		if ($this->logged) 
+		{
+			$tipe = $_POST['tipe'];
+			$nodih = $_POST['nodih'];
+			if ($tipe == "Kliring") {
+				$status = $this->Model_pelunasan->prosesGiroKliring($nodih);
+			}
+			else if ($tipe == "Tolak") {
+				$status = $this->Model_pelunasan->prosesGiroTolak($nodih);
+			}
+			else if ($tipe == "Batal") {
+				$status = $this->Model_pelunasan->prosesGiroBatal($nodih);
+			}
+			echo json_encode(array("status" => $status));
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function listFakturDIH()
+	{	
+		if ($this->logged) 
+		{
+			$data = array();        
+			$list = $this->Model_pelunasan->listFakturDIH();
+			$x = 0;
+			$i = 0;
+			$countCetak = 1;
+
+			foreach ($list as $baris) {
+				$x++;
+				$row = array();
+				$row[] = $x;
+				$row[] = '<button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Lihat" onclick="prosesFakturDIH('."'".$baris->NoFaktur."','Cash'".')">Cash</button> <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Lihat" onclick="prosesFakturDIH('."'".$baris->NoFaktur."','Transfer'".')">Transfer</button>';
+				$row[] = (!empty($baris->NoDIH) ? $baris->NoDIH : "");
+	 			$row[] = (!empty($baris->NoFaktur) ? $baris->NoFaktur : "");
+	 			$row[] = (!empty($baris->Pelanggan) ? $baris->Pelanggan : "");
+	 			$row[] = (!empty($baris->Penagih) ? $baris->Penagih : "");
+	 			$row[] = (!empty($baris->Salesman) ? $baris->Salesman : "");
+	 			$row[] = (!empty($baris->TglDIH) ? $baris->TglDIH : "");
+	 			$row[] = (!empty($baris->TglFaktur) ? $baris->TglFaktur : "");
+	 			$row[] = (!empty($baris->Total) ? $baris->Total : "");
+	 			$row[] = (!empty($baris->Saldo) ? $baris->Saldo : "");
+	 			
+				$data[] = $row;
+				$i++;
+			}
+			$output = array(
+							"data" => $data,
+					);
+			//output to json format
+			echo json_encode($output);
+		}
+		else 
+		{	
+			redirect("auth/logout");
+		}
+	}
+
+	public function prosesFakturDIH()
+	{
+		if ($this->logged) 
+		{
+			$tipe = $_POST['tipe'];
+			$no = $_POST['nofaktur'];
+			$status = $this->Model_pelunasan->prosesFakturDIH($no, $tipe);
+			echo json_encode(array("status" => $status));
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function buatpelunasanparsial()
+	{	
+		if ( $this->logged ) 
+		{
+			$this->twig->display('pembelian/buatpelunasanparsial.html', $this->content);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+}

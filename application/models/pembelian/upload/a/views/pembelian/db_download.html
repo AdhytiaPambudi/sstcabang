@@ -1,0 +1,501 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <table>
+                <tr>
+                    <td>Total user Login </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px"> {% for totaluser in totaluser %}
+                      <input class="form-control" type="text" style="width:50px;text-align:center" name="totaluser" id="totaluser" readonly value="{{ totaluser.totaluser }}">
+                    {% endfor %}
+                    </td>
+                    <td style="padding-left:10px">Tanggal Server </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px">  {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="server_date" style="width:100px;text-align:center" id="server_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                    </td>
+                </tr>
+                </table>
+               <!-- </b> -->
+            </div>
+            <div style="width:50%;float:left;">
+                <b><h5>DOWNLOAD DATA AWAL</h5></b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" style="width:130px;text-align:center" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:10px"> UserName </td>
+                        <td style="padding-left:10px"> : </td>
+                        <td style="padding-left:10px">
+                              <input class="form-control" type="text" style="width:70px;text-align:center" name="username" id="username" readonly value="{{ user }}">
+                        </td>
+                        <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" > <i style="padding-left:10px;" class="fa fa-download"><span style="padding-left:10px;padding-right:20px">DOWNLOAD</span></i></a> </td>
+                        
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div class="table-responsive">
+    <p style="padding-left:20px">List Total Record Table :</p>
+    <table>
+        <tr>
+            <td style="padding-left:10px">Master Produk</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mproduk" id="mproduk" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Faktur</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="tfaktur" id="tfaktur" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master Pelanggan</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mpelanggan" id="mpelanggan" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel DO</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="tdo" id="tdo" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master karyawan</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mkaryawan" id="mkaryawan" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel CN/DN</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="tcndn" id="tcndn" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master Harga</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mharga" id="mharga" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Stok Summary</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="sum" id="sum" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master Prinsipal</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mprinsipal" id="mprinsipal" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Stok Detail</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="det" id="det" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master Cabang</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mcabang" id="mcabang" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Stok History</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="his" id="his" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master AMS3</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mams3" id="mams3" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel DIH</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="dih" id="dih" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master Disc Jual</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="mdisc_jual" id="mdisc_jual" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Pelunasan</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="lunas" id="lunas" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master GL Bank</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="gl_bank" id="gl_bank" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Giro</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="giro" id="giro" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master GL Coa</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="gl_coa" id="gl_coa" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel PO</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="tpo" id="tpo" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+        <tr>
+            <td style="padding-left:10px">Master GL Kat</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="gl_kat" id="gl_kat" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+            <td style="padding-left:30px">Tabel Terima Barang</td>
+            <td style="padding-left:10px">:</td>
+            <td style="padding-left:10px"><input class="form-control" type="text" style="width:130px;text-align:center" name="tterima" id="tterima" readonly value="0"></td>
+            <td style="padding-left:10px">Records</td>
+        </tr>
+    </table>
+</div>
+<div id="msgBox"></div>
+<div id = 'cetak_list'>
+   <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+   <!-- <br>
+   <hr width="100%" size="10">
+   <div><center><strong>DATA GUDANG</strong></center></div>
+   <br>
+   <div id="grid_summary"> -->
+</div>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        
+    });
+
+    function f_get_data(){
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}getdownload",
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    notif('warning', 'PERHATIAN! Tidak dapat download & import data awal / Data Awal sudah di import');
+                    // reloadTable();
+                }else if(data.status == true){
+                    $('#mproduk').val(data.row["mst_produk"]);
+                    $('#mpelanggan').val(data.row["mst_pelanggan"]);
+                    $('#mkaryawan').val(data.row["mst_karyawan"]);
+                    $('#mharga').val(data.row["mst_harga"]);
+                    $('#mprinsipal').val(data.row["mst_prinsipal"]);
+                    $('#tfaktur').val(data.row["trs_faktur"]);
+                    $('#tdo').val(data.row["trs_do"]);
+                    $('#mcabang').val(data.row["mst_cabang"]);
+                    $('#mams3').val(data.row["mst_data_ams3"]);
+                    $('#mdisc_jual').val(data.row["mst_diskon_jual"]);
+                    $('#gl_bank').val(data.row["mst_gl_bank"]);
+                    $('#gl_coa').val(data.row["mst_gl_coa"]);
+                    $('#gl_kat').val(data.row["mst_gl_transaksi_kat"]);
+                    $('#sum').val(data.row["trs_invsum"]);
+                    $('#det').val(data.row["trs_invdet"]);
+                    $('#his').val(data.row["trs_invhis"]);
+                    $('#dih').val(data.row["trs_dih"]);
+                    $('#lunas').val(data.row["trs_pelunasan_detail"]);
+                    $('#giro').val(data.row["trs_pelunasan_giro_detail"]);
+                    $('#tpo').val(data.row["trs_po_header"]);
+                    $('#tterima').val(data.row["trs_terima_barang_header"]);
+                    notif('success', 'download & import data awal Sukses !!!');
+                   
+                }
+                $('#progressGIF').hide();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR);
+                notif('warning', 'PERHATIAN! Server Error');
+                $('#progressGIF').hide();
+            }
+        });       
+
+    }//end f_getdata_detail
+
+       
+       
+         function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },500);
+        }
+      
+</script>
+    {% endblock %}

@@ -1,0 +1,958 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+.rata-kanan{
+    text-align: right;
+}
+.huruf-tebal{
+    font-weight: bold;
+}
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+table {
+    font-size: 12px;
+}
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Laporan BPB Header</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        <!-- <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button> -->
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Laporan BPB Header
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr style="text-align: center;">
+                                        <th></th>
+                                        <!-- <th>Tipe</th> -->
+                                        <th>No Dokumen</th>
+                                        <th width="75px">Tanggal</th>
+                                        <th>No PR</th>
+                                        <th>No PO</th>
+                                        <!-- <th>No Usulan</th> -->
+                                        <th>Prinsipal</th>
+                                        <th>Supplier</th>
+                                        <th>NoSJ</th>
+                                        <th>NoBEX</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>View</th>
+                                        <th>Status BPB</th>
+                                        <th>Status Pusat</th>
+                                        <!-- <th>Status DO Pusat</th> -->
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body form">
+                <form id="myform" method="POST">
+                <input type="text" name="usulan" id="usulan" size="45">
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="dataUsulan">
+                                <thead style="line-height: 2">
+                                    <tr>
+                                        <th width="100px">Cabang</th>
+                                        <th width="100px">Prinsipal</th>
+                                        <th width="100px">Supplier</th>
+                                        <th width="100px">Pabrik</th>
+                                        <th width="100px">Produk</th>
+                                        <th width="100px">Nama Produk</th>
+                                        <th width="100px">Satuan</th>
+                                        <th width="100px">Keterangan</th>
+                                        <th width="100px">Penjelasan</th>
+                                        <th width="100px">No SJ</th>
+                                        <th width="100px">Tanggal</th>
+                                        <th width="100px">No Inv</th>
+                                        <th width="100px">Qty</th>
+                                        <th width="100px">Qty Bonus</th>
+                                        <th width="100px">Harga BEli</th>
+                                        <th width="100px">Diskon</th>
+                                        <th width="100px">Gross</th>
+                                        <th width="100px">Potongan</th>
+                                        <th width="100px">Value</th>
+                                        <th width="100px">PPN</th>
+                                        <th width="100px">Total</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </form>
+            </div>
+            <div class="modal-footer">
+                <!-- <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button> -->
+                <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" role="dialog"  id="example-cetak" role="dialog">
+    <div class="modal-content">
+    <div class="modal-body form">
+    <div id ="print_out">
+    <table  border="0" cellspacing="0">
+        <tr>
+            <td height="80px" width="80px" valign="top">
+                <div id="logo"><img src="{{base_url}}assets/logo/1489135837049.jpg"></div>
+            </td>
+            <td width="270px" valign="top">
+                PT. SAPTA SARITAMA<br>
+                Jl. Caringin No. 254 A BABAKAN, BANDUNG
+            </td>
+            <td rowspan="3" valign="top">
+                <table cellspacing="0">
+                    <tr>
+                        <td width="150px">No. BPB &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="NoDokumen"></td>
+                    </tr>
+                    <tr>
+                        <td>No.PO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="NoPO"></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TglDokumen"></td>
+                    </tr>
+                    <tr>
+                        <td>Cabang &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Cabang"></td>
+                    </tr>
+                    <tr>
+                        <td>No SJ &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" v-html="NoSJ"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>No Invoice &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" v-html="NoInv"></td>  
+                    </tr>
+                    <!-- <tr>
+                        <td>Status &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Status"></td>  
+                    </tr>
+                    <tr>
+                        <td>Status Pusat&nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="statusPusat"></td>  
+                    </tr> -->
+                    
+                </table>
+            </td>
+             <td valign="top">
+                    <H5>BUKTI PENERIMAAN BARANG</H5>
+            </td>
+            <!-- <td valign="top" width="150px">Barcode</td> -->
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>Prinsipal</td>
+                        <td>: <span v-html='Prinsipal'></span> - <span v-html='Supplier'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Alamat</td>
+                        <td>: - </td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <br>
+    <table cellspacing="0">
+    <thead>
+        <tr class="detail atas" align="center">
+            <td rowspan="2" width="20" class="awal">No.</td>
+            <td rowspan="2" width="80">ID PRODUK</td>
+            <td rowspan="2" width="220">NAMA PRODUK</td>
+            <td colspan="4">DATA</td>
+            <td rowspan="2" width="80">HARGA</td>
+            <td rowspan="2" width="80">DISKON</td>
+            <td rowspan="2" width="80">Gross</td>
+            <td rowspan="2" width="80">Potongan</td>
+            <td rowspan="2" width="80">Value</td>
+        </tr>
+        <tr class="detail" align="center">
+            <td width="40">Qty</td>
+            <td width="30">Satuan</td>
+            <td width="60">Batch</td>
+            <td width="80">Exp Date</td>
+            <!-- <td width="50">Pusat</td> -->
+            <!-- <td width="50">Cabang</td> -->
+            <!-- <td width="50">Pusat</td> -->
+            <!-- <td width="50">Cabang</td> -->
+        </tr>
+    </thead>
+         <tbody class="report-body">
+        <tr v-for = "(index,datas) in data_detail" class="detail-item" style="font-size: 11px; page-break-after: always;" >
+            <td v-html='index + 1' class='awal'> {{ index }}</td>
+            <td v-html='datas.Produk' style='padding-left:5px;'></td>
+            <td v-html='datas.NamaProduk' style='padding-left:2px;'></td>
+            <td v-html='datas.Qty | currencyDisplay' style='padding-right:2px;' align='right'> </td>
+            <td v-html='datas.Satuan' style='padding-left:2px;'></td>
+            <td v-html='datas.BatchNo' style='padding-left:2px;'></td>
+            <td v-html='datas.ExpDate' style='padding-left:2px;'></td>
+            <!-- <td v-html='datas.Harga_Beli_Pst | currencyDisplay' style='padding-right:2px;'  align="right"></td> -->
+            <td v-html='datas.HrgBeli | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <!-- <td v-html='datas.Disc_Pst | currencyDisplay' style='padding-right:2px;'  align="right"></td> -->
+            <td v-html='datas.Disc | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Gross | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Potongan | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Value | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+        </tr>
+    </tbody>
+    <!-- <tr class="page-break"> -->
+    <tr v-if="data_detail.length <= 10 ">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;" ></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 10 && data_detail.length <= 20">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 20 && data_detail.length < 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length >= 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <!-- <tfoot class="report-footer"> -->
+        <tr class="detail atas" style="font-size: 11px;">
+            <td class='awal' colspan="3" valign="top">Jumlah</td>
+            <td align='right' v-html='total_qty | currencyDisplay' style='padding-right:2px;'></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <!-- <td align='right' v-html='total_Harga_Beli_Pst | currencyDisplay' style='padding-right:2px;'></td> -->
+            <td align='right' v-html='total_Harga_Beli | currencyDisplay' style='padding-right:2px;'></td>
+            <!-- <td align='right' v-html='total_Disc_Pst | currencyDisplay' style='padding-right:2px;'></td> -->
+            <td align='right' v-html='total_Disc | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Gross | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Potongan | currencyDisplay' style='padding-right:2px;'></td>
+            <td id ='total_Value' align='right' v-html='total_Value | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail atas">
+            <td style='padding: 5px;' colspan="9" rowspan='6' valign="top" class="awal">Terbilang : <br> <span id ="terbilang_value"></span></td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Ongkos Kirim</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPN</td>
+            <td align='right' v-html='ppn_header | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPn BM</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <!-- <td colspan="3" rowspan="4" class="awal"></td>
+            <td colspan="4" rowspan="4"></td>
+            <td colspan="2" rowspan="4"></td> -->
+            <td colspan="2">Jumlah Tagihan</td>
+            <td align='right' v-html='total_header | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Dasar Pengenaan Pajak</td>
+            <td></td>
+        </tr>
+    <!-- </tfoot> -->
+    </table>
+    <!-- <table width="840px;">
+        <tr>
+            <td>
+                Pembayaran harap di transfer ke rekening {....................} BCA cabang {---------------------} A/C : {-----------};
+                Pembayaran dengan cek dan giro dianggap sah setelah diuangkan <br>
+                * Sesuai PER. DJP /16/PJ/2014 e-faktur Pajak tidak perlu di cek hard copy. Jika diperlukan e-faktur Pajak dapat
+                dicetak sendiri dengan memindai kode QRCODE dikiri bawah dokumen ini.
+            </td>
+        </tr>
+    </table> -->
+    <br>
+    <table>
+        <tr>
+            <td align="center" width="250">
+                Penerima,<br><br><br><br><br>
+                <span style="border-top: solid 1px; width: 200px; display: block;">P. Gudang</span>
+            </td>
+            <td align="center" width="250">
+                Penanggung Jawab,<br><br><br><br><br>
+                <span style="border-top: solid 1px; width: 200px; display: block;">Kabag</span>
+            </td>
+            <td align="center" width="250">
+                Menyetujui,<br><br><br><br><br>
+                <span style="border-top: solid 1px; width: 200px; display: block;">BM</span>
+            </td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_approval_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <marquee width = "100%"><b>Jika Data Kosong, maka data BPB belum terkirim ke pusat, KLik proses di kolom status Pusat atau di kolom kirim ulang ke pst<b></marquee>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto">
+                <h3>Status BPB Cabang di Server Pusat</h3> 
+                <input type="hidden" class="form-control" name="NoUsulan" id="NoUsulan">
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="ApprovalSO">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:100px">No Dokumen</th>
+                            <th style="min-width:100px">No BPP Pusat</th>
+                            <th style="min-width:100px">Tgl BPP</th>
+                            <th style="min-width:100px">No DO Pusat</th>
+                            <th style="min-width:100px">Tgl DO</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="prosesData('')"><i class="fa fa-refresh"></i>Kirim Ulang</button>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+         vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                jml_halaman : 1,
+                TglDokumen      :'',
+                NoDokumen       : '',
+                Supplier        :'',
+                Prinsipal       :'',
+                Cabang          : '',
+                NoPO            :'',
+                NoSJ            :'',
+                NoInv           :'',
+                NoIDPaket       :'',
+                Status          :'',
+                statusPusat     :'',
+                ppn_header      :'',
+                total_header    :'',
+                total_qty : 0,
+                total_Disc : 0,
+                total_Disc_Pst : 0,
+                total_Gross : 0,
+                total_Harga_Beli : 0,
+                total_Harga_Beli_Pst : 0,
+                total_Potongan : 0,
+                total_Value : 0,
+                data_detail : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Qty);
+                    });
+                    return gross;
+                },
+                total_Disc_Pst:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Disc_Pst);
+                    });
+                    return gross;
+                },
+                total_Disc:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Disc);
+                    });
+                    return gross;
+                },
+                total_Gross:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Gross);
+                    });
+                    return gross;
+                },
+                total_Harga_Beli:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga_Beli);
+                    });
+                    return gross;
+                },
+                total_Harga_Beli_Pst:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Harga_Beli_Pst);
+                    });
+                    return gross;
+                },
+                total_Potongan:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Potongan);
+                    });
+                    return gross;
+                },
+                total_Value:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Value);
+                    });
+                    return gross;
+                },
+            }
+        });
+        Vue.filter('currencyDisplay',{
+                read: function(val){
+                    return accounting.formatNumber(val);
+                },
+                write: function(val,oldVal){
+                    return accounting.unformat(val,",")
+                }
+        });
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataBPB",
+                "type": "POST"
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            responsive: true,
+            dom: 'Bfrtip',
+            columnDefs: [
+                {
+                    targets: 8,
+                    className: 'rata-kanan huruf-tebal',
+                    "render": function( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                },
+            ],
+            buttons: [
+                'copy', 'csv', 'excel',
+                {
+                    extend:'pdfHtml5',
+                    title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData BPB ',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 11],
+                    },
+                    download: 'open',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    customize: function (doc) {
+                        // doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                        doc.pageMargins = [20, 20, 10,10 ];
+                        doc.styles.tableHeader.fontSize = 10;
+                        doc.defaultStyle.fontSize = 10;
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                },
+                {
+                    text: 'Cetak BPB',
+                    action: function ( e, dt, node, config ) {
+                        cetaklist();
+                    }
+                },
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 25,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    });
+
+    function prosesData(No)
+    {
+        $("#notif").empty();
+        var NoUsulan = $("#NoUsulan").val();
+        if(No != ''){
+            var nodok = No;
+        }else{
+            var nodok = NoUsulan;
+        }
+        var url = "{{ base_url }}prosesDataBPBCabang"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:nodok},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan ke server pusat');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function view(no){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+        $('.modal-title').text('Detail BPB'); // Set title to Bootstrap modal title
+
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}dataDetailBPB",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                $('#usulan').val(no);
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#dataUsulan').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td>'+data[i].Cabang+'</td><td>'+data[i].Prinsipal+'</td><td>'+data[i].Supplier+'</td><td>'+data[i].Pabrik+'</td><td>'+data[i].Produk+'</td><td>'+data[i].NamaProduk+'</td><td>'+data[i].Satuan+'</td><td>'+data[i].Keterangan+'</td><td>'+data[i].Penjelasan+'</td><td>'+data[i].NoSJ+'</td><td>'+data[i].TglDokumen+'</td><td>'+data[i].NoInv+'</td><td>'+data[i].Qty+'</td><td>'+data[i].Bonus+'</td><td align="right">'+nf.format(data[i].HrgBeli)+'</td><td align="right">'+nf.format(data[i].Disc)+'</td><td align="right">'+nf.format(data[i].Gross)+'</td><td align="right">'+nf.format(data[i].Potongan)+'</td><td align="right">'+nf.format(data[i].Value)+'</td><td align="right">'+nf.format(data[i].PPN)+'</td><td align="right">'+nf.format(data[i].Total)+'</td></tr>'));
+                        x++;
+                    }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+    }
+
+    function cetak(no){
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}printdataBPB",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {
+                vue_cetak.TglDokumen     = data[0].TglDokumen,
+                vue_cetak.NoDokumen      = data[0].NoDokumen,
+                vue_cetak.NoPO           = data[0].NoPO,
+                vue_cetak.Supplier       = data[0].Supplier,
+                vue_cetak.Prinsipal      = data[0].Prinsipal,
+                vue_cetak.Cabang         = data[0].Cabang,
+                vue_cetak.NoSJ           = data[0].NoSJ,
+                vue_cetak.NoInv          = data[0].NoInv,
+                vue_cetak.Status         = data[0].Status,
+                vue_cetak.statusPusat    = data[0].statusPusat,
+                vue_cetak.ppn_header     = data[0].PPN,
+                vue_cetak.total_header   = data[0].total_header,
+                vue_cetak.data_detail    = data;
+                var total_value = Math.round(data[0].total_header);
+                document.getElementById("terbilang_value").innerHTML = terbilang(total_value);
+                setTimeout(function(){
+                    $('#print_out').print();
+                },1000);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+       
+    }
+
+    function updateData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataBPBPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function cetaklist(){
+        $("#notif").empty();
+        $("#print_out").empty()
+        var nobpb=[];
+        $(".ceklis:checked").each(function () {
+            nobpb.push($(this).val());
+        });
+        if(nobpb.length == 0){
+            notif('warning', 'Data belum dipilih');
+            return;
+        }
+        for (var i = 0; i < nobpb.length; i++) {
+            $.ajax({
+                url : "{{ base_url }}printdataBPB",
+                type: "POST",
+                data:{no:nobpb[i]},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    console.log(data);
+                    // vue_cetak.TglDokumen     = data[0].TglDokumen,
+                    // vue_cetak.NoDokumen      = data[0].NoDokumen,
+                    // vue_cetak.NoPO           = data[0].NoPO,
+                    // vue_cetak.Supplier       = data[0].Supplier,
+                    // vue_cetak.Prinsipal      = data[0].Prinsipal,
+                    // vue_cetak.Cabang         = data[0].Cabang,
+                    // vue_cetak.NoSJ           = data[0].NoSJ,
+                    // vue_cetak.NoInv          = data[0].NoInv,
+                    // vue_cetak.Status         = data[0].Status,
+                    // vue_cetak.statusPusat    = data[0].statusPusat,
+                    // vue_cetak.ppn_header     = data[0].PPN,
+                    // vue_cetak.total_header   = data[0].total_header,
+                    // vue_cetak.data_detail    = data;
+                    // var total_value = Math.round(data[0].total_header);
+
+                    $("#print_out").append($("<div>").load("{{base_url}}assets/print_template/cetak_bpb.php", {var1:data}));
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('danger', 'GAGAL! Error get data from ajax');
+                }
+            });
+        }   
+        setTimeout(function(){
+            $('#print_out').print();
+        },1000);
+    }
+
+    function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+    function cek(no){
+        $('#modal_approval_form').modal('show'); // show bootstrap modal when complete loaded
+        $('.itemRowHeader').remove();
+        $('.itemRowDetail').remove();
+        $("#noso").val('');
+        $.ajax({
+            url : "{{ base_url }}viewbpppusat",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {  
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                for (var i in data) {
+                    $('#ApprovalSO').append('<tr class="itemRowHeader"><td style="min-width:100px">'+data[i].NoBPB+'</td><td style="min-width:100px">'+data[i].NoBPP+'</td><td style="min-width:100px">'+data[i].TimeBPP+'</td><td style="min-width:100px">'+data[i].NoDO+'</td><td style="min-width:100px">'+data[i].TimeDO+'</td></tr>');
+                }
+                $("#NoUsulan").val(no);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,510 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+        padding-right: 20px;
+    }
+    td{
+        padding-right: 20px;
+    }
+    .hide{
+        display: none;
+    }
+    
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<form role="form" method="post" id="myForm" enctype="multipart/form-data">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Buat BPB</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <span>Ket: F1(Tambah Baris), F2(Save Data), F4(Hapus Baris)</span>
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading">
+                    <b>Buat Relokasi</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body"> 
+                    <!-- Start Hidden Form -->
+                    <!-- End Hidden Form -->
+
+                    <div class="col-lg-12">
+                        <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Cabang Usulan</th>
+                                        <th>Cabang Pengirim</th>
+                                        <th>No Relokasi</th>
+                                        <th>Tanggal</th>
+                                        <th>Dokumen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control" name="cabangUsulan" id="cabangUsulan" readonly="" value="{{logs.cabang}}">
+                                        </td>
+                                        <td>
+                                            <select class="form-control" id="cabangPengirim" name="cabangPengirim">
+                                                <option value="">--- Pilih ---</option>
+                                                {% for cabang in cabang %}
+                                                    <option value="{{ cabang.Cabang }}">{{ cabang.Cabang }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="noRelokasi" id="noRelokasi" value="{{no}}" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" name="tanggal" id="tanggal" value="{{tgl}}" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="file" class="form-control" name="Dokumen" id="Dokumen">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>        
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>Tambah Item</b>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="table-responsive">
+                                        <table class="table" id="table-barang">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Produk</th>
+                                                    <th>RJumlah</th>
+                                                    <th>RDiskon</th>
+                                                    <th>RBonus</th>
+                                                    <th>RHarga</th>
+                                                    <th>HPC</th>
+                                                    <th>Total Value</th>
+                                                    <th>Keterangan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>                                                 
+                                                <tr id="itemRow0">
+                                                    <td></td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="Produk[0]" id="Produk0"  onkeyup="setProduk(0)" onchange="getProduk(0)" autocomplete="off">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="Jumlah[0]" id="Jumlah0" onkeyup="hitung()" onchange="hitung()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control" step="0.01" min="0" name="Diskon[0]" id="Diskon0" onkeyup="hitung()" onchange="hitung()">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="Bonus[0]" id="Bonus0" onkeyup="hitung()" onchange="hitung()">
+                                                    </td>
+                                                    <td>    
+                                                        <input type="text" class="form-control" name="Harga[0]" id="Harga0" onkeyup="hitung()" onchange="hitung()">
+                                                        </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="HPC[0]" id="HPC0" readonly class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="Value[0]" id="Value0" readonly class="form-control">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control newRow" name="Keterangan[0]" id="Keterangan0">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!-- /.table-responsive -->
+                                    <div align="center">
+                                        <input type="hidden" name="bucket" id="bucket" value="0">
+                                        <input type="hidden" name="bucketmask" id="bucketmask" value="0">
+                                        <a href="javascript:void(0)" type="submit" class="btn btn-success" onclick="addRow(this.form);">Tambah Barang</a>                                        
+                                        <button type="reset" class="btn btn-default">Reset Form</button>
+                                        <!-- <a href="javascript:void(0)" type="submit" class="btn btn-danger" id="removeRow" onclick="removeRow();">Hapus Baris</a> -->
+                                    </div>
+                               <hr>
+                    <div class="col-lg-12">
+                        <div class="form-group-sm">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <th>Total 1</th>
+                                        <th>Potongan</th>
+                                        <th>Total 2</th>
+                                        <th>PPN</th>
+                                        <th>Total Value</th>
+                                    </thead>
+                                    <tbody>
+                                        <td>
+                                        <input type="text" class="form-control" name="total1" id="total1" style="background-color:#ccc" readonly="">
+                                        </td>
+                                        <td>
+                                        <input type="text" class="form-control" name="potongan" id="potongan" style="background-color:#ccc" readonly="">
+                                        </td>
+                                        <td>
+                                        <input type="text" class="form-control" name="total2" id="total2" style="background-color:#ccc" readonly="">
+                                        </td>
+                                        <td>
+                                        <input type="text" class="form-control" name="ppn" id="ppn" style="background-color:#ccc" readonly="">
+                                        </td>
+                                        <td>
+                                        <input type="text" class="form-control" name="totalValue" id="totalValue" style="background-color:#ccc" readonly="">
+                                        </td>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+                   
+                    <hr>
+                    <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-danger">Cancel</button>
+                </form> 
+                        </div>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /#page-wrapper -->
+
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+    $(document).on('keydown', '.newRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (keyCode == 9 && e.shiftKey == false) { 
+        addRow();
+        var b = document.getElementById('bucket').value;
+        $('#Produk'+b).focus();
+        // call custom function here
+      } 
+    });
+
+    $(document).on('keydown', '.delRow', function(e) { 
+      var keyCode = e.keyCode || e.which; 
+
+      if (e.shiftKey && keyCode === 9) { 
+        var b = document.getElementById('bucket').value;
+        if (b > 0) {
+            removeRow();
+        }
+        // call custom function here
+      } 
+    });
+
+    document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+            $('#Produk'+b).focus();
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }
+    $(document).ready(function() {     
+            loadProduk();
+        });
+
+    // START TAMBAH & HAPUS ROW BARANG
+    var rowNum = 0;
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        var s = document.getElementById('Value'+b).value;
+        if (s) {
+            $('#removeRow').show();
+            rowNum ++;
+
+            $('#table-barang').append($('<tr id="itemRow'+rowNum+'"><td></td><td><input type="text" class="form-control delRow" name="Produk['+rowNum+']" id="Produk'+rowNum+'"  onkeyup="setProduk('+rowNum+')" onchange="getProduk('+rowNum+')" autocomplete="off"></td><td><input type="text" class="form-control" name="Jumlah['+rowNum+']" id="Jumlah'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="number" class="form-control" step="'+rowNum+'.'+rowNum+'1" min="'+rowNum+'" name="Diskon['+rowNum+']" id="Diskon'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="text" class="form-control" name="Bonus['+rowNum+']" id="Bonus'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="text" class="form-control" name="Harga['+rowNum+']" id="Harga'+rowNum+'" onkeyup="hitung()" onchange="hitung()"></td><td><input type="text" class="form-control" name="HPC['+rowNum+']" id="HPC'+rowNum+'" readonly class="form-control"></td><td><input type="text" name="Value['+rowNum+']" id="Value'+rowNum+'" readonly class="form-control"></td><td><input type="text" class="form-control newRow" name="Keterangan['+rowNum+']" id="Keterangan'+rowNum+'"></td></tr>'));
+
+
+            $('#bucket').val(rowNum);
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning', 'PERHATIAN! Isi form diatas terlebih dahulu');
+        }
+    }
+
+    function removeRow() 
+    {
+        $('#itemRow'+rowNum).remove();
+        rowNum--;
+        if (rowNum==0) {
+            $('#removeRow').hide();
+        }
+        $('#bucket').val(rowNum);
+        hitung();
+    }
+
+    function clearRow(e) 
+    {
+        if (e == 'all') {
+            var bucket = document.getElementById('bucket').value;
+            for (var e = bucket; e > 0; e--) {            
+                $('#itemRow'+e).remove();            
+                rowNum--;
+            }
+            $('#bucket').val(rowNum);
+        }
+
+        $('#Produk'+e).val("");
+        $('#Jumlah'+e).val("");
+        $('#Diskon'+e).val("");
+        $('#Bonus'+e).val("");
+        $('#Harga'+e).val("");
+        $('#HPC'+e).val("");
+        $('#Value'+e).val("");
+        $('#Keterangan'+e).val("");
+        $('#total1').val("");
+        $('#potongan').val("");
+        $('#total2').val("");
+        $('#ppn').val("");
+        $('#totalValue').val("");
+    }
+
+    var produkSource = [];
+    function loadProduk() {
+        produkSource.length = 0;
+        $.ajax({
+            url : "{{ base_url }}produkAll/",
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk+"~"+data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $("#notif").empty();
+                notif('danger','Error get list Produk from ajax');
+            }
+        });
+    }
+
+    function setProduk(e) {   
+        $('#Produk'+e).typeahead({
+                source: produkSource
+            });
+    }
+
+    function getProduk(e){
+        var bucket =document.getElementById('bucket').value; 
+        var Value = document.getElementById('Produk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+        var Status = true;
+        if (bucket > 0) {
+            for (var i = 0; i < bucket; i++) {
+                var Value2 = document.getElementById('Produk'+i).value;
+                var split2 = Value2.split("~");
+                var Kode2 = split2[0];
+                if (Kode === Kode2) 
+                { 
+                    Status = false;
+                    break;
+                }
+            }
+        }
+
+        if (Status == true) {
+            $.ajax({
+                url : "{{ base_url }}getDetailUsulanRelokasi",
+                type: "POST",
+                data: {kode:Kode},
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    if (data)
+                    {                 
+                        $('#HPC'+e).val(data.hpc);
+                        $('#Harga'+e).val(data.harga);
+                        $('#Diskon'+e).val(data.diskon);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    
+                }
+            });
+        }
+        else
+        {
+            $("#notif").empty();
+            notif('warning','Duplikat Produk');
+            $('#Produk'+e).val("");
+        }
+    }
+
+    function hitung() {
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        var sumgross = 0;
+        var sumpotongan = 0;
+        var sumvalue = 0;
+        var ppn = 0;
+        var summary = 0;
+        for (var e = 0; e <= bucket; e++) {
+            var Jumlah = ((document.getElementById('Jumlah'+e).value) ? document.getElementById('Jumlah'+e).value : 0);
+            var Diskon = ((document.getElementById('Diskon'+e).value) ? document.getElementById('Diskon'+e).value : '');
+            var Bonus = ((document.getElementById('Bonus'+e).value) ? document.getElementById('Bonus'+e).value : 0);
+            var Harga = ((document.getElementById('Harga'+e).value) ? document.getElementById('Harga'+e).value : 0);
+            var HPC = ((document.getElementById('HPC'+e).value) ? document.getElementById('HPC'+e).value : 0);
+            var hrg = ((Harga > 0) ? Harga : HPC);
+            
+            var gross = (parseInt(Jumlah) + parseInt(Bonus)) * hrg;
+            var dsc = (hrg * parseInt(Jumlah)) * (parseFloat(Diskon/100)); 
+            var bns = (Bonus * hrg);
+            var potongan = parseInt(dsc) + parseInt(bns);
+            var nett = gross - potongan;
+            var ppn = nett * 0.1;
+            var value = nett - ppn;
+            sumgross = parseInt(sumgross) + parseInt(gross);
+            sumpotongan = parseInt(sumpotongan) + parseInt(potongan);
+            $('#Value'+e).val(value);
+        }
+        var total2 = sumgross - sumpotongan;
+        var ppn = total2 * 0.1;
+        var summary = total2 - ppn;
+        $('#total1').val(sumgross);
+        $('#potongan').val(sumpotongan);
+        $('#total2').val(total2);
+        $('#ppn').val(ppn);
+        $('#totalValue').val(summary);
+    }
+
+    function saveData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}saveUsulanRelokasi"; 
+
+        var bucket = document.getElementById('bucket').value;
+        var cabang = document.getElementById('cabangPengirim').value;
+        var status = true;
+
+        if (cabang == "") {
+            notif('warning', 'PERHATIAN! Data Cabang Pengirim Belum Dipilih');
+            status=false;
+        }
+        
+        for (var i = 0; i <= bucket; i++) {
+            var  n = i + 1;
+            var Produk = document.getElementById('Produk'+i).value;
+            var Jumlah = document.getElementById('Jumlah'+i).value;   
+            var Harga = document.getElementById('Harga'+i).value;   
+            var HPC = document.getElementById('HPC'+i).value;   
+            var Value = document.getElementById('Value'+i).value;
+
+            var HRG = ((Harga > 0) ? Harga : HPC);
+
+            if (Produk == "" || Jumlah == "" || HRG == "" || Value == "") 
+            {
+                // notif('warning', 'PERHATIAN! Data Barang Belum Lengkap. Hapus Baris Jika Tidak Diperlukan.', 'produk');
+                notif('warning', 'PERHATIAN! Data ke-'+n+' Belum Lengkap. Hapus Baris Jika Tidak Diperlukan');
+                status=false;
+            } 
+        }
+        // ajax adding data to database
+        if (status==true) {
+            $('#progressGIF').show();
+            var formdata = new FormData();      
+            // append tipe file
+            var Dokumen = $('#Dokumen')[0].files[0];
+            formdata.append('Dokumen', Dokumen);
+
+            $.each($('#myForm').serializeArray(), function(a, b){
+                formdata.append(b.name, b.value);
+            });
+         
+            var formData = new FormData($('#myForm')[0]);
+
+            $.ajax({
+                url : url,
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                dataType: "JSON",
+                success: function(data)
+                {
+                    if (data.status == false) {
+                        // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', 'SUKSES! Data berhasil disimpan');   
+                    }                       
+                    location.reload();
+                    $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                    // notif('danger', 'PERHATIAN! Save Data Usulan Beli GAGAL');
+                    location.reload();
+                    $('#progressGIF').hide();
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

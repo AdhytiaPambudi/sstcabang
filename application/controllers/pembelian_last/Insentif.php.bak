@@ -1,0 +1,128 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Insentif extends CI_Controller {
+
+	var $content;
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->model('Model_main');
+		$this->load->model('pembelian/Model_insentif');
+		$this->load->model('pembelian/Model_main');
+		$this->logs = $this->session->all_userdata();
+		$this->logged = $this->session->userdata('userLogged');
+		$this->userGroup = $this->session->userdata('userGroup');
+		$this->content = array(
+			"base_url" => base_url(),
+			"tgl" => date("Y-m-d"),
+			"logs" => $this->session->all_userdata(),
+			"logged" => $this->session->userdata('userLogged'),
+		);
+	}
+
+	public function insentif()
+	{
+		if ($this->logged) 
+		{
+            $this->content['cabang'] = $this->Model_main->Cabang();
+            $this->content['time'] = date('Y-m-d H:i:s');
+			$this->content['salesman'] = $this->Model_insentif->dataLaporanInsentifSalesman();
+			$this->twig->display('pembelian/insentif.html', $this->content);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+
+	public function getSalesman()
+    {
+        if ($this->logged) 
+        {
+            $cabang = $_POST['cabang'];
+			$data = $this->Model_insentif->dataLaporanInsentifSalesman($cabang);
+            echo json_encode($data);
+        }
+        else 
+        {   
+            redirect("auth/logout");
+        }
+    }
+
+	public function dataLaporanInsentifSalesman()
+	{
+		if ($this->logged) 
+		{
+			$targetTotal = 0;
+			$tgl = $_POST['tgl'];
+			$kode = $_POST['kode'];
+			$cabang = $_POST['cabang'];
+			$sales = $this->Model_insentif->salesInsentif($tgl, $kode, $cabang);
+			$tipe = $this->Model_insentif->salesTipeSalesman($kode, $cabang);
+			// $ecreport = $this->Model_insentif->salesECReport($tgl, $kode);
+
+			// if ($tipe->tipeSalesman2 == 'LK') {
+			// 	$hari = $ecreport->hariLK;
+			// }
+			// elseif ($tipe->tipeSalesman2 == 'DK') {
+			// 	$hari = $ecreport->hariDK;
+			// }
+			// else{
+			// 	$hari = $ecreport->hariDK;
+			// }
+			$hari = 24.0;
+
+			$tglec = $this->Model_insentif->salesTanggalEfektifCall($tgl, $kode, $cabang);
+			$ec = 0;
+
+			foreach ($tglec as $key => $value) {
+				$count = $this->Model_insentif->salesCountPelanggan($tglec[$key]->TglFaktur, $kode, $cabang);
+				$ec = $ec + $count; 
+			}
+
+			$call = $this->Model_insentif->salesCall($tipe->tipeSalesman);
+			$ectarget = ($hari * $call);
+			$batas = ($ec / $ectarget);
+			$echari = ($ec / $hari);
+			$ecpersen = ($batas * 100);
+			if ($tipe->tipeSalesman == 'Reg' || $tipe->tipeSalesman == 'OTC' || $tipe->tipeSalesman == 'Mix' || $tipe->tipeSalesman == 'Apotik' || $tipe->tipeSalesman == 'RS' || $tipe->tipeSalesman == 'Institusi') {
+				$insentif = $this->Model_insentif->salesInsentifCall($batas, 'RegEC');
+			}
+			elseif ($tipe->tipeSalesman == 'Non Reg') {
+				$insentif = $this->Model_insentif->salesInsentifCall($batas, 'NonRegEC');
+			}
+			else {
+				$insentif = $this->Model_insentif->salesInsentifCall($batas, 'NonRegEC');
+			}
+
+			$noo = $this->Model_insentif->salesNOO($tgl, $kode, $cabang);
+			$tagihan = $this->Model_insentif->salesTagihan($tgl, $kode);
+			if (!empty($sales)) {
+				$salesman = $sales->KodeSalesman."-".$sales->NamaSalesman;
+				// $target = $this->Model_insentif->salesTarget($salesman, $cabang, $tgl);
+			}
+			$output = array(
+							"sales" => (!empty($sales->Total)? $sales->Total : 0),
+							// "target" => (!empty($target->total)? $target->total : 0),
+							"target" => 1000000,
+							"ecpersen" => $ecpersen,
+							"ectot" => $ec,
+							"ectarget" => $ectarget,
+							"echari" => $hari,
+							"ecinsentif" => $insentif,
+							"noo" => $noo->total,
+							"tagihanA" => $tagihan->A,
+							"tagihanB" => $tagihan->B,
+							"tagihanC" => $tagihan->C,
+							"tagihanD" => $tagihan->D,
+					);
+			//output to json format
+			echo json_encode($output);
+		}
+		else 
+		{
+			redirect("auth/logout");
+		}
+	}
+}

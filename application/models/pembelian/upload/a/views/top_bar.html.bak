@@ -1,0 +1,37 @@
+<!-- /.navbar-header -->
+<ul class="nav navbar-top-links navbar-right">
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">GPS Call <i class="fa fa-caret-down"></i></a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}main/map">Map</a></li>
+            <li><a href="{{ base_url }}main/rute">Rute</a></li>
+            <li><a href="{{ base_url }}main/absen">Absen</a></li>
+            <li><a href="{{ base_url }}main/order">Order</a></li>
+            <li><a href="{{ base_url }}main/kunjungan">Kunjungan</a>
+            <li><a href="{{ base_url }}main/mapkunjungan">Map Kunjungan</a>
+            <li><a href="{{ base_url }}main/datakunjungan">Laporan Kunjungan</a></li>
+        </ul>
+    </li>
+    {% if logs.usergroup == "Cabang" or logs.usergroup == "RBM" or logs.usergroup == "BM" or logs.usergroup == "Pusat" or logs.usergroup == "Admin"%}
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Laporan BM <i class="fa fa-caret-down"></i></a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}main/inputlaporanbm">Input Laporan BM</a></li>
+            <li><a href="{{ base_url }}main/laporanbm">Laporan BM</a></li>
+            <li><a href="{{ base_url }}main/laporanrombm">Laporan ROM</a></li>
+            {% if logs.usergroup == "RBM" or logs.usergroup == "Pusat" or logs.usergroup == "Admin" %}
+            <li><a href="{{ base_url }}main/inputlaporanrombm">Input Laporan ROM</a></li>
+            {% endif %}
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ logs.username }} <i class="fa fa-caret-down"></i></a>
+        <ul class="dropdown-menu">
+            <li><a href="{{ base_url }}auth/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+        </ul>
+        <!-- /.dropdown-user -->
+    </li>
+    <!-- /.dropdown -->
+</ul>
+<!-- /.navbar-top-links -->

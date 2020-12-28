@@ -1,0 +1,1157 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+    <link href="{{ base_url }}assets/css/easyui.css" rel="stylesheet">
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<form role="form" method="post" id="myForm">
+<div class="row">
+    <div class="col-lg-12">
+        <marquee width = "100%"><b>Info terbaru:</b> Closing Bulanan Wajib Dilakukan Setiap Awal Bulan Sebelum Transaksi.  <span style="color: red;">Jika Tidak Closing Bulanan, Tidak Akan Bisa Melakukan Transaksi. </span> Tombol Re-Proses Stok Berfungsi Untuk Re-Proses Summary Stok Jika Ada Selisih Antara Saldo Stok dan Saldo Akhir Transaksi</marquee>
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="float:left;">
+                <table>
+                <tr>
+                    <td>UserName </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px">
+                         <input class="form-control" type="text" style="width:70px;text-align:center" name="username" id="username" readonly value="{{ user }}">
+                        {% for totaluser in totaluser %}
+                      <input class="form-control" type="hidden" style="width:50px;text-align:center" name="totaluser" id="totaluser" readonly value="{{ totaluser.totaluser }}">
+                    {% endfor %}
+                    </td>
+                    <td style="padding-left:10px">Tanggal Server </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px">  {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="server_date" style="width:100px;text-align:center" id="server_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                    </td>
+                    <td style="padding-left:10px">Tanggal Closing </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px">
+                        <input class="form-control" type="text" name="closing_date" style="width:100px;text-align:center" id="closing_date" readonly value="{{ dateclosing }}">
+                      <input class="form-control" type="hidden" style="width:70px;text-align:center" name="datastok" id="datastok" readonly>
+                    </td>
+                    <td style="padding-left:10px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses Closing</span></i></a> </td>
+                    <td style="padding-left:10px"> <a v-bind:href="javascript:" onclick="f_stok();return false;" title="Reproses Stok" class="btn btn-primary" readonly> <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Reproses Stok</span></i></a> 
+                    </td> 
+                    <td style="padding-left:10px">
+                        {% if user == "cabang" %} 
+                            <a v-bind:href="javascript:" onclick="Unlock();return false;" title="Unlock Trans" class="btn btn-success" readonly> <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Unlock Transaksi</span></i></a> 
+                        {% endif %}
+                    </td>
+                    <td style="padding-left:10px"> 
+                        {% if user == "cabang" %} 
+                            <a v-bind:href="javascript:" onclick="f_getpu('pu');return false;" title="Create Data Piutang" class="btn btn-danger" readonly> <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Create Data Piutang</span></i></a> 
+                        {% endif %}
+                    </td>
+                </tr>
+                </table>
+            </div>
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <div class="table-responsive"> 
+                <table class="table table-striped table-bordered table-hover" id="dataTables2">
+                    <tr>
+                        <td style="text-align:center">Cabang</td>
+                        <td style="text-align:center">Closing Stok</td>
+                        <td style="text-align:center" colspan="2">Faktur Open</td>
+                        <td style="text-align:center" colspan="2">Faktur Kirim</td>
+                        <td style="text-align:center" colspan="2">App Adjustment</td>
+                        <td style="text-align:center" colspan="2">App Relokasi</td>
+                        <td style="text-align:center" colspan="2">App Retur Beli</td>
+                        <td style="text-align:center" colspan="2">App Retur DO</td>                  
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" style="width:100px;text-align:center" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="setstok" id="setstok" readonly value="{{ cektglstok }}"> 
+                        </td>
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="DoOpen" id="DoOpen" readonly value="{{ DoOpen }}"> 
+                        </td>
+                        <td><a v-bind:href="javascript:" onclick="f_cekfaktur('doopen');return false;" title="Cek Faktur Open" class="btn btn-danger" > <i class="fa fa-search-plus"><span>Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="DoKirim" id="DoKirim" readonly value="{{ DoKirim }}"> 
+                        </td> 
+                        <td> <a v-bind:href="javascript:" onclick="f_cekfaktur('doclosed');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span>Cek</span></i></a> </td> 
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="AppAdjustment" id="AppAdjustment" readonly value="{{ AppAdjustment }}"> 
+                        </td> 
+                        <td> <a v-bind:href="javascript:" onclick="f_cekApp('AppAdjustment');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span>Cek</span></i></a> </td> 
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="AppRelokasi" id="AppRelokasi" readonly value="{{ AppRelokasi }}"> 
+                        </td> 
+                        <td> <a v-bind:href="javascript:" onclick="f_cekApp('AppRelokasi');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span>Cek</span></i></a> </td>  
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="AppReturBeli" id="AppReturBeli" readonly value="{{ AppReturBeli }}"> 
+                        </td> 
+                        <td> <a v-bind:href="javascript:" onclick="f_cekApp('AppReturBeli');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span>Cek</span></i></a> </td>   
+                        <td><input class="form-control" style="width:50px;text-align:center" type="text"  name="AppRDO" id="AppRDO" readonly value="{{ AppRDO }}"> 
+                        </td> 
+                        <td> <a v-bind:href="javascript:" onclick="f_cekApp('AppRDO');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span>Cek</span></i></a> </td>   
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="msgBox"><center><h5><b>CLOSING BULANAN</b></h5></center> </div>
+<div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables1">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;" colspan="2">DO/Faktur Header</td>
+                        <td style="text-align:center" colspan="2">DO/Faktur Detail</td>
+                        <td style="text-align:center" colspan="2">DO/Kiriman</td>
+                        <td style="text-align:center" colspan="2">CN/DN</td>
+                        <td style="text-align:center" colspan="2">Saldo Pelunasan</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="DoHeader" id="DoHeader" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('doheader');return false;" title="Cek Faktur Header" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="Dodetail" id="Dodetail" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('dodetail');return false;" title="Cek Faktur Detail" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="DOKirim" id="DOKirim" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('dokirim');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="cndn" id="cndn" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('cndn');return false;" title="Cek Faktur CNDN" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="vallunas" id="vallunas" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('vallunas');return false;" title="Cek Value Pelunasan" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td> 
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            </div>
+            </div>
+        </div>
+    </div>
+<div id = 'cetak_list'>
+   <hr width="100%" size="10">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kode Produk</th>
+                                <th>Produk</th>
+                                <th>Saldo Awal</th> 
+                                <th>Saldo Akhir</th>
+                                <th>Saldo Stok</th>
+                                <th>Cek</th>          
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    var s_doheader = false;
+    var s_dodetail = false;
+    var s_dokirim = false;
+    var s_cndn = false;
+    var s_vallunas = false;
+    var s_stok = false;
+    var s_datastok = false;
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        var setstok = document.getElementById("setstok");
+        if(setstok.value == "OK"){
+            $("#setstok").css('background-color','green').css('font-weight','bold').css('color','yellow');
+        }else{
+            $("#setstok").css('background-color','red').css('font-weight','bold').css('color','yellow');
+        }
+    });
+
+    function f_get_data(){
+        var status =false; 
+        s_doheader = false;
+        s_dodetail = false;
+        s_dokirim = false;
+        s_cndn = false;
+        s_vallunas = false;
+        s_stok = false;
+        s_datastok = false;
+        var totaluser = document.getElementById("totaluser").value;
+        var setstok   = document.getElementById("setstok").value;
+        var DoOpen   = document.getElementById("DoOpen").value;
+        var DoKirim   = document.getElementById("DoKirim").value;
+        var AppAdjustment   = document.getElementById("AppAdjustment").value;
+        var AppRelokasi   = document.getElementById("AppRelokasi").value;
+        var AppReturBeli   = document.getElementById("AppReturBeli").value;
+        var AppRDO   = document.getElementById("AppRDO").value;
+        var exp = document.getElementById("Cabang").value;
+        var cabang = exp.split('~');
+        var cabang = cabang[0];
+        var tgl_server   = document.getElementById("server_date").value;
+        var tgl_server   = new Date(tgl_server);
+        var date1 = tgl_server.getFullYear() + '/' + (tgl_server.getMonth() + 1 ) +'/'+ tgl_server.getDate();
+        var date = new Date(), y = date.getFullYear(), m = date.getMonth();
+        var lastDay = new Date(y, m + 1, 0);
+        var tgl_akhir = lastDay.getFullYear() + '/' + (lastDay.getMonth()) +'/'+ lastDay.getDate();
+        if((parseInt(DoOpen) > 0)  || (parseInt(DoKirim) > 0) ){
+            notif("danger","<h2>Terdapat DO yg masih Open atau Belum Jadi Faktur </h2>");
+            return;
+        }
+        if(parseInt(AppAdjustment) > 0 ){
+            notif("danger","<h2>Terdapat Approval Mutasi Koreksi yg masih gantung </h2>");
+            return;
+        }
+        if(parseInt(AppRelokasi) > 0 ){
+            notif("danger","<h2>Terdapat Approval Kirim Relokasi yg masih gantung </h2>");
+            return;
+        }
+        if(parseInt(AppReturBeli) > 0){
+            notif("danger","<h2>Terdapat Approval Retur SUpplier yg masih gantung </h2>");
+            return;
+        }
+        if(parseInt(AppRDO) > 0 ){
+            notif("danger","<h2>Terdapat Approval Retur Faktur ( RDO ) yg masih gantung </h2>");
+            return;
+        }
+        if(setstok == 'OK'){
+            notif("danger","<h2>Sudah Dilakukan Closing !!!!! </h2>");
+            return;
+        }
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}getclosingstokbulanan",
+            type: "POST",
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Stok',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                s_stok = true;
+                $.messager.progress('close');
+                $('#datastok').val(data.length);
+                    if(data.length > 0){
+                        s_datastok = true;
+                        var x = 0;
+                        for(i in data)
+                            {
+                                x++;
+                                $('#dataTables-example').append('<tr class="itemRowDetail"><td>'+x+'</td><td><input type="text" name="Kode_Produk['+x+']" id="Kode_Produk'+x+'" style="width:100px" class="delRow" value="'+data[i].Kode_Produk+'" autocomplete="off" readonly></td><td><input type="text" name="produk['+x+']" id="produk'+x+'" style="width:200px" value="'+data[i].Produk+'" readonly></td><td><input type="text" name="saldo_awal['+x+']" id="saldo_awal'+x+'" style="width:100px" class="delRow" value="'+data[i].saldo_awal+'" autocomplete="off" readonly></td><td><input type="text" name="saldo_akhir['+x+']" id="saldo_akhir'+x+'" style="width:100px" class="delRow" value="'+data[i].saldo_akhir+'" autocomplete="off" readonly></td><td><input type="text" name="qty_stok['+x+']" id="qty_stok'+x+'" style="width:100px" class="delRow" value="'+data[i].qty_stok+'" autocomplete="off" readonly></td><td><input type="text" name="qty_stokdetail['+x+']" id="qty_stokdetail'+x+'" style="width:100px" class="delRow" value="'+data[i].qty_stokdetail+'" autocomplete="off" readonly></td><td><a class="btn btn-sm btn-success" title="Fix Stok Detail" onclick="fixstokdetail('+"'"+data[i].Kode_Produk+"','"+data[i].saldo_akhir+"','"+data[i].qty_stokdetail+"'"+')" id="detail"><i class="fa fa-eye"></i>Fix Stok Detail</a></td></tr>');
+                            }
+                    }
+                    f_cekdata(1);
+                    f_doheader();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                f_cekdata(1);
+                f_doheader();
+            }
+        });
+    }//end f_getdata_detail
+
+    function f_stok()
+    {
+        $datastok = ((document.getElementById('datastok').value) ? document.getElementById('datastok').value : 0);
+        var status =false;
+        if($datastok == 0 ||$datastok == ""){
+            notif('warning', 'Data Transaksi Kosong, silahkan Proses Closing');
+        }else if($datastok > 0){
+            var bucket = $('#dataTables-example tbody tr').length;
+            bucket = bucket + 1;
+            var valstok = 0;
+            var valdetail = 0;
+            for (var e = 1; e < bucket; e++) {
+                var produk     = ((document.getElementById('Kode_Produk'+e).value) ? document.getElementById('Kode_Produk'+e).value : "");
+                var saldoakhir = ((document.getElementById('saldo_akhir'+e).value) ? document.getElementById('saldo_akhir'+e).value : 0);
+                var qtystok    = ((document.getElementById('qty_stok'+e).value) ? document.getElementById('qty_stok'+e).value : 0);
+                var qtystokdetail = ((document.getElementById('qty_stokdetail'+e).value) ? document.getElementById('qty_stokdetail'+e).value : 0);
+                if(saldoakhir != qtystok){
+                    valstok += 1;
+                }
+                if(saldoakhir != qtystokdetail){
+                    valdetail += 1;
+                }
+            }
+            if(valstok > 0){
+                var r = confirm("Cek Mutasi / Kartu Stok untuk memastikan kesesuaian stok. Jika sudah yakin klik tombol Ok, Ok ?");
+                if (r == true) {
+                    status = true;
+                } else {
+                    status = false;
+                }
+                if(status==true){
+                    $('#progressGIF').show();
+                    $.ajax({
+                        url : "{{ base_url }}generatestokbulanan/",
+                        type: "POST",
+                        data: $('#myForm').serialize(),
+                        dataType: "JSON",
+                        success: function(data)
+                        {           
+                            $('#progressGIF').hide();
+                            location.reload();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                            $('#progressGIF').hide();
+                            location.reload();
+                        }
+                    });
+                }
+            }
+            if(valstok == 0 && valdetail > 0){
+                notif('danger', '<h2>Selisih Stok Detail</h2><br><h3>Klik tombol Fix Stok Detail di setiap item produk untuk pembetulan</h3><br><h3>Jika setelah 2x fix stok detail masih belum sukses, hubungi IT untuk pembetulan lebih lanjut</h3>');
+                return;
+            }    
+        }  
+    }
+    function f_closing(){
+        $.ajax({
+            url : "{{ base_url }}setClosingBulan",
+            type: "POST",
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Closing Bulanan',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                if (data.status == false) {
+                    $.messager.show({
+                        title:'Proses Closing',
+                        msg:'<center><b><h3>Closing Bulanan Gagal<h3></b><hr> <h4>Cek Saldo Awal, Qty Saldo Awal harus sama dengan saldo akhir di bulan sebelumnya</h4></center>',
+                        showType:'show',
+                        style:{
+                            right:'',
+                            top:document.body.scrollTop+document.documentElement.scrollTop,
+                            bottom:''
+                        }
+                    });
+                }else if(data.status== true){
+                    $.messager.show({
+                        title:'Proses Closing',
+                        msg:'<center><b><h3>Closing Bulanan Sukses<h3></b></center>',
+                        showType:'show',
+                        style:{
+                            right:'',
+                            top:document.body.scrollTop+document.documentElement.scrollTop,
+                            bottom:''
+                        }
+                    });
+                }
+                $.messager.progress('close');
+                f_getpu("ok");
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.show({
+                    title:'Proses Closing',
+                    msg:'<center><b><h3>Closing Bulanan Gagal<h3></b></center>',
+                    showType:'show',
+                    style:{
+                        right:'',
+                        top:document.body.scrollTop+document.documentElement.scrollTop,
+                        bottom:''
+                    }
+                });
+                $.messager.progress('close');
+            }
+        });
+        // location.reload();       
+    }
+
+    function f_cekdata(nmr){
+        console.log(nmr);
+        var doheader = document.getElementById('DoHeader').value;
+        var dodetail = document.getElementById('Dodetail').value;
+        var dokirim = document.getElementById('DOKirim').value;
+        var cndn = document.getElementById('cndn').value;
+        var vallunas = document.getElementById('vallunas').value;
+        if(s_doheader == true && s_dokirim == true && s_cndn == true && s_vallunas == true && s_stok == true && s_dodetail == true){
+            if(s_datastok == true){
+                notif('danger', '<h3>PERHATIAN! Terdapat Selisih Stok, Perbaiki Dengan Cara Klik Tombol Reproses Stok</h3>');
+            }else if(s_datastok == false){
+                if((doheader != 0) || (dodetail != 0) || (dokirim != 0) || (cndn != 0) || (vallunas != 0)){
+                    console.log("aaaa");
+                    notif('danger', '<h3>PERHATIAN! Masih Terdapat Selisih Data</h3>');
+                }else{
+                    console.log("lsg closing");
+                    f_closing();
+                }
+                            
+            }
+            $("#buttonload").prop('disabled', false);
+        }
+    }
+
+    function f_cek(status){
+        var doheader = document.getElementById('DoHeader').value;
+        var dodetail = document.getElementById('Dodetail').value;
+        var dokirim = document.getElementById('DOKirim').value;
+        var cndn = document.getElementById('cndn').value;
+        var vallunas = document.getElementById('vallunas').value;
+        var no = "";
+        if((doheader == 0 || doheader == "") && (dodetail == 0 || dodetail == "") && (dokirim == 0 || dokirim == "") && (cndn == 0 || cndn == "") && (vallunas == 0 || vallunas == "") ){
+            notif("danger","<h3>Tidak Ada Data yg perlu di cek</h3>");
+            return;
+        } 
+        $.redirect("{{ base_url }}FixDOFakturClosing",
+                {
+                    status: status,
+                    tipe:'monthly'
+                },
+                "POST",
+                '_blank');     
+    }
+
+    function f_cekfaktur(status){
+        var DoOpen   = document.getElementById("DoOpen").value;
+        var DoKirim   = document.getElementById("DoKirim").value;
+        var no = "";
+        if((parseInt(DoOpen) == 0)  && (parseInt(DoKirim) == 0) ){
+            notif("warning","<h3>Tidak ada faktur open / kirim yg msaih gantung</h3>");
+            return;
+        }
+        $.redirect("{{ base_url }}FixDOFakturClosing",
+                {
+                    status: status,
+                    tipe:'monthly'
+                },
+                "POST",
+                '_blank');     
+    }
+
+    function f_kirim(){
+        notif('success', '<h3>Sedang Proses Kirim Data Ke Pusat</h3>');
+        $.ajax({
+            url : "{{ base_url }}setKirimdatadaily",
+            type: "POST",
+            data:{tipe:"monthly",status:"ok"},
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Kirim Data',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                if (data.status == false) {
+                    $.messager.show({
+                        title:'Proses Kirim Data',
+                        msg:'<center><b><h3>Kirim Data Gagal<h3></b></center>',
+                        showType:'show',
+                        style:{
+                            right:'',
+                            top:document.body.scrollTop+document.documentElement.scrollTop,
+                            bottom:''
+                        }
+                    });
+                }else if(data.status== true){
+                    $.messager.show({
+                            title:'Proses Kirim Data',
+                            msg:'<center><b><h3>Kirim Data Sukses<h3></b></center>',
+                            showType:'show',
+                            style:{
+                                right:'',
+                                top:document.body.scrollTop+document.documentElement.scrollTop,
+                                bottom:''
+                            }
+                        });
+                        $.messager.progress('close');
+                        location.reload();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.show({
+                    title:'Proses Kirim Data',
+                    msg:'<center><b><h3>Koneksi ke Server Error<h3></b></center>',
+                    showType:'show',
+                    style:{
+                        right:'',
+                        top:document.body.scrollTop+document.documentElement.scrollTop,
+                        bottom:''
+                    }
+                });
+                $.messager.progress('close');
+            }
+        });
+        // location.reload();       
+    }
+
+    function f_doheader(){
+        $.ajax({
+            url : "{{ base_url }}getclosingdoheader",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"monthly"},
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress DO Header',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                $.messager.progress('close');
+                document.getElementById('DoHeader').value="";
+                document.getElementById('DoHeader').value=data;
+                if(data == 0){
+                    $("#DoHeader").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#DoHeader").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Header</h3>');
+                                // f_closing("nostok");   
+                }
+                s_doheader = true;
+                f_cekdata(2);
+                f_dodetail();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                f_cekdata(2);
+                f_dodetail();
+            }
+        });
+    }
+    function f_dodetail(){
+        $.ajax({
+            url : "{{ base_url }}getclosingdodetail",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"monthly"},
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress DO Detail',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                $.messager.progress('close');
+                document.getElementById('Dodetail').value="";
+                document.getElementById('Dodetail').value=data;
+                if(data == 0){
+                    $("#Dodetail").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#Dodetail").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Detail</h3>');  
+                }
+                s_dodetail = true;
+                f_cekdata(3);
+                f_dokirim();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                f_cekdata(3);
+                f_dokirim();
+            }
+        });
+    }
+    function f_dokirim(){
+        $.ajax({
+            url : "{{ base_url }}getclosingdokirim",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"monthly"},
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress DO Kirim',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                $.messager.progress('close');
+                document.getElementById('DOKirim').value="";
+                document.getElementById('DOKirim').value=data;
+                if(data == 0){
+                    $("#DOKirim").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#DOKirim").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0 ){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Kirim</h3>');  
+                }
+                s_dokirim = true;
+                f_cekdata(4);
+                f_cndn();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                f_cekdata(4);
+                f_cndn();
+            }
+        }); 
+    }
+    function f_cndn(){
+        $.ajax({
+            url : "{{ base_url }}getclosingcndn",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"monthly"},
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress CNDN',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                $.messager.progress('close');
+                document.getElementById('cndn').value="";
+                document.getElementById('cndn').value=data;
+                if(data == 0){
+                    $("#cndn").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#cndn").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if((data > 0) ){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data CNDN</h3>');
+                }
+                s_cndn = true;
+                f_cekdata(5);
+                f_vallunas();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                f_cekdata(5);
+                f_vallunas();
+            }
+        }); 
+    }
+    function f_vallunas(){
+        $.ajax({
+            url : "{{ base_url }}getclosingvallunas",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"monthly"},
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Value Pelunasan',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                $.messager.progress('close');
+                document.getElementById('vallunas').value="";
+                document.getElementById('vallunas').value=data;
+                if(data== 0){
+                     $("#vallunas").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#vallunas").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data Pelunasan</h3>');  
+                }
+                s_vallunas = true;
+                f_cekdata(6);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+            }
+        }); 
+    }
+
+    function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },500);
+        }
+    function Unlock()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}UnlockTrans"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"Closing"},
+            success: function(data)
+            {
+                if (data.status == false) {
+                        notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    }
+                    else{
+                        notif('success', '<h3>SUKSES! status Stok berhasil Di Unlock</h3>');
+                    }
+                    $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('error', 'PERHATIAN! Proses Error');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+    function f_getpu(ok){
+        notif('success', '<h3>Sedang Proses Create Data Piutang</h3>');
+        $.ajax({
+            url : "{{ base_url }}setcreatetablepu",
+            type: "POST",
+            data:{tipe:"monthly",status:ok},
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Create Data Piutang',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                if (data.status == false) {
+                    $.messager.show({
+                        title:'Proses Create Data Piutang',
+                        msg:'<center><b><h3>Create Data Piutang Gagal<h3></b></center>',
+                        showType:'show',
+                        style:{
+                            right:'',
+                            top:document.body.scrollTop+document.documentElement.scrollTop,
+                            bottom:''
+                        }
+                    });
+                }else if(data.status== true){
+                    $.messager.show({
+                            title:'Proses Create Data Piutang',
+                            msg:'<center><b><h3>Create Data Piutang Sukses<h3></b></center>',
+                            showType:'show',
+                            style:{
+                                right:'',
+                                top:document.body.scrollTop+document.documentElement.scrollTop,
+                                bottom:''
+                            }
+                        });
+                        $.messager.progress('close');
+                }
+                if(ok != 'pu'){
+                    f_kirim();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.show({
+                    title:'Proses Create Data Piutang',
+                    msg:'<center><b><h3>Koneksi ke Server Error<h3></b></center>',
+                    showType:'show',
+                    style:{
+                        right:'',
+                        top:document.body.scrollTop+document.documentElement.scrollTop,
+                        bottom:''
+                    }
+                });
+                $.messager.progress('close');
+            }
+        });     
+    }
+    function fixstokdetail(kode,saldoakhir,stokdetail){
+        if(saldoakhir < 0){
+            notif('danger', '<h2>Saldo Akhir minus, tidak bisa di reproses stok</h2><br><h3>Kontak IT Untuk Pembetulan</h3>');
+            return;
+        }
+        $.ajax({
+            url : "{{ base_url }}reproses_stokdetail",
+            type: "POST",
+            data:{status:'monthly',kode:kode,saldoakhir:saldoakhir,stokdetail:stokdetail},
+            dataType: "JSON",
+            beforeSend: function(){
+             $("#progressGIF").show();
+           },
+            success: function(data)
+            {   
+                if (data.status) {
+                    notif('success', '<h2>SUKSES! Reproses Stok Berhasil </h2>');
+                }else{
+                    notif('warning', '<h2>Informasi : ' + data.message + '</h2>');
+                }
+                $("#progressGIF").hide();
+                load_detail();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('error', 'Error From Ajax');
+                $("#progressGIF").hide();
+            }
+        });
+    } 
+
+    function f_cekApp(status){
+        var AppAdjustment   = document.getElementById("AppAdjustment").value;
+        var AppRelokasi   = document.getElementById("AppRelokasi").value;
+        var AppReturBeli   = document.getElementById("AppReturBeli").value;
+        var AppRDO   = document.getElementById("AppRDO").value;
+        var no = "";
+        // if((parseInt(DoOpen) == 0)  && (parseInt(DoKirim) == 0) ){
+        //     notif("warning","<h3>Tidak ada faktur open / kirim yg msaih gantung</h3>");
+        //     return;
+        // }
+        if(status == 'AppAdjustment'){
+            if(parseInt(AppAdjustment) == 0){
+                notif("warning","<h3>Tidak ada Approval Adjustment Koreksi yg masih gantung</h3>");
+            }else{
+                notif("danger","<h2>Terdapat data Approval Adjustment Koreksi yg masih gantung</h2><br><h3>Cek di menu Approval Mutasi Koreksi menggunakan user BM</h3>");
+            }
+        }  
+        if(status == 'AppRelokasi'){
+            if(parseInt(AppRelokasi) == 0){
+                notif("warning","<h3>Tidak ada Approval Kirim Relokasi yg masih gantung</h3>");
+            }else{
+                notif("danger","<h2>Terdapat data Approval Kirim Relokasi yg masih gantung</h2><br><h3>Cek di menu Approval Kirim Relokasi menggunakan user BM</h3>");
+            }
+        }  
+        if(status == 'AppReturBeli'){
+            if(parseInt(AppReturBeli) == 0){
+                notif("warning","<h3>Tidak ada Approval Retur Supplier yg masih gantung</h3>");
+            }else{
+                notif("danger","<h2>Terdapat data Approval Retur Supplier yg masih gantung</h2><br><h3>Cek di menu Approval Retur Supplier menggunakan user BM</h3>");
+            }
+        }  
+        if(status == 'AppRDO'){
+            if(parseInt(AppRDO) == 0){
+                notif("warning","<h3>Tidak ada Approval Retur Faktur ( RDO) yg masih gantung</h3>");
+            }else{
+                notif("danger","<h2>Terdapat data Retur Faktur ( RDO) yg masih gantung</h2><br><h3>Cek di menu Approval Retur Faktur menggunakan user BM</h3>");
+            }
+        }   
+    }
+    function load_detail(){
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}getclosingstokbulanan",
+            type: "POST",
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Stok',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                $.messager.progress('close');
+                $('#datastok').val(data.length);
+                    if(data.length > 0){
+                        var x = 0;
+                        for(i in data)
+                        {
+                            x++;
+                            $('#dataTables-example').append('<tr class="itemRowDetail"><td>'+x+'</td><td><input type="text" name="Kode_Produk['+x+']" id="Kode_Produk'+x+'" style="width:100px" class="delRow" value="'+data[i].Kode_Produk+'" autocomplete="off" readonly></td><td><input type="text" name="produk['+x+']" id="produk'+x+'" style="width:200px" value="'+data[i].Produk+'" readonly></td><td><input type="text" name="saldo_awal['+x+']" id="saldo_awal'+x+'" style="width:100px" class="delRow" value="'+data[i].saldo_awal+'" autocomplete="off" readonly></td><td><input type="text" name="saldo_akhir['+x+']" id="saldo_akhir'+x+'" style="width:100px" class="delRow" value="'+data[i].saldo_akhir+'" autocomplete="off" readonly></td><td><input type="text" name="qty_stok['+x+']" id="qty_stok'+x+'" style="width:100px" class="delRow" value="'+data[i].qty_stok+'" autocomplete="off" readonly></td><td><input type="text" name="qty_stokdetail['+x+']" id="qty_stokdetail'+x+'" style="width:100px" class="delRow" value="'+data[i].qty_stokdetail+'" autocomplete="off" readonly></td><td><a class="btn btn-sm btn-success" title="Fix Stok Detail" onclick="fixstokdetail('+"'"+data[i].Kode_Produk+"','"+data[i].saldo_akhir+"','"+data[i].qty_stokdetail+"'"+')" id="detail"><i class="fa fa-eye"></i>Fix Stok Detail</a></td></tr>');
+                        }
+                    }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.progress('close');
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+            }
+        });
+    }
+</script>
+{% endblock %}

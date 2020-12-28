@@ -1,0 +1,615 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+     .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+.rata-kanan{
+    text-align: right;
+}
+.huruf-tebal{
+    font-weight: bold;
+}
+td.child ul li span.dtr-data{
+    display: inline-block;
+    min-width: 80px;
+    text-align: right;
+    text-align: right;
+}
+table tr td{
+    padding: 0 5px 0 5px;
+}
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 12px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+/*#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}*/
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table tr td{
+        padding:0 3px 0 3px;
+    }
+    .atas{
+        border-top: solid 1px;
+    }
+    .bawah{
+        border-bottom: solid 1px;
+    }
+    .kiri{
+        border-left: solid 1px;
+    }
+    .kanan{
+        border-right: solid 1px;
+    }
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Data PR/PO</h1>
+        </div>
+        <!-- <div id="testing"></div> -->
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+            <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button>
+            <button class="btn btn-success" onclick="updateDataPO()"><i class="fa fa-refresh"></i> Tarik Data PO Pusat</button>
+            <select class="form-control selectpicker" id="pr" name="pr" data-live-search="true" padding-left='10px' width='100px'>
+                <option value="">--- Silahkan Pilih No PO ---</option>
+            </select>
+            
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Data PR/PO
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>Tipe</th>
+                                        <th>No PO</th>
+                                        <th width="75px">Tanggal</th>
+                                        <th>No PR</th>
+                                        <th>No Usulan</th>
+                                        <th>Prinsipal</th>
+                                        <th>Supplier</th>
+                                        <th>Total PO</th>
+                                        <th>Status</th>
+                                        <th>Status SJ</th>
+                                        <th>View</th>
+                                        <!-- <th>Print</th> -->
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto">
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="dataUsulan">
+                                <thead style="line-height: 2">
+                                    <tr>
+                                        <th width="100px">Cabang</th>
+                                        <th width="100px">Prinsipal</th>
+                                        <th width="100px">Supplier</th>
+                                        <th width="100px">Kategori</th>
+                                        <th width="100px">Produk</th>
+                                        <th width="100px">Nama Produk</th>
+                                        <th width="100px">Satuan</th>
+                                        <th width="100px">Keterangan</th>
+                                        <th width="100px">Penjelasan</th>
+                                        <th width="100px">No Usulan</th>
+                                        <th width="100px">No PR</th>
+                                        <th width="100px">No PO</th>
+                                        <th width="100px">Tanggal PO</th>
+                                        <th width="100px">Qty</th>
+                                        <th width="100px">Diskon</th>
+                                        <th width="100px">Bonus</th>
+                                        <th width="100px">Harga Beli Cabang</th>
+                                        <th width="100px">Harga Deal</th>
+                                        <th width="100px">Value PO</th>
+                                    </tr>
+                                </thead>
+                            </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" role="dialog"  id="example-cetak" role="dialog">
+    <div class="modal-content">
+    <div class="modal-body form">
+        <div id ="print_out"></div>
+    </div>
+    </div>
+</div>
+<!-- End Bootstrap modal -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                data_header : [],
+                jml_halaman : 1,
+                Tgl_PO      :'',
+                No_PO       : '',
+                Tipe        : '',
+                Supplier    :'',
+                Prinsipal   :'',
+                Cabang      : '',
+                No_PR       :'',
+                tipe        :'',
+                Status_PO   :'',
+                NoIDPaket   :'',
+                total_qty : 0,
+                data_detail : [],
+                array_supplier:[]
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail, function (i, e) {
+                        gross += Math.round(e.Qty_PO);
+                    });
+                    return gross;
+                },
+               
+            }
+        });
+        
+        Vue.filter('currencyDisplay',{
+                read: function(val){
+                    return accounting.formatNumber(val);
+                },
+                write: function(val,oldVal){
+                    return accounting.unformat(val,",")
+                }
+        });
+
+        Vue.filter('format_tanggal',{
+            read: function(val){
+                return f_tanggal(val);
+        }
+        });
+
+        Vue.filter('terbilang',{
+            read: function(val){
+                return terbilang(val);
+        }
+        });
+        var POSource = [];
+
+        {% for pr in pr %}
+            POSource.push("{{ pr.No_PO }}~{{ pr.flag_suratjalan }}");
+        {% endfor %}
+        console.log(POSource);
+        for (var i = 0; i < POSource.length; i++) {
+            $('#pr').append("<option class='optPO' value='"+POSource[i]+"'>"+POSource[i]+"</option>");
+        }
+        $('.selectpicker').selectpicker('refresh');
+
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataPRPO",
+                "type": "POST"
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            responsive: true,
+            dom: 'Bfrtip',
+            columnDefs: [
+                {
+                    targets: 7,
+                    className: 'rata-kanan huruf-tebal',
+                    "render": function( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                },
+            ],
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData BPB ',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5, 6, 7],
+                    },
+                    download: 'open',
+                    orientation: 'landscape',
+                    customize: function (doc) {
+                        doc.pageMargins = [25, 20, 10,10 ];
+                        doc.styles.tableHeader.fontSize = 8;
+                        doc.defaultStyle.fontSize = 8;
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function view(no){
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+        $('.modal-title').text('Detail PR'); // Set title to Bootstrap modal title
+
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}dataDetailPRPO",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 1;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#dataUsulan').append($('<tr class="itemRow table2 table-striped table-bordered table-hover"><td>'+data[i].Cabang+'</td><td>'+data[i].Prinsipal+'</td><td>'+data[i].Supplier+'</td><td>'+data[i].Kategori+'</td><td>'+data[i].Produk+'</td><td>'+data[i].Nama_Produk+'</td><td>'+data[i].Satuan+'</td><td>'+data[i].Keterangan+'</td><td>'+data[i].Penjelasan+'</td><td>'+data[i].No_Usulan+'</td><td>'+data[i].No_PR+'</td><td>'+data[i].No_PO+'</td><td>'+data[i].Tgl_PO+'</td><td>'+data[i].Qty_PO+'</td><td>'+data[i].Disc2+'</td><td>'+data[i].Bonus+'</td><td align="right">'+nf.format(data[i].Harga_Beli_Cab)+'</td><td align="right">'+nf.format(data[i].Harga_Deal)+'</td><td align="right">'+nf.format(data[i].Value_PO)+'</td></tr>'));
+                        x++;
+                    }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function cetak(no,Tipe){
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}printdataPO",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(response)
+            {
+                var data = [];
+                vue_cetak.array_supplier = [];
+                data = response['query'];
+                vue_cetak.data_detail = data;
+                $('#print_out').load("{{base_url}}assets/print_template/" + response['xhtml'], {var1:data});
+                setTimeout(function(){
+                    $('#print_out').print();
+                },1000);
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+       
+    }
+
+    function updateData()
+    {
+        var url = "{{ base_url }}updateDataPOPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            data:{tipe:"all"},
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+    function updateDataPO()
+    {
+        var xpld = document.getElementById('pr').value;
+        var nopo = xpld.split("~")[0];
+        if(xpld == ""){
+            notif('danger', 'Pilih Nomor PO terlebih dahulu');
+            return;
+        }
+        var url = "{{ base_url }}updateDataPOPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            data:{tipe:"satu",nopo:nopo},
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+    function terbilang(total_value){
+        var bilangan = total_value.toString();
+        var kalimat ="";
+        var angka   = new Array('0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+        var kata    = new Array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan');
+        var tingkat = new Array('','Ribu','Juta','Milyar','Triliun');
+        var panjang_bilangan = bilangan.length;
+        /* pengujian panjang bilangan */
+        if(panjang_bilangan > 15){
+            kalimat = "Diluar Batas";
+        }else{
+            /* mengambil angka-angka yang ada dalam bilangan, dimasukkan ke dalam array */
+            for(i = 1; i <= panjang_bilangan; i++) {
+                angka[i] = bilangan.substr(-(i),1);
+            }
+             
+            var i = 1;
+            var j = 0;
+             
+            /* mulai proses iterasi terhadap array angka */
+            while(i <= panjang_bilangan){
+                subkalimat = "";
+                kata1 = "";
+                kata2 = "";
+                kata3 = "";
+                 
+                /* untuk Ratusan */
+                if(angka[i+2] != "0"){
+                    if(angka[i+2] == "1"){
+                        kata1 = "Seratus";
+                    }else{
+                        kata1 = kata[angka[i+2]] + " Ratus";
+                    }
+                }
+                 
+                /* untuk Puluhan atau Belasan */
+                if(angka[i+1] != "0"){
+                    if(angka[i+1] == "1"){
+                        if(angka[i] == "0"){
+                            kata2 = "Sepuluh";
+                        }else if(angka[i] == "1"){
+                            kata2 = "Sebelas";
+                        }else{
+                            kata2 = kata[angka[i]] + " Belas";
+                        }
+                    }else{
+                        kata2 = kata[angka[i+1]] + " Puluh";
+                    }
+                }
+                 
+                /* untuk Satuan */
+                if (angka[i] != "0"){
+                    if (angka[i+1] != "1"){
+                        kata3 = kata[angka[i]];
+                    }
+                }
+                 
+                /* pengujian angka apakah tidak nol semua, lalu ditambahkan tingkat */
+                if ((angka[i] != "0") || (angka[i+1] != "0") || (angka[i+2] != "0")){
+                    subkalimat = kata1+" "+kata2+" "+kata3+" "+tingkat[j]+" ";
+                }
+                 
+                /* gabungkan variabe sub kalimat (untuk Satu blok 3 angka) ke variabel kalimat */
+                kalimat = subkalimat + kalimat;
+                i = i + 3;
+                j = j + 1;
+            }
+             
+            /* mengganti Satu Ribu jadi Seribu jika diperlukan */
+            if ((angka[5] == "0") && (angka[6] == "0")){
+                kalimat = kalimat.replace("Satu Ribu","Seribu");
+            }
+        }
+        return kalimat;
+    }
+    function f_tanggal(tgl){
+        var hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        var bulan = ['Januari', 'Februari', 'Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+        var tanggal = new Date(tgl).getDate();
+        var xhari = new Date(tgl).getDay();
+        var xbulan = new Date(tgl).getMonth();
+        var xtahun = new Date(tgl).getYear();
+        var hari = hari[xhari];
+        var bulan = bulan[xbulan];
+        var tahun = (xtahun < 1000)?xtahun + 1900 : xtahun;
+
+        // console.log(hari +', ' + tanggal + ' ' + bulan + ' ' + tahun);
+        // return hari +', ' + tanggal + ' ' + bulan + ' ' + tahun;
+        return tanggal + ' ' + bulan + ' ' + tahun;
+    }
+</script>
+
+{% endblock %}

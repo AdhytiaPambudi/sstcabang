@@ -1,0 +1,1099 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <b>Kartu Stok Gudang</b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:30px">Tanggal </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="datepicker" type="text" name="tgldoc" id ="tgldoc"></td> 
+
+                        <td style="padding-left:30px">Produk </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="form-control" type="text" name="produk" id ="produk" onkeyup="cariKode()" autocomplete="off" style="width:400px"></td>   
+                        <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses</span></i></a> </td>
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_pdf();return false;" title="Print to pdf" class="btn btn-primary" ><i class="fa fa-file-pdf-o"><span style="padding-left:10px;padding-right:20px">Print to PDF</span></i></a> </td>
+                         <!-- <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_excel();return false;" title="Excell" class="btn btn-primary" > <i class="fa fa-file-excel-o"><span style="padding-left:10px;padding-right:20px">Excell</span></i></a> </td> -->
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div id="msgBox"></div>
+<div id = 'cetak_list'>
+   <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+   <br>
+   <hr width="100%" size="10">
+   <div><center><strong>DATA GUDANG</strong></center></div>
+   <br>
+   <!-- <div id="grid_summary"> -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th>Kode Produk</th>
+                                <th>Produk</th>
+                                <th>Satuan</th> 
+                                <th>Gudang Summary</th>
+                                <th>Qty Summary</th>
+                                <th>Cek</th>
+                                <th>Gudang Detail</th>
+                                <th>Qty Detail</th>
+                                <th>Cek</th>             
+                                <th>ReProses</th>             
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                        <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+</div>
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Info Stok Summary</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <table class="table" id="table-total">
+                            <thead>
+                                <tr>
+                                    <th>Saldo Akhir</th>
+                                    <th>Stok Existing</th>
+                                    <th>Stok Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> 
+                                        <input type="text" name="saldoakhir" id="saldoakhir" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="stoksummary" id="stoksummary" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="stoksummaryupdate" id="stoksummaryupdate" class="form-control" readonly=""> 
+                                    </td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table width="100%" class="table2 table-striped table-bordered table-hover" id="datastoksum">
+                        <thead style="line-height: 2">
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama Produk</th>
+                                <th>Unit Stok</th>
+                                <th>Gudang</th>
+                                <th>Perbaiki Stok</th>
+                            </tr>                    
+                        </thead>
+                    </table>
+                    </div>
+                    <input type="hidden" name="bucket" id="bucket">
+                </div>
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="modal_form1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Info Stok Detail</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <table class="table" id="table-total">
+                            <thead>
+                                <tr>
+                                    <th>Saldo Akhir</th>
+                                    <th>Stok Existing</th>
+                                    <th>Stok Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td> 
+                                        <input type="text" name="saldoakhir1" id="saldoakhir1" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="stoksummary1" id="stoksummary1" class="form-control" readonly=""> 
+                                    </td> 
+                                    <td> 
+                                        <input type="text" name="stoksummaryupdate1" id="stoksummaryupdate1" class="form-control" readonly=""> 
+                                    </td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table width="100%" class="table2 table-striped table-bordered table-hover" id="datastokdetail">
+                        <thead style="line-height: 2">
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama Produk</th>
+                                <th>Unit Stok</th>
+                                <th>Gudang</th>
+                                <th>Batch</th>
+                                <th>ED</th>
+                                <th>Dok Batch</th>
+                                <th>Perbaiki Stok</th>
+                            </tr>                    
+                        </thead>
+                    </table>
+                    </div>
+                    <input type="hidden" name="bucket1" id="bucket1">
+                </div>
+
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script>
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+    <script src="{{ base_url }}assets/js/jquery.dataTables.min.js"></script>
+    <script src="{{ base_url }}assets/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap.min.js"></script>
+<script>
+
+    var tabel;
+     var produkSource = [];
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        var today1 = new Date();
+        $("#tgldoc").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgldoc").data("kendoDatePicker").value(today1);
+        $.ajax({
+            url : "{{ base_url }}listProdukAll",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk + "~" + data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data produk');
+            }
+        });   
+
+    });
+    function cariKode(){    
+        $('#produk').typeahead({
+                source: produkSource
+            });
+    }
+
+    function f_get_data(){
+        $("#grid").data("kendoGrid").destroy();
+        $("#grid").empty();
+        var nilai_saldo_awal = 0;
+        var dataheader = $(myForm).serialize();
+        var saldo_akhir = 0;//parseInt(nilai_saldo_awal);
+        var cabang = document.getElementById("Cabang").value;
+        var tgl_mulai   = $("#tgldoc").data("kendoDatePicker").value();
+        var firstDay    = new Date(tgl_mulai.getFullYear(), tgl_mulai.getMonth(), 1);
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        // var materialName = document.getElementById("material_name").value;
+        var materialID = document.getElementById("produk").value;
+        if(materialID == '' || materialID == null)
+        {
+            notif("error","Pilih Produk Terlebih Dahulu ");
+            return;
+        }
+        if ((!Date.parse(tgl_mulai) > !Date.parse(tgl_selesai)) ){
+            toastr.error("Ada kesalahan pada tanggal ! ");
+            return;
+        };
+        var tgl_start   = f_tanggal(firstDay);
+        var tgl_end = f_tanggal(tgl_selesai);
+        var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}getkartustok",   
+                        dataType: 'json',
+                        data: {produk:materialID,tgldoc:tgl_end},
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        var result = data.s_awal;
+                        if (result.length <= 0){
+                            notif('warning','Data tidak ditemukan');// 
+
+                        }else{  
+                            var json = result.s_awal;
+                            $(result).each(function(i,val){
+                                $.each(val,function(k,v){
+                                    nilai_saldo_awal = v                                                       
+                                });
+                            });
+                                                   
+                        $("#grid th[data-field=data_saldo]").contents().last().replaceWith('Saldo Awal: ' + accounting.formatNumber(nilai_saldo_awal, 3, ","));
+                                    
+                        }
+                        return data.Result;
+                    },
+                    model: {
+                            fields: {
+                                rownumber       : { editable: false, nullable: true },
+                                saldo           : { editable:false},
+                                NamaProduk      : {type:"string", editable:false},
+                                NoDoc           : {type:"string", editable:false},
+                                TglDoc          : {type:"date",   editable:false},
+                                Dokumen         : {type:"string", editable:false},
+                                qty_in          : {type:"number", editable:false},
+                                qty_out         : {type:"number", editable:false},
+                                BatchNo         : {type:"string", editable:false},
+                                ExpDate         : {type:"date",   editable:false},
+                            }
+                    },
+                    aggregate: [{ field: "qty_in", aggregate: "sum" ,  format: '{0:n2}'},
+                            { field: "qty_out", aggregate: "sum" ,  format: '{0:n2}'}], 
+                },
+                // pageSize: 10,
+                // serverPaging: true,
+                // serverFiltering: true,
+                // serverSorting: true
+        });
+
+            $("#grid").kendoGrid({
+                pdf:{
+                      // author:"Lohith G N",
+                      repeatHeaders: true, 
+                      fileName:"kartu stok.pdf",
+                      keywords:"SST",
+                      landscape:true,
+                      margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "1cm" },
+                      allPages: true,
+                      paperSize:"A4",
+                      subject:"Kartu Stok",
+                      title:"Kartu Stok",
+                      scale: 0.1,
+                      template: $("#page-template").html(), 
+               },
+                dataSource: ds,
+                sortable: true,
+                height: 600,
+                // height: $(window).height() - 100,
+                sortable:false,
+                resizable: true,
+                scrollable: true,
+                columnMenu:false,
+                selectable: "single",
+                columns: [
+                    {
+                        title: "KARTU STOK GUDANG",
+                        headerAttributes: {style: "text-align: center"},
+                        columns:[
+                            { field : "periode", 
+                              title: 'Starting Date : ' + tgl_start + ' - Ending Date :' + tgl_end,
+                              headerAttributes: {style: "text-align: left"},
+                              headerTemplate: 'Starting Date  : ' + tgl_start + '  ||  Ending Date  : ' + tgl_end + ' || Cabang : ' + cabang,
+                                columns:[
+                                    { field : "material", 
+                                      title: 'Produk : ' + materialID ,
+                                      headerAttributes: {style: "text-align: left"},
+                                      headerTemplate: 'Produk : ' + materialID,
+                                        columns:[
+                                            { field: "rownumber",
+                                                    title: "No.",
+                                                    width: 30,
+                                                    editable : true,
+                                                    headerAttributes: {style: "text-align: center"},
+                                                    nullable : true,
+                                                    // template: "<span class='row-number'></span>"
+                                            },
+                                            {
+                                                    field: "TglDoc",
+                                                    title: "TGL",
+                                                    width: 40,
+                                                    format      : "{0:dd.MMM.yyyy}",
+                                                    parseFormats: ["MM/dd/yyyy"],
+                                                    filterable: {
+                                                        ui: "datetimepicker"
+                                                    }
+                                            },
+                                            { field: "NoDoc" ,
+                                                                title: "Document Number",
+                                                                width: 75,
+                                                                attributes: { style:"text-align:left;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                            },
+                                            { field: "Dokumen",
+                                                                title: "Keterangan",
+                                                                width: 100,
+                                                                attributes: { style:"text-align:left;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                // template: '#=Getvalue(mvtype)#' 
+                                            },
+                                        ]},
+                                        
+                                        { field : "data_saldo", title: 'Saldo Awal: ' + accounting.formatNumber(nilai_saldo_awal, 3, ","),
+                                            headerAttributes: {style: "text-align: right"},
+                                                    columns:[ 
+
+                                                            { field: "qty_in" ,
+                                                               title: "Qty Masuk",
+                                                               width: 40,
+                                                               format: '{0:n2}',
+                                                               attributes: { style:"text-align:right;" },
+                                                               headerAttributes: {style: "text-align: center"},
+                                                               // footerTemplate: "<div style='text-align: right' '> #= kendo.toString(sum, '0.00') #</div>"
+                                                            },
+                                                            { field: "qty_out" ,
+                                                                title: "Qty Keluar",
+                                                                width: 40,
+                                                                format: '{0:n2}',
+                                                                attributes: { style:"text-align:right;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                // footerTemplate: "<div style='text-align: right' '> #= kendo.toString(sum, '0.00') #</div>"
+                                                            },
+                                                            { field: "saldo",
+                                                                title: "Saldo Akhir",
+                                                                width: 50,
+                                                                format: '{0:n2}',
+                                                                // editable : true,
+                                                                attributes: { style:"text-align:right;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                nullable : true,
+                                                                // template: "<span class='row-saldo'></span>"
+                                                            }, 
+                                                            { field: "BatchNo",
+                                                                title: "Batch No",
+                                                                width: 40,
+                                                                attributes: { style:"text-align:center;" },
+                                                                headerAttributes: {style: "text-align: center"},
+                                                                // template: '#=Getvalue(mvtype)#' 
+                                                            },
+                                                            {
+                                                                    field: "ExpDate",
+                                                                    title: "Exp Date",
+                                                                    width: 50,
+                                                                    format      : "{0:dd.MMM.yyyy}",
+                                                                    parseFormats: ["MM/dd/yyyy"],
+                                                                    filterable: {
+                                                                        ui: "datetimepicker"
+                                                                    }
+                                                            },
+
+                                                        ]
+                                        }
+
+                                ]
+                            }
+                            
+                        ]
+                    }
+                    
+                ],
+                dataBound: function (e) {
+                    var grid = $("#grid").data("kendoGrid");
+                    var mBox = $("#msgBox");
+                    if (grid.dataSource.data().length === 0) {
+                        if (!mBox.data("kendoWindow")) {
+                            mBox.kendoWindow({
+                                actions: ["Close"],
+                                animation: {
+                                    open: {
+                                        effects: "fade:in",
+                                        duration: 500
+                                    },
+                                    close: {
+                                        effects: "fade:out",
+                                        duration: 500
+                                    }
+                                },
+                                modal: true,
+                                resizable: false,
+                                title: "No items",
+                                width: 400
+                            }).data("kendoWindow").content("<p>No data available. Please try again later.</p>").center().open();
+                        } else {
+                            mBox.data("kendoWindow").content("<p>No data available. Please try again later.</p>").open();
+                        }
+
+                    }
+
+                 },
+                  dataBinding: function(){
+                    var grid = $("#grid").data("kendoGrid");
+                     var gridData = grid.dataSource.view();
+                     saldo_akhir = 0;
+                     var nilai = parseFloat(nilai_saldo_awal);
+                     if(isNaN(nilai)){
+                        nilai = 0;
+                     }
+                        if(nilai_saldo_awal == '' || nilai_saldo_awal == null)
+                        {
+                            nilai_saldo_awal = 0;
+                        }
+                        var saldo_awal = parseFloat(nilai_saldo_awal);
+                        for (var i = 0; i < gridData.length; i++) {
+                            if (i == 0)
+                            {
+                               saldo_akhir = saldo_awal + saldo_akhir + gridData[i].qty_in - gridData[i].qty_out; 
+                               
+                            }else{
+                               saldo_akhir = saldo_akhir + gridData[i].qty_in - gridData[i].qty_out;
+                            }
+                            gridData[i].saldo=saldo_akhir;
+                            document.getElementById('saldoakhir').value = saldo_akhir;
+                            document.getElementById('saldoakhir1').value = saldo_akhir;
+                            gridData[i].rownumber=i+1;
+                        }                     
+                        
+                    }
+                // },        
+            }); //end kendo grid
+            $("#grid").data("kendoGrid").setDataSource(ds);
+
+            $('.itemRowDetail').remove();
+            $('.itemRowDetail1').remove();
+            tabel = $('#dataTables-example').DataTable({
+             destroy: true, 
+            "processing": true,
+            "serverSide": true, 
+            "ajax": {
+                "url": "{{ base_url }}getstokdetail",
+                "data":{produk:materialID,tgldoc:tgl_end}, 
+                "type": "POST"
+            },
+            // "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            // responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'csv', 'excel', 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+            //  var ds2 = new kendo.data.DataSource({
+            //     transport: {
+            //         read: {
+            //             type: 'Post',
+            //             url: "{{ base_url }}getstokdetail",   
+            //             dataType: 'json',
+            //             data: {produk:materialID},
+            //         }
+            //     },
+            //     error: function(e) {
+            //         alert(e);
+            //     },
+            //     schema: {
+            //         data: function(data){
+            //             return data.Result;
+            //         },
+            //         model: {
+            //                 fields: {
+            //                     // rownumber       : { editable: false, nullable: true },
+            //                     Kode_Produk     : {type:"string", editable:false},
+            //                     Produk      : {type:"string", editable:false},
+            //                     gudang_summary  : {type:"string", editable:false},
+            //                     Stok_summary    : {type:"number", editable:false},
+            //                     gudang_detail   : {type:"string", editable:false},
+            //                     Stok_detail     : {type:"number", editable:false}
+            //                 }
+            //         },
+            //         aggregate: [{ field: "Stok_summary", aggregate: "sum" ,  format: '{0:n2}'},
+            //                 { field: "Stok_detail", aggregate: "sum" ,  format: '{0:n2}'}], 
+            //     },
+            //     // pageSize: limit,
+            //     // serverPaging: true,
+            //     // serverFiltering: true,
+            //     // serverSorting: true
+            // });
+            //    $("#grid_summary").kendoGrid({
+            //     dataSource: ds2,
+            //     sortable: true,
+            //     height: 200,
+            //     // height: $(window).height() - 100,
+            //     resizable: true,
+            //     scrollable: true,
+            //     columnMenu:true,
+            //     selectable: "single",
+            //     columns: [
+            //          { field : "periode", 
+            //             title: 'Starting Date : ' + tgl_start + ' - Ending Date :' + tgl_end,
+            //             headerAttributes: {style: "text-align: left"},
+            //             headerTemplate: 'Stok Gudang => Starting Date  : ' + tgl_start + '  ||  Ending Date  : ' + tgl_end + ' || Cabang : ' + cabang,
+            //             columns:[
+                    
+            //                     {   field: "Kode_Produk",
+            //                         title: "Kode.",
+            //                         width: 40,
+            //                         // editable : true,
+            //                         headerAttributes: {style: "text-align: center"},
+            //                         nullable : true,
+            //                     },
+            //                     {   field: "Produk",
+            //                         title: "Nama Produk.",
+            //                         width: 60,
+            //                         // editable : true,
+            //                         headerAttributes: {style: "text-align: center"},
+            //                         nullable : true,
+            //                     },
+            //                     {   field: "gudang_summary",
+            //                         title: "Gudang Summary.",
+            //                         width: 50,
+            //                         // editable : true,
+            //                         headerAttributes: {style: "text-align: center"},
+            //                         nullable : true,
+            //                     },
+            //                     {   field: "Stok_summary",
+            //                         title: "Stok Summary.",
+            //                         width: 50,
+            //                         // editable : true,
+            //                         headerAttributes: {style: "text-align: center"},
+            //                         nullable : true,
+            //                     },
+            //                     {   field: "gudang_detail",
+            //                         title: "Gudang Detail.",
+            //                         width: 50,
+            //                         // editable : true,
+            //                         headerAttributes: {style: "text-align: center"},
+            //                         nullable : true,
+            //                     },
+            //                     {   field: "Stok_detail",
+            //                         title: "Stok Detail.",
+            //                         width: 50,
+            //                         // editable : true,
+            //                         headerAttributes: {style: "text-align: center"},
+            //                         nullable : true,
+            //                     },
+            //                 ]
+            //             }
+
+                       
+            //     ],
+                 
+            // }); //end kendo grid
+            // $("#grid").data("kendoGrid").setDataSource(ds);
+
+
+            
+        }//end f_getdata_detail
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+        function f_tanggal(tglx)
+        {
+           
+            month_value = tglx.getMonth()+1;
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = year_value +'-'+ month_value + '-' + day_value  ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            $('#cetak_list').table2excel({
+                exclude:".noExl",
+                name:"kartu stok report",
+                filename: "kartu stok report"
+            });
+        }
+
+    function summary(kode,gudang){
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+
+        $('.itemRowDetail').remove();
+        $.ajax({
+            url : "{{ base_url }}liststoksummary",
+            type: "POST",
+            data:{kode:kode,gudang:gudang,tgl_end:tgl_end},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 0;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#datastoksum').append('<tr class="itemRowDetail"><td style="min-width:50px"><input type="text" name="KodeProduk['+i+']" id="KodeProduk'+i+'" value="'+data[i].KodeProduk+'" readonly="" style="background-color: #eee;width:120px"></td><td style="min-width:100px"><input type="text" name="NamaProduk['+i+']" id="NamaProduk'+i+'" value="'+data[i].NamaProduk+'" readonly="" style="background-color: #eee;width:150px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStok['+i+']" id="UnitStok'+i+'" value="'+data[i].UnitStok+'" readonly="" style="background-color: #eee;width:100px" onkeyup="hitung()" onchange="hitung()"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="Gudang['+i+']" id="Gudang'+i+'" value="'+data[i].Gudang+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStokupdate['+i+']" id="UnitStokupdate'+i+'" value="0" style="width:100px" onkeyup="hitung()" onchange="hitung()"><a class="btn btn-sm btn-success" title="fix summary" onclick="fixsummary('+i+')" id="summary"><i class="fa fa-eye"></i>Fix Stok Summary</a></td></tr>');
+                        document.getElementById('stoksummary').value = data[0].UnitStok;
+                        x++;
+                        $("#bucket").val(x);
+                    }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function detail(kode,gudang){
+        $('#modal_form1').modal('show'); // show bootstrap modal when complete loaded
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        $('.itemRowDetail1').remove();
+        $.ajax({
+            url : "{{ base_url }}liststokdetail",
+            type: "POST",
+            data:{kode:kode,gudang:gudang,tgl_end:tgl_end},
+            dataType: "JSON",
+            success: function(data)
+            {   
+                var x = 0;
+                var nf = new Intl.NumberFormat();
+                    for(i in data)
+                    {
+                        $('#datastokdetail').append('<tr class="itemRowDetail1"><td style="min-width:50px"><input type="text" name="KodeProduk1['+i+']" id="KodeProduk1'+i+'" value="'+data[i].KodeProduk+'" readonly="" style="background-color: #eee;width:120px"></td><td style="min-width:100px"><input type="text" name="NamaProduk1['+i+']" id="NamaProduk1'+i+'" value="'+data[i].NamaProduk+'" readonly="" style="background-color: #eee;width:150px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStok1['+i+']" id="UnitStok1'+i+'" value="'+data[i].UnitStok+'" readonly="" style="background-color: #eee;width:100px" onkeyup="hitung1()" onchange="hitung1()"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="Gudang1['+i+']" id="Gudang1'+i+'" value="'+data[i].Gudang+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="BatchNo['+i+']" id="BatchNo'+i+'" value="'+data[i].BatchNo+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="ExpDate['+i+']" id="ExpDate'+i+'" value="'+data[i].ExpDate+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="NoDokumen['+i+']" id="NoDokumen'+i+'" value="'+data[i].NoDokumen+'" readonly="" style="background-color: #eee;width:100px"></td><td style="min-width:50px" class="rata-kanan"><input type="text" name="UnitStokupdate1['+i+']" id="UnitStokupdate1'+i+'" value="0" style="width:100px" onkeyup="hitung1()" onchange="hitung1()"><a class="btn btn-sm btn-success" title="fix Detail" onclick="fixdetail('+i+')" id="stokdetail"><i class="fa fa-eye"></i>Fix Stok Detail</a></td></tr>');
+                        // document.getElementById('stoksummary').value = data[0].UnitStok;
+                        x++;
+                        $("#bucket1").val(x);
+                    }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function reproses(kode,gudang){
+        $("#notif").empty();
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        $.ajax({
+            url : "{{ base_url }}reproses_kartustok",
+            type: "POST",
+            data:{kode:kode,gudang:gudang,tgl_end:tgl_end},
+            dataType: "JSON",
+            beforeSend: function(){
+             $("#progressGIF").show();
+           },
+            success: function(data)
+            {   
+                if (data.status) {
+                    notif('success', 'SUKSES! Reproses Stok '+data.message);
+                }else{
+                    notif('warning', 'Perhatian! Terjadi Kesalahan '+data.message);
+                }
+                $("#progressGIF").hide();
+                load_detail(kode,tgl_end);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('error', 'Error From Ajax');
+                load_detail(kode,tgl_end);
+                $("#progressGIF").hide();
+            }
+        });
+    }
+
+    function load_detail(materialID,tgl_end){
+
+        if ($.fn.dataTable.isDataTable('#dataTables-example')) {
+            tabel.destroy();
+            $('#dataTables-example tbody').empty();
+        }
+        materialID = materialID+ "~test";
+         tabel = $('#dataTables-example').DataTable({
+             destroy: true, 
+            "processing": true,
+            "serverSide": true, 
+            "ajax": {
+                "url": "{{ base_url }}getstokdetail",
+                "data":{produk:materialID,tgldoc:tgl_end}, 
+                "type": "POST"
+            },
+            // "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            // responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'csv', 'excel', 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    }
+
+    function hitung() {
+        var valsum = 0;
+        var valsumupdate = 0;
+        var bucket = ((document.getElementById('bucket').value) ? document.getElementById('bucket').value : 0);
+        for (var e = 0; e < bucket; e++) {
+            var KodeProduk = ((document.getElementById('KodeProduk'+e).value) ? document.getElementById('KodeProduk'+e).value : "");
+            var UnitStok = ((document.getElementById('UnitStok'+e).value) ? document.getElementById('UnitStok'+e).value : "");
+            var Gudang = ((document.getElementById('Gudang'+e).value) ? document.getElementById('Gudang'+e).value : "");
+            var UnitStokupdate = ((document.getElementById('UnitStokupdate'+e).value) ? document.getElementById('UnitStokupdate'+e).value : "");
+
+            // document.getElementById('stoksummary').value = UnitStok;
+            document.getElementById('stoksummaryupdate').value = UnitStokupdate;
+
+        }
+    }
+
+    function hitung1() {
+        var valsum = 0;
+        var valsumupdate = 0;
+        var bucket = ((document.getElementById('bucket1').value) ? document.getElementById('bucket1').value : 0);
+        for (var e = 0; e < bucket; e++) {
+            var KodeProduk = ((document.getElementById('KodeProduk1'+e).value) ? document.getElementById('KodeProduk1'+e).value : "");
+            var UnitStok = ((document.getElementById('UnitStok1'+e).value) ? document.getElementById('UnitStok1'+e).value : "");
+            var Gudang = ((document.getElementById('Gudang1'+e).value) ? document.getElementById('Gudang1'+e).value : "");
+            var UnitStokupdate = ((document.getElementById('UnitStokupdate1'+e).value) ? document.getElementById('UnitStokupdate1'+e).value : "");
+
+            // document.getElementById('stoksummary').value = UnitStok;
+            valsum = valsum + parseInt(UnitStok);
+            valsumupdate = valsumupdate + parseInt(UnitStokupdate);
+        }
+        document.getElementById('stoksummary1').value = valsum;
+        document.getElementById('stoksummaryupdate1').value = valsumupdate;
+    }
+
+    function fixsummary(e){
+        var KodeProduk = ((document.getElementById('KodeProduk'+e).value) ? document.getElementById('KodeProduk'+e).value : "");
+        var UnitStok = ((document.getElementById('UnitStok'+e).value) ? document.getElementById('UnitStok'+e).value : "");
+        var Gudang = ((document.getElementById('Gudang'+e).value) ? document.getElementById('Gudang'+e).value : "");
+        var UnitStokupdate = ((document.getElementById('UnitStokupdate'+e).value) ? document.getElementById('UnitStokupdate'+e).value : "");
+        var saldoakhir = ((document.getElementById('saldoakhir').value) ? document.getElementById('saldoakhir').value : "");
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        // if(parseInt(UnitStokupdate) > parseInt(saldoakhir)){
+        //     notif('success', 'Warning! Unit Stok tidak boleh melebihi Saldo Akhir ');
+        //     return;
+        // }
+        $.ajax({
+            url : "{{ base_url }}updatestoksummary",
+            type: "POST",
+            data:{KodeProduk:KodeProduk,
+                  Gudang:Gudang
+                  ,UnitStok:UnitStokupdate,tgl_end:tgl_end},
+            dataType: "JSON",
+            success: function(data)
+            {   
+               if (data ==false) {
+                    notif('warning', 'PERHATIAN! Update Stok Gagal');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate ');
+                }
+                $('#modal_form').modal('hide');
+                load_detail(KodeProduk,tgl_end);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+                $('#modal_form').modal('hide');
+            }
+        });
+    }
+
+    function fixdetail(e){
+        var KodeProduk = ((document.getElementById('KodeProduk1'+e).value) ? document.getElementById('KodeProduk1'+e).value : "");
+        var UnitStok = ((document.getElementById('UnitStok1'+e).value) ? document.getElementById('UnitStok1'+e).value : "");
+        var Gudang = ((document.getElementById('Gudang1'+e).value) ? document.getElementById('Gudang1'+e).value : "");
+        var batchNo = ((document.getElementById('BatchNo'+e).value) ? document.getElementById('BatchNo'+e).value : "");
+        var BatchDoc = ((document.getElementById('NoDokumen'+e).value) ? document.getElementById('NoDokumen'+e).value : "");
+        var UnitStokupdate = ((document.getElementById('UnitStokupdate1'+e).value) ? document.getElementById('UnitStokupdate1'+e).value : "");
+        var saldoakhir = ((document.getElementById('saldoakhir').value) ? document.getElementById('saldoakhir').value : "");
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        var tgl_end = f_tanggal(tgl_selesai);
+        // if(parseInt(UnitStokupdate) > parseInt(saldoakhir)){
+        //     notif('success', 'Warning! Unit Stok tidak boleh melebihi Saldo Akhir ');
+        //     return;
+        // }
+        $.ajax({
+            url : "{{ base_url }}updatestokdetail",
+            type: "POST",
+            data:{KodeProduk:KodeProduk,
+                  Gudang:Gudang,
+                  UnitStok:UnitStokupdate,
+                  BatchNo:batchNo,
+                  BatchDoc:BatchDoc,
+                  tgl_end:tgl_end
+              },
+            dataType: "JSON",
+            success: function(data)
+            {   
+               if (data ==false) {
+                    notif('warning', 'PERHATIAN! Update Stok Gagal');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate ');
+                }
+                $('#modal_form1').modal('hide');
+                load_detail(KodeProduk,tgl_end);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+                $('#modal_form1').modal('hide');
+            }
+        });
+    }
+      
+</script>
+    {% endblock %}

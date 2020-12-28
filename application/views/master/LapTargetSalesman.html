@@ -1,0 +1,305 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.my_style {
+    font-weight:bold;
+    color:#B51454;
+}
+.kanan{
+    text-align: right;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Laporan Target Salesman</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <!-- <button class="btn btn-success" onclick="addData()"><i class="fa fa-plus"></i> Add Data</button> -->
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        <br><br>
+        <table width="80%">
+            <tr>
+                <td>Prinsipal</td>
+                <td>:</td>
+                <td>
+                    <select id="prinsipal"  class="form-control" >
+                        <option value="-">SEMUA</option>
+                        {% for Prinsipal in Prinsipal %}
+                            <option value="{{Prinsipal.Prinsipal}}">{{Prinsipal.Prinsipal}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <!-- <td>
+                    <select id="bulan"  class=" form-control" >
+                        <option nm-bulan ="{{bulan}}" value="-">SEMUA</option>
+                        <option nm-bulan ="Januari" value="01">Januari</option>
+                        <option nm-bulan ="Februari" value="02">Februari</option>
+                        <option nm-bulan ="Maret" value="03">Maret</option>
+                        <option nm-bulan ="April" value="04">April</option>
+                        <option nm-bulan ="Mei" value="05">Mei</option>
+                        <option nm-bulan ="Juni" value="06">Juni</option>
+                        <option nm-bulan ="Juli" value="07">Juli</option>
+                        <option nm-bulan ="Agustus" value="08">Agustus</option>
+                        <option nm-bulan ="September" value="09">September</option>
+                        <option nm-bulan ="Oktober" value="10">Oktober</option>
+                        <option nm-bulan ="November" value="11">November</option>
+                        <option nm-bulan ="Desember" value="12">Desember</option>
+                    </select>
+                </td>
+                <td><button class="btn btn-primary" onclick="load_data()">Tampilkan data</button></td> -->
+            </tr>
+            <tr>
+                <td>Periode</td>
+                <td>:</td>
+                <td>
+                    <select id="tahun"  class="form-control" >
+                        <option value="-">SEMUA</option>
+                        {% for getTahun in getTahun %}
+                            <option value="{{getTahun.tahun}}">{{getTahun.tahun}}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select id="bulan"  class=" form-control" >
+                        <option nm-bulan ="{{bulan}}" value="-">SEMUA</option>
+                        <option nm-bulan ="Januari" value="01">Januari</option>
+                        <option nm-bulan ="Februari" value="02">Februari</option>
+                        <option nm-bulan ="Maret" value="03">Maret</option>
+                        <option nm-bulan ="April" value="04">April</option>
+                        <option nm-bulan ="Mei" value="05">Mei</option>
+                        <option nm-bulan ="Juni" value="06">Juni</option>
+                        <option nm-bulan ="Juli" value="07">Juli</option>
+                        <option nm-bulan ="Agustus" value="08">Agustus</option>
+                        <option nm-bulan ="September" value="09">September</option>
+                        <option nm-bulan ="Oktober" value="10">Oktober</option>
+                        <option nm-bulan ="November" value="11">November</option>
+                        <option nm-bulan ="Desember" value="12">Desember</option>
+                    </select>
+                </td>
+                <td><button class="btn btn-primary" onclick="load_data()">Tampilkan data</button></td>
+                <td><button id="buttonxls" class="btn btn-primary" onclick="export_excel(event,this)">Export To Excel</button></td>
+                <td><span style="color:red">* Jika Error Pada Saat Export Ke Excel, Gunakan Browser Mozilla Firefox</span></td>
+            </tr>
+        </table>
+        </div>
+        
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Target Salesman 
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Cabang</th>
+                                        <th>Kode Salesman</th>
+                                        <th>Nama Salesman</th>
+                                        <th>Tipe Salesman</th>
+                                        <th>Mcl</th>
+                                        <th>Tanggal</th>
+                                        <th>Prinsipal</th>
+                                        <th>Target</th>
+                                    </tr>
+                                </thead>
+                             <tfoot >
+                                <tr>
+                                    <th colspan="8" align="right">Total</th>
+                                    <th  class="kanan my_style" id="total-target"></th>
+
+                                </tr>
+                                
+                            </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- End Bootstrap modal -->
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var saveMethod;
+    var tabel;
+    $(document).ready(function() {
+
+      load_data();
+
+    });
+
+    function load_data(){
+        bulan = $('#bulan').val();
+        tahun = $('#tahun').val();
+        prinsipal = $('#prinsipal').val();
+        // alert(bulan + tahun);
+
+         if ($.fn.dataTable.isDataTable('#dataTables-example')) {
+            tabel.destroy();
+            $('#dataTables-example tbody').empty();
+        }
+
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataLapTargetSalesman",
+                "data": ({tahun:tahun,bulan:bulan,prinsipal:prinsipal}),
+                "type": "POST"
+            },
+            responsive: true,
+            dom: 'Bfrtip',
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            buttons: [
+                'copy', 'csv', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+
+            columnDefs: [
+                {
+                    targets: 8,
+                    className: 'kanan my_style',
+                    "render": function ( data, type, row, meta ) {
+                        return accounting.formatNumber(data);
+                    }
+                }
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                },
+            "order": [[ 0, "desc" ]]
+            });
+
+       
+
+        $.ajax({
+              url: '{{ base_url }}listDataLapTargetSalesman_count',
+              type: 'POST',
+              data: {tahun:tahun,bulan:bulan,prinsipal:prinsipal},
+          })
+          .done(function(data) {
+               json = JSON.parse(data);
+               if (json.total != 'null') {
+
+                $('#total-target').html(number_format(json.total));
+               }else{
+                $('#total-target').html(number_format(0));
+               }
+          }) 
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    
+    function number_format(nStr)
+    {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+
+    function export_excel(e,x){
+        e.preventDefault();
+        // $("#notif").empty();
+        // var status = 'Open';
+        var prinsipal = $('#prinsipal').val();
+        var tahun = $('#tahun').val();
+        var bulan = $('#bulan').val();
+        // alert(prinsipal + " "+ tahun + " "+bulan);
+
+        /*if(tgl1 == "" ){
+            notif("warning", "<h4>Mohon isi periode</h4> <br> karena bila load semua data tanpa periode akan memakan waktu  lama");
+            $('[name=tgl1]').focus();
+            return;
+        }*/
+        $('#progressGIF').show();
+        // $(x).prop('disabled', true);
+        $.ajax({
+            url : "{{ base_url }}getExportTargetSalesman",
+            type: "POST",
+            dataType: "JSON",
+            data:{prinsipal: prinsipal, tahun: tahun , bulan: bulan},
+            success: function(data)
+            {
+                var $a = $("<a>");
+                $a.attr("href",data.file);
+                $("body").append($a);
+                $a.attr("download",data.filename);
+                $a[0].click();
+                $a.remove();
+                $('#progressGIF').hide();
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'Tidak Ada data pada periode ini');
+                $('#progressGIF').hide();
+            }
+        });   
+        
+
+    }
+
+</script>
+    {% endblock %}

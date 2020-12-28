@@ -1,0 +1,965 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+    <!-- <link href= "{{ base_url }}assets/css/pivot.min.css" rel="stylesheet"> -->
+
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+        #pivotgrid {
+            width: 100%;
+        }
+
+        .hidden-on-narrow {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .k-pivot-table .k-grid-content td {
+          text-align: right;
+      }
+
+        @media print {
+            html, body{
+                font-size:6px;
+                font-family: Tahoma;
+                width: 210mm;
+                height: 148mm;
+            }
+        }
+        table.report-container {
+            page-break-after:always;
+        }
+        thead.report-header {
+            display:table-header-group;
+        }
+        tfoot.report-footer {
+            display:table-footer-group;
+            bottom: 0;
+        }
+</style> 
+<div class="modal">
+    <div id="print_out" style="font-family: Tahoma; font-size:12px; width: 210mm; height: 148mm;"></div>
+</div>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <b>LAPORAN PIUTANG PELANGGAN</b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:30px">Pelanggan</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input class="form-control" type="text" name="pelanggan" id="pelanggan" onkeyup="cariKode()" style="width:400px">
+                        </td>
+                        <td style="padding-left:10px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-success" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses</span></i></a> </td>
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_pdf();return false;" title="Print to pdf" class="btn btn-warning" ><i class="fa fa-file-pdf-o"><span style="padding-left:10px;padding-right:20px">Print to PDF</span></i></a> </td>
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_excel();return false;" title="Excell" class="btn btn-info" > <i class="fa fa-file-excel-o"><span style="padding-left:10px;padding-right:20px">Excell</span></i></a> </td>
+                         <td style="padding-left:5px"><a v-bind:href="javascript:" onclick="f_cetak_tanda_terima('tanda_terima');return false;" title="Cetak Tanda Terima" class="btn btn-info" >Cetak Tanda terima</a></td>
+                         <td style="padding-left:5px"><a v-bind:href="javascript:" onclick="f_cetak_tanda_terima('kwitansi');return false;" title="Cetak Tanda Terima" class="btn btn-info" >Cetak Kwitansi</a></td>
+                         <td style="padding-left:5px"><a v-bind:href="javascript:" onclick="f_cetak_konfirmasi_piutang('kwitansi');return false;" title="Cetak Tanda Terima" class="btn btn-info" >Cetak Konfirmasi</a></td>
+                         <td> <input class="form-control" type="hidden" name="txtAllRowSum" id="txtAllRowSum" readonly> </td>
+                    </tr>
+                   <!--  <tr>
+                        <td >Tgl Mulai </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="datepicker" type="text" name="tgl1" id ="tgl1"></td>
+                        <td style="padding-left:30px">Tgl Selesai </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input class ="datepicker" type="text" name="tgl2" id ="tgl2"></td>
+                    </tr> -->
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div id="msgBox"></div>
+<div id = 'cetak_list'>
+    <table>
+        <tr>
+            <td style="padding-left:10px">Nama :</td>
+            <td style="padding-left:10px">
+                <!-- <input class="form-control" type="text" name="namapelanggan" id="namapelanggan" style="width:400px" readonly=""> -->
+                <span id="namapelanggan"></span>
+            </td>
+            <td style="padding-left:20px">Sisa / Limit:</td>
+            <td style="padding-left:10px">
+                <!-- <input class="form-control" type="text" name="sisa" id="sisa" style="width:100px;text-align:center" readonly=""> </td -->
+                <span id="sisa"></span>
+            <td>/</td>
+            <!-- <td><input class="form-control" type="text" name="limitpelanggan" id="limitpelanggan" style="width:100px;text-align:center" readonly=""> -->
+               <td> <span id="limitpelanggan"></span>
+               <input type="hidden" id="limit_hide" >
+            </td>
+            <td style="padding-left:20px">Status Limit :</td>
+            <td style="padding-left:10px">
+               <!--  <input class="form-control" type="text" name="status_sisa" id="status_sisa" style="width:75px;text-align:center" readonly=""> </td> -->
+                <span id="status_sisa"></span>
+        </tr>
+            <tr>
+            <td style="padding-left:10px">Alamat :</td>
+            <td style="padding-left:10px">
+                <!-- <input class="form-control" type="text" name="alamatpelanggan" id="alamatpelanggan" style="width:600px" readonly=""> -->
+                <span id="alamatpelanggan"></span>
+            </td>
+            <td style="padding-left:20px">Umur / TOP :</td>
+            <td style="padding-left:10px">
+                <!-- <input class="form-control" type="text" name="umur_top" id="umur_top" style="width:100px;text-align:center" readonly="">  -->
+                <span id="umur_pelanggan"></span>
+            <td>/</td>
+            <td><!-- <input class="form-control" type="text" name="umur_pelanggan" id="umur_pelanggan" style="width:100px;text-align:center" readonly=""> -->
+            <span id="umur_top"></span>
+            </td>
+            <td style="padding-left:20px">Status TOP :</td>
+            <td style="padding-left:10px">
+               <!--  <input class="form-control" type="text" name="status_top" id="status_top" style="width:75px;text-align:center" readonly=""> </td> -->
+                <span id="status_top"></span>
+        </tr>
+    </table>
+    <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+    <div id="cetak_konfirm"></div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <!-- <script src="{{ base_url }}assets/js/pivot.min.js"> </script> -->
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var pelangganSource = [];
+    var konfirm = new Vue({
+            el:'#cetak_konfirm',
+            data:{
+                    // no_billing      :'',
+                    // billing_date    :'',
+                    // billing_time    :'',
+                    // shifts          :'',
+                    // total_gross     : 0,
+                    // total_disc      : 0,
+                    // total_dpp       : 0,
+                    // total_vat       : 0,
+                    // total_net       : 0,
+                    detail  :[]
+                    },
+            // computed:{
+            //     total_gross:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.total_jual);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     },
+            //     total_disc:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.disc1);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     },
+            //     total_dpp:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.dpp);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     },
+            //     total_vat:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.vat_in);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     },
+            //     total_voucher:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.voucher);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     },
+            //     total_val_voucher:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.value_voucher);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     },
+            //     total_net:function(){
+            //         var gross = 0;
+            //         $.each(this.detail_billing, function (i, e) {
+            //             gross += Math.round(e.total_nett_jual);
+            //         });
+            //         // return gross;
+            //         return accounting.formatNumber(gross);
+            //     }
+
+            // }
+        })
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        // var today1 = new Date();
+        // $("#tgl1").kendoDatePicker({format: "dd/MM/yyyy"});
+        // $("#tgl1").data("kendoDatePicker").value(today1);
+        // $("#tgl2").kendoDatePicker({format: "dd/MM/yyyy"});
+        // $("#tgl2").data("kendoDatePicker").value(today1);
+        $.ajax({
+            url : "{{ base_url }}listpelangganAll",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    pelangganSource[i] = data[i].Kode + "~" + data[i].Pelanggan;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data Pelannagn');
+            }
+        });   
+
+    });
+       
+    function cariKode(){    
+        $('#pelanggan').typeahead({
+                source: pelangganSource
+            });
+    }
+
+    function f_get_data(){
+        // $("#grid").data("kendoGrid").destroy();
+        // $('#progressGIF').show();
+        $("#grid").empty();
+        // var url = "{{ base_url }}getdatasalesharian";
+        // var tglmulai = f_tanggal($("#tgl1").data("kendoDatePicker").value());
+        // var tglselesai = f_tanggal($("#tgl2").data("kendoDatePicker").value());
+        var cabang = document.getElementById("Cabang").value;
+        var expld = cabang.split("-");
+        cabang = expld[0]; 
+        var xx = document.getElementById("pelanggan").value;
+        var pelanggan = xx.split("~");
+        pelanggan = pelanggan[0];
+        var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}getdatapiutangpelanggan",   
+                        dataType: 'json',
+                        data:{cabang:cabang,pelanggan:pelanggan},
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        if(data.row.length > 0){
+                            // console.log(data.header[0]);
+                            document.getElementById("namapelanggan").innerHTML =data.row[0].Pelanggan;
+                             document.getElementById("alamatpelanggan").innerHTML =data.header[0].Alamat;
+                             document.getElementById("limit_hide").value = data.header[0].limit_kredit;
+                             document.getElementById("limitpelanggan").innerHTML = numberWithCommas(data.header[0].limit_kredit);
+                             document.getElementById("umur_top").innerHTML = numberWithCommas(data.header[0].top);
+                             document.getElementById("umur_pelanggan").innerHTML = numberWithCommas(data.header[0].Umur_faktur);
+                            // if(data.header[0].sisa >= 0){
+                            //     $("#status_sisa").val("Ok");
+                            //     document.getElementById("status_sisa").innerHTML ="Ok";
+                            // }else{
+                            //     $("#status_sisa").val("Not Ok");
+                            //     document.getElementById("status_sisa").innerHTML ="Not Ok";
+                            // }
+                            if((data.header[0].top - data.header[0].Umur_faktur) >= 0){
+                                 $("#status_top").val("Ok");
+                                 document.getElementById("status_top").innerHTML ="Ok";
+                            }else{
+                                $("#status_top").val("Not Ok");
+                                document.getElementById("status_top").innerHTML ="Not Ok";
+                            }  
+                        }
+                        konfirm.detail = data.row;
+
+                        return data.row;
+                    },
+                    model: {
+                            fields: {
+                                // rownumber       : { editable: false, nullable: true },
+                                NoFaktur          : {type:"string", editable:false},
+                                TipeDokumen          : {type:"string", editable:false},
+                                Acu          : {type:"string", editable:false},
+                                TglFaktur         : {type:"string", editable:false},
+                                TglJtoFaktur         : {type:"string", editable:false},
+                                Pelanggan        : {type:"string", editable:false},
+                                CaraBayar          : {type:"string", editable:false},
+                                Umur_faktur             : {type:"number", editable:false},
+                                Salesman      : {type:"string", editable:false},
+                                Total      : {type:"number", editable:false},
+                                Saldo          : {type:"number",   editable:false},
+                                pelunasan      : {type:"number", editable:false},
+                                Giro         : {type:"string", editable:false},
+                                TglGiro         : {type:"string", editable:false},
+                                tglJTO         : {type:"string", editable:false},
+                                value_giro         : {type:"number", editable:false},
+                            }
+                    },
+                },
+                aggregate: [
+                            { field: "Total", aggregate: "sum" ,  format: '{0:n2}'},
+                            { field: "Saldo", aggregate: "sum" ,  format: '{0:n2}'},
+                            { field: "pelunasan", aggregate: "sum" ,  format: '{0:n2}'},
+                            { field: "value_giro", aggregate: "sum" ,  format: '{0:n2}'},
+                    ],
+        });
+             $("#grid").kendoGrid({
+                    dataSource : ds,
+                    scrollable: true,
+                    filterable: true,
+                    sortable: true,
+                    navigatable: true,
+                    resizable: true,
+                    width:"100%",
+                    height: 800,
+                    pageable:true,
+                    selectable: "single",
+                    save: function (e) {
+                            e.sender.refresh();
+                    }, // untuk menghitung ulang 
+                    columns: [
+                    {
+                        title: "Laporan Piutang Pelanggan " + " CABANG : " + cabang.toUpperCase(),
+                        headerAttributes: {style: "text-align: center"},
+                        columns:[
+                        {
+                            field : "periode", 
+                            // title: "Start Date :" + tglmulai + " End Date : " + tglselesai ,
+                            // headerTemplate: "Start Date :" + tglmulai + " End Date : " + tglselesai ,
+                            headerAttributes: {style: "text-align: left"},
+                            columns:[
+                                     { 
+                                        template: "<input type='checkbox' class='pilihan' value='#=NoFaktur#' />",
+                                        width: 30
+                                     },
+                                     {
+                                        field: "NoFaktur",
+                                        title: "Nomor Faktur",
+                                        width: 100,
+                                        editable : false,
+                                        type: "string",
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true, 
+                                    },
+                                    {
+                                        field: "TipeDokumen",
+                                        title: "Tipe",
+                                        width: 20,
+                                        editable : false,
+                                        type: "string",
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true, 
+                                    },
+                                    {
+                                        field: "Acu",
+                                        title: "Nomor Acu",
+                                        width: 100,
+                                        editable : false,
+                                        type: "string",
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true, 
+                                    },
+                                    {
+                                        field: "TglFaktur",
+                                        title: "Tgl",
+                                        width: 75,
+                                        editable : false,
+                                        type: "string",
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true,
+
+                                    },
+                                    {
+                                        field: "TglJtoFaktur",
+                                        title: "Tgl Jatuh Tempo",
+                                        width: 75,
+                                        editable : false,
+                                        type: "string",
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true,
+
+                                    },
+                                    // {
+                                        
+                                    //     field: "Pelanggan",
+                                    //     title: "Pelanggan",
+                                    //     width: 250,
+                                    //     type: "number",
+                                    //     nullable: false,
+                                    //     format: '{0:n2}',
+                                    //     attributes:{style:"text-align:left;"},
+                                    //     headerAttributes: {
+                                    //         style: "text-align: center"
+                                    //     },
+                                    // },
+
+                                    {
+                                        // hidden:true,
+                                        field: "CaraBayar",
+                                        title: "Cara Bayar",
+                                        width: 75,
+                                        type: "string",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                    },
+
+                                    {
+                                        field: "Umur_faktur",
+                                        title: "Umur Faktur",
+                                        width: 75,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                    },
+
+                                    {
+                                        // hidden:true,
+                                        field: "Salesman",
+                                        title: "Salesman",
+                                        nullable: false,
+                                        width: 150,
+                                        type: "string",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+
+                                        footerTemplate: "Total :"
+                                    },
+                                    {
+                                        field: "Total",
+                                        title: "Total",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Saldo",
+                                        title: "Saldo",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "pelunasan",
+                                        title: "Pelunasan",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                    },
+                                    {
+                                        field: "Giro",
+                                        title: "Giro",
+                                        width: 75,
+                                        type: "string",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate: "Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>"
+                                    },
+                                    {
+                                        field: "TglGiro",
+                                        title: "Tgl Giro",
+                                        width: 75,
+                                        type: "string",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate: "Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>"
+                                    },
+                                    {
+                                        field: "tglJTO",
+                                        title: "Tgl JTO Giro",
+                                        width: 75,
+                                        type: "string",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate: "Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>"
+                                    },
+                                    {
+                                        field: "value_giro",
+                                        title: "Value Giro",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n2}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                    },
+
+                                ]
+                            },
+                        ], 
+                    },
+                    ],
+                           
+                    dataBound: function (e) {
+                        //Total sum of UnitsInStock field
+                        // var datalength = e.sender.dataSource.data().length;
+                        // var totalsum = 0;
+                        // if (datalength > 0) {
+                        //     for (var i = 0; i < datalength; i++) {
+                        //         console.log(e.sender.dataSource.data()[0].Saldo);
+                        //         totalsum += e.sender.dataSource.data()[0].Saldo;
+                        //     }
+                        // }
+                        // $("#txtAllRowSum").val(totalsum);
+                        
+                    },
+                    dataBinding: function(){ 
+                         var grid = $("#grid").data("kendoGrid");
+                         var gridData = grid.dataSource.view();
+                         totalsum = 0;
+                            for (var i = 0; i < gridData.length; i++) {
+                                   totalsum = totalsum + gridData[i].Saldo;
+
+                                // gridData[i].saldo=saldo_akhir;
+                                gridData[i].rownumber=i+1;
+                        } 
+                        hitung_header(totalsum);  
+                        // $("#txtAllRowSum").val(totalsum);     
+                    }
+
+                });
+            $("#grid").data("kendoGrid").setDataSource(ds);
+            // $('#progressGIF').hide();
+    }//end f_getdata_detail
+
+    function hitung_header(totalsum){
+       var limit_pelanggan = document.getElementById("limit_hide").value;
+       var sisalunas = limit_pelanggan - totalsum;
+       document.getElementById("sisa").innerHTML = numberWithCommas(Math.round(sisalunas));
+       if(sisalunas >= 0){
+            $("#status_sisa").val("Ok");
+            document.getElementById("status_sisa").innerHTML ="Ok";
+        }else{
+            $("#status_sisa").val("Not Ok");
+            document.getElementById("status_sisa").innerHTML ="Not Ok";
+        }
+    }
+
+        var rowNumber = 0;
+        function resetRowNumber(e) {
+            rowNumber = 0;
+        }
+         
+        function renderNumber(data) {
+            return ++rowNumber;
+        }
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+         function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+           setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"Laporan Piutang Pelanggan",
+                    filename: "Laporan Piutang Pelanggan"
+                });
+            },500);
+        }
+
+        function f_cetak_tanda_terima(cetakan){
+            var detail = [];
+            $('#print_out').empty();
+            var cabang = $("#Cabang").val();
+            var pelanggan = $("#namapelanggan").text();
+            var alamat = $("#alamatpelanggan").text();
+            $(".pilihan:checked").each(function () {
+                // nofaktur.push($(this).val());
+                var row = $(this).closest("tr");
+                var grid = $("#grid").data("kendoGrid");
+                var dataItem = grid.dataItem(row);
+                detail.push({
+                    NoFaktur : dataItem['NoFaktur'],
+                    Acu : dataItem['Acu'],
+                    Alamat : dataItem['Alamat'],
+                    CaraBayar : dataItem['CaraBayar'],
+                    Giro : dataItem['Giro'],
+                    Pelanggan : dataItem['Pelanggan'],
+                    Saldo : dataItem['Saldo'],
+                    Salesman : dataItem['Salesman'],
+                    TglFaktur : dataItem['TglFaktur'],
+                    TglGiro : dataItem['TglGiro'],
+                    TglJtoFaktur : dataItem['TglJtoFaktur'],
+                    Total : dataItem['Total'],
+                    Umur_faktur : dataItem['Umur_faktur'],
+                    pelunasan : dataItem['pelunasan'],
+                    rownumber : dataItem['rownumber'],
+                    tglJTO : dataItem['tglJTO']
+                });
+            });
+            if(detail.length == 0){
+                notif("danger","<h4>Data belum dipilih</h4>");
+                return;
+            }
+            if(cetakan == 'kwitansi'){
+                $("#print_out").append($("<div>").load("{{base_url}}assets/print_template/cetak_kwitansi.php",
+                    {   var1:detail,
+                        cabang:cabang,
+                        pelanggan:pelanggan,
+                        alamat:alamat
+                    },function(){
+                    $('#print_out').print();
+                }));
+            }
+            else{
+                $("#print_out").append($("<div>").load("{{base_url}}assets/print_template/cetak_tandaterima.php",
+                    {   var1:detail,
+                        cabang:cabang,
+                        pelanggan:pelanggan,
+                        alamat:alamat
+                    },function(){
+                    $('#print_out').print();
+                }));
+            }
+        }
+
+        function f_cetak_konfirmasi_piutang(){
+            $('#print_out').empty();
+            var cabang = $("#Cabang").val();
+            var pelanggan = $("#namapelanggan").text();
+            var alamat = $("#alamatpelanggan").text();
+            var displayedData = JSON.stringify($('#grid').data("kendoGrid").dataSource.data());
+            $("#print_out").append($("<div>").load("{{base_url}}assets/print_template/cetak_konfirmasi_piutang.php",
+                {   var1:displayedData,
+                    cabang:cabang,
+                    pelanggan:pelanggan,
+                    alamat:alamat
+                },function(){
+                $('#print_out').print();
+            }));
+        }
+      
+</script>
+    {% endblock %}

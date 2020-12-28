@@ -1,0 +1,410 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+
+<style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+    
+    input{
+    	height: 25px;
+    	font-size: 16px;
+    }
+    select{
+    	height: 25px;
+    	font-size: 16px;
+    }
+</style>
+
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<br>
+<div id="page-wrapper" style="font-size: 14px;">
+	<div class="row">
+        <div class="col-lg-12">
+        	<div class="panel panel-default">
+        		<div class="panel-heading" style="min-height: 35px">
+        			<div style="width:50%;float:left;">
+                        <b>Buat Usulan Pelanggan</b>
+                    </div>
+        		</div>
+        			
+        		<form id="myForm">
+        		<div class="panel-body">
+        			<div style="color: red; font-weight: bold">{{ message }}</div>
+        			
+					<table border="0" class="table table-striped">
+						<tr>
+							<td width="150">Cabang</td>
+							<td width="200" nowrap><input type="text" name="cabang" class="form-control" value="{{ logs.cabang }}" readonly></td>
+							<td width="100"></td>
+							<td width="150">Limit</td>
+							<td width="200" nowrap><input type="text" name="limit_kredit" class="form-control number" required value="2,500,000" style="text-align: right" readonly></td>
+						</tr>
+
+						<tr>
+							<td>Jenis Pelanggan</td>
+							<td>
+								<select name="jenis_pelanggan" class="form-control" required placeholder="pilih">
+									<option value="" selected hidden>-- Pilih --</option>
+									<option value="Pelanggan baru berdiri">Pelanggan baru berdiri</option>
+									<option value="Pelanggan baru tercover">Pelanggan baru tercover</option>
+								</select>
+							</td>
+							<td></td>
+							<td>TOP</td>
+							<td>
+								<input type="number" name="top" class="form-control" value="7" style="text-align: right;" readonly>
+							</td>
+						</tr>
+						<tr>
+							<td>Kode</td>
+							<td><input type="text" name="kode" class="form-control" required value="{{data.kode}}"></td>
+							<td></td>
+							<td>Rekomendasi Dari</td>
+							<td rowspan="4" valign="TOP"><textarea name="rekomendasi_dari" rows="4" class="form-control" required value="{{data.rekomendasi_dari}}"></textarea></td>
+						</tr>
+						<tr>
+							<td>Nama Pelanggan</td>
+							<td><input type="text" name="nama_pelanggan" class="form-control" required value="{{data.nama_pelanggan	}}"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Nama Faktur</td>
+							<td><input type="text" name="nama_faktur" class="form-control" required value="{{data.nama_faktur}}"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>No. Ijin Usaha</td>
+							<td><input type="text" name="no_ijin_usaha" class="form-control" required value="{{data.no_ijin_usaha}}"></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>No. Ijin Apoteker</td>
+							<td><input type="text" name="no_ijin_apoteker" class="form-control" required value="{{data.no_ijin_apoteker}}"></td>
+							<td></td>
+							<td>Cara Bayar</td>
+							<td>
+								<select name="cara_bayar" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									<option value="Cash">Cash</option>
+									<option value="Kredit">Kredit</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Tipe Pajak</td>
+							<td>
+								<select name="tipe_pajak" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									<option value="0">Non NPWP - Non PKP</option>
+									<option value="2">Dinas dan RS Pemerintah - PKP</option>
+									<option value="3">Kawasan Berikat PKP</option>
+									<option value="4">NPWP dan NPPPTKP - PKP</option>
+									<option value="53">K-PKP</option>
+									<option value="5">BUMN-PKP</option>
+									<option value="55">K2-PKP</option>
+									<option value="6">Non PKP - Non PKP</option>
+								</select>
+							</td>
+							<td></td>
+							<td>Area</td>
+							<td>
+								<select name="area" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									{% for area in areas %}
+									<option value="{{ area.Area_Cabang }}">{{ area.Area_Cabang }}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>No. KTP</td>
+							<td><input type="text" name="no_ktp" class="form-control" required value="{{data.no_ktp}}"></td>
+							<td></td>
+							<td>Rayon</td>
+							<td>
+								<select name="rayon" class="form-control" required value="{{data.rayon}}">
+									<option value="" selected hidden>-- Pilih --</option>
+									{% for rayon in rayons %}
+									<option value="{{ rayon.Rayon }}">{{ rayon.Rayon }}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Nama Pajak</td>
+							<td><input type="text" name="nama_pajak" class="form-control" required value="{{data.nama_pajak}}"></td>
+							<td></td>
+							<td>Wilayah</td>
+							<td>
+								<select name="wilayah" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									{% for wilayah in wilayahs %}
+									<option value="{{ wilayah.Nama_Wilayah }}">{{ wilayah.Nama_Wilayah }}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Alamat Pajak</td>
+							<td><input type="text" name="alamat_pajak" class="form-control" required value="{{data.alamat_pajak}}"></td>
+							<td></td>
+							<td>Salesman</td>
+							<td>
+								<select name="salesman" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									{% for salesman in salesmans %}
+									<option value="{{ salesman.Nama }}">{{ salesman.Nama }}</option>
+									{% endfor %}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>NPWP</td>
+							<td><input type="text" name="npwp" class="form-control" required value="{{data.npwp}}"></td>
+							<td></td>
+							<td>Status Usulan</td>
+							<td>Baru</td>
+						</tr>
+						<tr>
+							<td>Alamat</td>
+							<td><input type="text" name="alamat" class="form-control" required value="{{data.alamat}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td rowspan="3">Kota</td>
+							<td width="180" nowrap rowspan="3" class="form-controlx" required>
+								<select name="kota" class="form-control">
+									<option value="" selected hidden>-- Pilih --</option>
+									{% for kota in kotas %}
+									<option value="{{ kota.Kota }}">{{ kota.Kota }}</option>
+									{% endfor %}
+								</select>
+								<br>
+								Keterangan :
+								Jika ada k misalnya k.Bekasi  = Kabupaten Bekasi
+								sedangkan jika Bekasi = Kota Bekasi </td>
+							<td rowspan="3"></td>
+							<td valign="top"></td>
+							<td valign="top"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Telp</td>
+							<td><input type="text" name="telepon" class="form-control" required value="{{data.telepon}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>No FAX</td>
+							<td><input type="text" name="no_fax" class="form-control" required value="{{data.no_fax}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Alamat E-mail</td>
+							<td><input type="text" name="alamat_email" class="form-control" required value="{{data.alamat_email}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Alamat Kirim Barang</td>
+							<td><input type="text" name="alamat_kirim" class="form-control" required value="{{data.alamat_kirim}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Class</td>
+							<td>
+								<select name="class_pelanggan" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									<option value="A">A</option>
+									<option value="B">B</option>
+									<option value="C">C</option>
+									<option value="D">D</option>
+								</select>
+							</td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Tipe Pelanggan</td>
+							<td>
+								<select name="tipe_pelanggan" class="form-control" required>
+									<option value="" selected hidden>-- Pilih --</option>
+									{% for tipe_pelanggan in tipe_pelanggans %}
+									<option value="{{ tipe_pelanggan.Tipe }}">{{ tipe_pelanggan.Nama_Tipe }}</option>
+									{% endfor %}
+								</select>
+							</td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Grup Pelanggan</td>
+							<td><input type="text" name="group_pelanggan" class="form-control" required value="{{data.group_pelanggan}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Nama Apoteker</td>
+							<td><input type="text" name="nama_apoteker" class="form-control" required value="{{data.nama_apoteker}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>No SIPA</td>
+							<td><input type="text" name="no_sipa" class="form-control" required value="{{data.no_sipa}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>ED SIPA</td>
+							<td><input type="date" name="ed_sipa" class="form-control" required value="{{data.ed_sipa}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+						<tr>
+							<td>Alamat Apoteker</td>
+							<td><input type="text" name="alamat_apoteker" class="form-control" required value="{{data.alamat_apoteker}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>Nama Asisten Apoteker</td>
+							<td><input type="text" name="nama_asisten_apoteker" class="form-control" required value="{{data.nama_asisten_apoteker}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td>No Ijin Asisten Apoteker (TTK)</td>
+							<td><input type="text" name="no_ijin_asisten_apoteker" class="form-control" required value="{{data.no_ijin_asisten_apoteker}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td>ED TTK</td>
+							<td><input type="date" name="ed_ttk" class="form-control" required value="{{data.ed_ttk}}"></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+					<div align="center" style="width: 100%; background-color: #d1d1e0; padding: 10px;" ><input type="button" name="submit" value="Save" onclick="savedata(event)"> | <input type="reset" value="Reset"></div>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">	
+	// $("input[name='submit'").on("click", function(){
+	// 	var myform = $("#myForm").serializeArray();
+	// 	var proses = true;
+	// 	// cek form yang belum diisi
+	// 	$.each(myform, function(i, field){
+	// 		if(field.value == ""){
+	// 			alert(field.name + " masih kosong");
+	// 			proses = true;
+	// 			return false;
+	// 		}
+	//         $("#results").append(field.name + ":" + field.value + " ");
+	//     });
+
+	// 	if(proses === true){
+	// 		submit_form();
+	// 	}
+	// })
+
+	function savedata(event){
+		event.preventDefault();
+		// document.getElementById("myForm").reset();
+		// $("#myForm").reset();
+		// return;
+		// var myform = $("#myForm").serializeArray();
+		// var arr = ["cabang", "limit_kredit", "jenis_pelanggan", "top", "kode", "rekomendasi_dari", "nama_pelanggan", "nama_faktur", "no_ijin_usaha", "no_ijin_apoteker", "cara_bayar", "tipe_pajak", "area", "no_ktp", "rayon", "nama_pajak", "wilayah", "alamat_pajak", "salesman", "npwp", "alamat", "kota", "telepon", "no_fax", "alamat_email", "alamat_kirim", "class_pelanggan", "tipe_pelanggan", "group_pelanggan", "nama_apoteker", "no_sipa", "ed_sipa", "alamat_apoteker", "nama_asisten_apoteker", "no_ijin_asisten_apoteker", "ed_ttk"];
+		var arr = ["cabang", "limit_kredit", "jenis_pelanggan", "top", "kode", "nama_pelanggan", "nama_faktur", "no_ijin_usaha", "no_ijin_apoteker", "cara_bayar", "tipe_pajak", "area", "no_ktp", "rayon", "nama_pajak", "wilayah", "alamat_pajak", "salesman", "npwp", "alamat", "kota", "telepon", "no_fax", "alamat_email", "alamat_kirim", "class_pelanggan", "tipe_pelanggan", "group_pelanggan", "nama_apoteker", "no_sipa", "ed_sipa", "alamat_apoteker", "nama_asisten_apoteker", "no_ijin_asisten_apoteker", "ed_ttk"];
+		
+		// cek form yang belum diisi
+		for (var i = 0; i < arr.length; i++) {
+			if($("[name="+arr[i]+"]").val() == ""){
+				$("[name="+arr[i]+"]").focus();
+				notif('warning',arr[i]+" masih kosong");
+				return;
+			}
+		}
+		submit_form();
+	}
+
+	function submit_form(){
+		$("#progressGIF").show();
+		$.ajax({
+			url : "{{ base_url }}addDataPelanggan",
+            type: "POST",
+            data: $('#myForm').serialize(),
+            dataType: "JSON",
+            success: function(data){
+            	if(data.status === false){
+            		alert(data.message);
+            		$("#progressGIF").hide();
+            	}
+            	else{
+            		$("#progressGIF").hide();
+            		// document.getElementById("myForm").reset();
+            		// $("#myForm").trigger('reset');
+					notif('success'," Save berhasil <br> Pelanggan akan segera aktif bila sudah di approve");
+            		location.reload();
+            	}
+            },
+            error: function(e){
+            	$("#progressGIF").hide();
+            	console.log("error submit usulan pelanggan");
+            	console.log(e);
+            }
+		})
+	}
+
+	var el = document.querySelector('input.number');
+	el.addEventListener('keyup', function (event) {
+	 	if (event.which >= 37 && event.which <= 40) return;
+
+	 	this.value = this.value.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		});
+
+</script>
+{% endblock %}

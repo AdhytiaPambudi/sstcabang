@@ -1,0 +1,464 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.my_style {
+    font-weight:bold;
+    color:#B51454;
+}
+.kanan{
+    text-align: right;
+}
+
+th { white-space: nowrap; }
+
+#print_out {display: none;}
+@media print {
+    #print_out {display: block;}
+    /*tfoot{
+        display: table-footer-group;
+        position: fixed;
+        bottom: 0;
+    }*/
+}
+
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Faktur</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="margin-bottom: 10px">
+            <button id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+            <!-- <button class="btn btn-primary" onclick="updateData(event)"><i class="fa fa-refresh"></i> Update</button> -->
+        </div>
+        <div class="col-lg-6" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Datatable List Retur Beli Supplier</b>
+                            <!-- <div style="float: right;" ">
+                                <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data</input>
+                            </div> -->
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th></th>
+                                        <th>Status Pusat</th>
+                                        <th>Detail</th>
+                                        <th>No Retur</th>
+                                        <th>Tanggal</th>
+                                        <th>Prinsipal</th>
+                                        <th>Supplier</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                        <th>Dokumen</th>
+                                        <th>Approval BM</th>
+                                        <th>Tipe Retur</th>
+                                        <th>No BPB</th>
+                                        <th>Jml Cetak</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail</h3>
+            </div>
+            <div class="modal-body form">
+            <b>No Retur : <u><span id="noretur" class="my_style"></span></u></b> / <span id="prinsipal"></span>
+            <!-- <hr> -->
+                <table class="table table-striped" id="dataTables-detail">
+                    <thead>
+                        <th>#</th>
+                        <th>Kode</th>
+                        <th>Nama Produk</th>
+                        <th>Qty</th>
+                        <th>Satuan</th>
+                        <th>BatchNo</th>
+                        <th>Qty_Rec</th>
+                        <th>Disc</th>
+                        <th>Bonus</th>
+                        <th>Disc_Cab</th>
+                        <th>Harga_Beli_Cab</th>
+                        <th>Harga_Deal</th>
+                        <th>Gross</th>
+                        <th>Potongan</th>
+                        <th>Value_Usulan</th>
+                        <th>PPN</th>
+                        <th>Total</th>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="8" style="text-align:right">Total:</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_approve" role="dialog">
+    <div class="modal-dialog" style="width:250px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Konfirmasi</h3>
+                <span id="keterangan"></span>
+                <input type="hidden" name="nomor">
+            </div>
+            <div class="modal-body form" style="overflow-x: auto;overflow-y: auto" align="center">
+                <button class="btn btn-primary" style="width: 70px" onclick="approve('Y')">Approve</button>
+                <button class="btn btn-danger" style="width: 70px" onclick="approve('R')">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="print_out" style="font-family: Tahoma; font-size:10px;">aaaaaaa</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        tabel = $('#dataTables-example').DataTable({
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listdatareturbeli",
+                "type": "POST"
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            columnDefs: [
+                {
+                    targets: 8,
+                    className: 'my_style kanan'
+                },
+                {
+                    targets: 14,
+                    className: 'kanan'
+                },
+                {
+                    targets: 11,
+                    "render": function ( data, type, row, meta ) {
+                        var x = "";
+                        switch(data) {
+                            case "Pending":
+                                x = "<i style='color:red;'>Pending</i>";
+                                break;
+                            case "Y":
+                                x = "<b>Approved</b";
+                                break;
+                            default:
+                                x = data;
+                        }
+                      return x;
+                    }
+                }
+            ],
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdfHtml5',
+                    title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData BPB ',
+                    exportOptions: {
+                        columns: [ 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    },
+                    download: 'open',
+                    pageSize: 'A4',
+                    customize: function (doc) {
+                        // doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                        doc.pageMargins = [10, 20, 10,10 ];
+                        doc.styles.tableHeader.fontSize = 9;
+                        doc.defaultStyle.fontSize = 9;
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                },
+                {
+                    text: 'Cetak Retur',
+                    action: function ( e, dt, node, config ) {
+                        cetaklist();
+                    }
+                },
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function view(no,prins){
+        $("#notif").empty();
+        $("#noretur").html(no);
+        $("#prinsipal").html(prins);
+        if ( $.fn.dataTable.isDataTable( '#dataTables-detail' ) ) {
+            tabel_detail.destroy();
+            // $('#dataTables-detail').empty();
+        }
+        tabel_detail = $('#dataTables-detail').DataTable({
+            "footerCallback": function ( row, data, start, end, display ) {
+                var api = this.api(), data;
+ 
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                // Total over all pages
+                total = api
+                    .column( 16 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return numberWithCommas(intVal(a) + intVal(b));
+                    }, 0 );
+
+                // Update footer
+                $( api.column( 0 ).footer() ).html('Total');
+                $( api.column( 16 ).footer() ).html(total);
+
+            },
+            "processing": true,
+            paging: false,
+            searching: false,
+            "ajax": {
+                "url": "{{ base_url }}detail_retur_beli",
+                "type": "POST",
+                data:{
+                    no : no
+                }
+            },
+            columns: [
+                { data: "noline"},
+                { data: "Produk" },
+                { data: "Nama_Produk"},
+                { data: "Qty" },
+                { data: "Satuan" },
+                { data: "BatchNo" },
+                { data: "Qty_Rec" },
+                { data: "Disc" },
+                { data: "Bonus" },
+                { data: "Disc_Cab" },
+                { data: "Harga_Beli_Cab" },
+                { data: "Harga_Deal" },
+                { data: "Gross" },
+                { data: "Potongan" },
+                { data: "Value_Usulan"},
+                { data: "PPN"},
+                { data: "Total"}
+            ],
+            columnDefs: [
+                {
+                    targets: 2,
+                    className: 'my_style'
+                },
+                {
+                    targets: [4,6,7,8,9],
+                    className: 'kanan'
+                },
+                {
+                    targets: [10,16],
+                    className: 'my_style kanan',
+                    "render": function ( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                },
+                {
+                    targets: 11,
+                    className: 'my_style kanan',
+                    "render": function ( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                },
+                {
+                    targets: 12,
+                    className: 'my_style kanan',
+                    "render": function ( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                }
+              ]
+        });
+        $('#modal_form').modal('show');
+    }
+
+    function Approve_confirm(no,group){
+        $('#modal_approve').modal('show');
+        $('[name=nomor]').val(no);
+        $('#keterangan').html(no);
+    }
+
+    function approve(status){
+        var no = $('[name=nomor]').val();
+        $.ajax({
+            url: "{{ base_url }}approve_retur_beli",
+            type: "post",
+            dataType:"JSON",
+            data:{
+                no      : no,
+                status  : status
+            },
+            success: function(data){
+                $('#modal_approve').modal('hide');
+                notif("Success",data);
+                tabel.ajax.reload();
+            },
+            error:function(e){
+                notif("Error","Maaf, Server Pusat Unconected / Terjadi kesalahan saat menyimpan data");
+            }
+        });
+    }
+
+    function cetaklist(){
+        $("#notif").empty();
+        $("#print_out").empty();
+        var noretur=[];
+        var jml_cetakan = 0;
+        
+        $(".ceklis:checked").each(function () {
+            noretur.push($(this).val());
+        });
+        if(noretur.length == 0){
+            notif('warning', 'Data belum dipilih');
+            return;
+        }
+        $('#progressGIF').show();
+
+        for (var i = 0; i < noretur.length; i++) {
+            $.ajax({
+                url : "{{ base_url }}cetakreturbeli",
+                type: "POST",
+                data:{no:noretur[i]},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    // console.log(data);
+                    $("#print_out").append($("<div>").load("{{base_url}}assets/print_template/cetak_retur_beli.php", {var1:data}, function(){
+                        jml_cetakan = jml_cetakan+1;
+                        if(jml_cetakan == noretur.length){
+                            $('#progressGIF').hide();
+                            $('#print_out').print();
+                        }
+                    }));
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $('#progressGIF').hide();
+                    notif('danger', 'GAGAL! Error get data from ajax');
+                }
+            });
+        }
+    }
+
+    function upload_pusat(no){
+        $('#notif').empty();
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url}}upload_retur_ke_pusat",
+            type : "POST",
+            data : {
+                no : no
+            },
+            success:function(response){
+                $('#progressGIF').hide();
+                notif("success",response);
+                tabel.ajax.reload();
+            },
+            error:function(e){
+                $('#progressGIF').hide();
+                console.log(e);
+                notif("danger","Upload pusat gagal \n Periksa koneksi ke server \n "+e);
+            }
+        });
+    }
+
+    function updateData(e){
+        e.preventDefault();
+        // ('#notif').empty();
+        // $('#progressGIF').show();
+        $.ajax({
+            url:"{{base_url}}download_retur_beli_pusat",
+            type:"POST",
+            dataType:"JSON",
+            success:function(data){
+                console.log(data);
+            },
+            error:function(e){
+                console.log(e);
+                notif("error","Terjadi kesalahan saat menyimpan data")
+            }
+        });
+    }
+    function allData() { 
+        var all = document.getElementById('all').value;       
+        if($("#all").is(':checked')){ 
+            tabel.ajax.url('{{ base_url }}listdatareturbeli/all');
+        }   
+        else{
+            tabel.ajax.url('{{ base_url }}listdatareturbeli');
+        }
+        reloadTable();
+    }   
+
+</script>
+    {% endblock %}

@@ -1,0 +1,325 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+    }
+    .hide{
+        display: none;
+    }
+    input{
+        padding-right: 2px;
+        padding-left: 2px;
+    }
+    input:read-only { 
+      background-color: #C0C0C0;
+    }
+    .blokir{
+        background-color: #C0C0C0;
+        padding: 3px;
+        display: inline-block;
+        min-width: 150px;
+    }
+    
+</style>
+
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+
+<div id="page-wrapper">
+	<div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Revisi BPB</h1>
+        </div>
+    </div>
+<form id="myForm">
+	<div class="row">
+	    <div class="col-lg-12">
+	    	<div class="panel panel-default">
+	            <div class="panel-heading">
+	                Form Revisi BPB
+	            </div>
+	            <div class="panel-body">
+	            	<table>
+	            		<tr>
+	            			<td style="padding-left:10px">Pilih No BPP</td>
+                            <td style="padding-left:10px">:</td>
+                            <td style="padding-left:10px">
+                                <select class="form-control selectpicker" name="nobpp" id="nobpp" data-live-search="true"><option value="">--- Silahkan Pilih No BPB ---</option>
+                            </select></td>
+                            <td style="padding-left:10px">
+                                <button onclick="getDataBPP(event)">Load</button>
+                            </td>
+	            		</tr>
+	            	</table>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+    <!-- .............................................................. -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Header
+                </div>
+                <div class="panel-body">
+                    <table>
+                        <tr>
+                            <td>NO. BPP : <input type="text" name="nobpp" style="width: 200px;" readonly></td>
+                            <td>Prinsipal : <span id="prinsipal" class="blokir">&nbsp;</span></td>
+                            <td>Supplier : <span id="supplier" class="blokir">&nbsp;</span></td>
+                            <td>No. PO : <span id="nopo" class="blokir">&nbsp;</span></td>
+                            <td><span id="supplier">&nbsp;</span></td>
+                        </tr>
+                    </table>
+                    <hr>
+                    <table>
+                        <tr>
+                            <td align="center">Gross :<br> <input type="text" name="gross" style="text-align: right;"></td>
+                            <td align="center">Potongan :<br> <input type="text" name="potongan" style="text-align: right;"></td>
+                            <td align="center">Value :<br> <input type="text" name="value" style="text-align: right;"></td>
+                            <td align="center">PPN :<br> <input type="text" name="ppn" style="text-align: right;"></td>
+                            <td align="center">PPH22 :<br> <input type="text" name="pph" style="text-align: right;"></td>
+                            <td align="center">Total :<br> <input type="text" name="total" style="text-align: right; font-weight: bold;"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- .......................................................................... -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Item detail
+                </div>
+                <div class="panel-body">
+                    <table class="table" id="table-detail">
+                        <thead>
+                            <tr>
+                                <th>Produk</th>
+                                <th>Nama Produk</th>
+                                <th>Satuan</th>
+                                <th>Qty</th>
+                                <th>Batch</th>
+                                <th>Bonus</th>
+                                <th>Disc</th>
+                                <th>Harga Beli</th>
+                                <th>PPH22</th>
+                                <th>Gross</th>
+                                <th>Potongan</th>
+                                <th>Value</th>
+                                <th>PPN</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="savedata(event)">Update</button>
+</form>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+        var BPBSource = [];
+
+        {% for bpbnumber in bpbnumber %}
+            BPBSource.push("{{ bpbnumber.NoDokumen }}");
+        {% endfor %}
+        
+        for (var i = 0; i < BPBSource.length; i++) {
+            $('#nobpp').append("<option class='optPO' value='"+BPBSource[i]+"'>"+BPBSource[i]+"</option>");   
+        }
+        $('.selectpicker').selectpicker('refresh');
+    })
+    function getDataBPP(e){
+        e.preventDefault();
+        clearRow();
+        $('#progressGIF').hide();
+        var no = $("[name=nobpp]").val();
+        $.ajax({
+          type: "POST",
+          url: "{{ base_url }}get_bpb_revisi",
+          data: {no:no},
+          dataType:"JSON",
+          success: function(data){
+            // console.log(data.header.NoDokumen);
+            if(data.header){
+                $("[name=nobpp]").val(data.header.NoDokumen);
+                $("#supplier").text(data.header.Supplier);
+                $("#prinsipal").text(data.header.Prinsipal);
+                $("#nopo").text(data.header.NoPO);
+                $("[name=gross]").val(accounting.formatNumber(data.header.Gross));
+                $("[name=potongan]").val(accounting.formatNumber(data.header.Potongan));
+                $("[name=value]").val(accounting.formatNumber(data.header.Value));
+                $("[name=ppn]").val(accounting.formatNumber(data.header.PPN));
+                $("[name=pph]").val(accounting.formatNumber(data.header.PPH));
+                $("[name=total]").val(accounting.formatNumber(data.header.Total));
+
+                fill_detail_item(data.detail);
+                $('#progressGIF').hide();
+            }else{
+                alert("Data Tidak Ditemukan");
+                $('#progressGIF').hide();
+            }
+          },
+          error : function(e){
+            alert("error");
+            $('#progressGIF').hide();
+          }
+            
+        });
+    }
+
+    function fill_detail_item(detail){
+        for(i in detail){
+            $('#table-detail tbody').append(
+                '<tr id="itemRow'+i+'">'+
+                    '<td><input id="Produk'+i+'" name="Produk[]" type="text" value="'+detail[i].Produk+'" style="width:80px;" readonly></td>'+
+                    '<td>'+detail[i].NamaProduk+'</td>'+
+                    '<td>'+detail[i].Satuan+'</td>'+
+                    '<td><input id="Qty'+i+'" name="Qty[]" type="text" value="'+detail[i].Qty+'" style="width:50px; text-align:right;" onchange="hitung_pusat()" onkeyup="hitung_pusat()" readonly></td>'+
+                    '<td><input id="Batch'+i+'" name="Batch[]" type="text" value="'+detail[i].BatchNo+'" style="width:150px;" readonly></td>'+
+                    '<td><input id="Bonus'+i+'" name="Bonus[]" type="text" value="'+detail[i].Bonus+'" style="width:50px; text-align:right;" onchange="hitung_pusat()" onkeyup="hitung_pusat()" readonly></td>'+
+                    '<td><input id="Disc'+i+'" name="Disc[]" type="text" value="'+detail[i].Disc+'" style="width:50px; text-align:right;" onchange="hitung_pusat()" onkeyup="hitung_pusat()"></td>'+
+                    '<td>'+
+                        '<input id="Harga_Beli'+i+'" name="Harga_Beli[]" type="text" value="'+detail[i].HrgBeli+'" style="width:70px; text-align:right;" onchange="hitung_pusat()" onkeyup="hitung_pusat()" readonly>'+
+                    '</td>'+
+                    '<td>'+
+                        '<input id="PPH22'+i+'" name="PPH22[]" type="checkbox" value="Y" onchange="hitung_pusat()">'+
+                        '<input id="PPH22val'+i+'" name="PPH22val[]" type="text" style="width:70px; text-align:right;" readonly>'+
+                    '</td>'+
+                    '<td><input id="Gross'+i+'" name="Gross[]" type="text" style="width:70px; text-align:right;" readonly></td>'+
+                    '<td><input id="Potongan'+i+'" name="Potongan[]" type="text" style="width:70px; text-align:right;" readonly></td>'+
+                    '<td><input id="Value'+i+'" name="Value[]" type="text" style="width:70px; text-align:right;" readonly></td>'+
+                    '<td><input id="PPN'+i+'" name="PPN[]" type="text" style="width:70px; text-align:right;" readonly></td>'+
+                    '<td><input id="Total'+i+'" name="Total[]" type="text" style="width:80px; text-align:right;" readonly></td>'+
+                '</tr>'
+            )
+        }
+        hitung_pusat();
+    }
+
+    function hitung_pusat(){
+        var total_gross     = 0;
+        var total_value     = 0;
+        var total_potongan  = 0;
+        var total_netto     = 0;
+        var total_ppn       = 0;
+        var total_pph22     = 0;
+        var banyak = $("#table-barang tbody tr").length;
+        $("#table-detail tbody tr").each(function(key){
+
+            var qty = ((document.getElementById('Qty'+key).value) ? parseInt(document.getElementById('Qty'+key).value) : 0);
+            var bonus = ((document.getElementById('Bonus'+key).value) ? document.getElementById('Bonus'+key).value : 0);
+            var harga = ((document.getElementById('Harga_Beli'+key).value) ? parseFloat(document.getElementById('Harga_Beli'+key).value) : 0);
+            var disc = ((document.getElementById('Disc'+key).value) ? document.getElementById('Disc'+key).value : 0);
+            var pph22 = ((document.getElementById('PPH22'+key).checked) ? 'Y' : 'x');
+            // console.log(pph22);
+            var disc_value = 0;
+            var bonus_value = 0;
+            var pph22_value = 0;
+            var potongan = 0;;
+            var gross = 0;
+            var value = 0;
+            var total = 0;
+            banyak = qty + parseInt(bonus);
+            
+            gross           = (banyak * harga);
+            total_gross     += gross;
+            disc_value      = ( harga * qty ) * parseFloat(disc)/100;
+            bonus_value     = (parseInt(bonus)*harga);
+            potongan        = (disc_value + bonus_value);
+            total_potongan  += potongan;
+            value_awal      = (gross - potongan);
+            total_netto     += value_awal;
+            ppn             = (value_awal * 0.1);
+            total_ppn       += ppn;
+            value_awal_ppn  = (value_awal + ppn);
+
+            if(pph22 == 'Y'){
+                pph22_value = (value_awal * 0.003);  // sebelum ppn
+            }else{
+                pph22_value = 0;
+            }
+            total_pph22 += pph22_value;
+
+            value       = (value_awal_ppn + pph22_value);
+            total_value += value;
+            $("#Gross"+key).val(accounting.format(gross));
+            $("#Potongan"+key).val(accounting.format(potongan,2));
+            $("#Value"+key).val(accounting.format(value_awal));
+            $("#PPN"+key).val(accounting.format(ppn));
+            $("#PPH22val"+key).val(accounting.format(pph22_value));
+            $("#Total"+key).val(accounting.format(value,2));
+        });
+        $("[name=gross]").val(accounting.format(total_gross,2));
+        $("[name=potongan]").val(accounting.format(total_potongan,2));
+        $("[name=value]").val(accounting.format(total_netto,2));
+        $("[name=ppn]").val(accounting.format(total_ppn,2));
+        $("[name=pph]").val(accounting.format(total_pph22,2));
+        $("[name=total]").val(accounting.format(total_value,2));
+    }
+
+    function savedata(e){
+        e.preventDefault();
+        $('#notif').empty();
+        $('#progressGIF').hide();
+        var url = "{{ base_url }}update_bpb"; 
+
+        // var formdata = new FormData();
+        // $.each($('#myForm').serializeArray(), function(a, b){
+        //     formdata.append(b.name, b.value);
+        // });
+        var formData = new FormData($('#myForm')[0]);
+
+        $.ajax({
+            url : url,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status=="sukses"){
+                    notif('success', data.pesan);
+                    $('#myForm')[0].reset();
+                    clearRow();
+                }
+                else{
+                    notif('danger', data.pesan);
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'PERHATIAN! Save Data Order GAGAL.', 'gagal');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function clearRow(){
+        $("#table-detail tbody").empty();
+    }
+</script>
+{% endblock %}

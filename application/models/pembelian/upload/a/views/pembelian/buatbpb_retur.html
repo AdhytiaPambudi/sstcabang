@@ -1,0 +1,502 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.selectpicker2{
+    height: 25px;
+}
+input{
+    padding-right: 3px;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-2" style="margin-top: 10px;">
+            <a href="{{base_url}}buatbpb_cabang" class="btn btn-primary" style="padding: 5px;">Buat BPB Cabang</a>
+        </div>
+        <div class="col-lg-12">
+            <h3 class="page-headerx">Buat BPB Retur</h3>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <!-- /.row -->
+    <div class="row" id="vue1">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>header</b>
+                    <!-- <div style="float: right;" ">
+                        <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data</input>
+                    </div> -->
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="col-lg-2">
+                        <label>No. BKB</label>
+                        <select name="no_bkb" class="form-control selectpicker" data-live-search="true" onchange="load_bkb(this)">
+                            <option selected disabled value="">pilih</option>
+                            <option v-for="bkb in data_bkb" :value="bkb.NoDokumen" v-text = "bkb.NoDokumen"></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2" style="height: 50px;">
+                        <label>Prinspal</label>
+                        <input type="text" name="prinsipal" class="form-control">
+                    </div>
+                    <div class="col-lg-2" style="height: 50px;">
+                        <label>Supplier</label>
+                        <input type="text" name="supplier" class="form-control">
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Tanggal</label>
+                        <input type="text" name="tanggal" class="form-control" value="{{tgl}}">
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Gross</label>
+                        <input type="text" name="total_gross" class="form-control" value="0" style="text-align: right;" readonly>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Total Potongan</label>
+                        <input type="text" name="total_potongan" class="form-control" value="0" style="text-align: right;" readonly>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Value</label>
+                        <input type="text" name="total_value" class="form-control" value="0" style="text-align: right;" readonly>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>PPN</label>
+                        <input type="text" name="total_ppn" class="form-control" value="0" style="text-align: right;" readonly>
+                    </div>
+                    <div class="col-lg-2">
+                        <label>Total Net</label>
+                        <input type="text" name="total_net" class="form-control" value="0" style="text-align: right;" readonly>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>Detail data</b>&nbsp;
+                    <button class="btn btn-default" onclick="addrow(event)">Tambah Baris</button>
+                    <!-- <div style="float: right;" ">
+                        <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data</input>
+                    </div> -->
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="table-responsive" style="height: 90%;">
+                        <table class="table" id="table-barang">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th width="200" >Produk</th>
+                                    <th>Qty Pesan</th>
+                                    <th>Satuan</th>
+                                    <th>Qty perima</th>
+                                    <th>Batch No</th>
+                                    <th>Exp Date</th>
+                                    <th>Harga Beli</th>
+                                    <th>Diskon</th>
+                                    <th>Bonus</th>
+                                    <th>HPC</th>
+                                    <th style="display: none;">HPC Awal</th>
+                                    <th>Value BPB</th>
+                                    <th>Banyak</th>
+                                    <th>Pot Cabang</th>
+                                    <th>PPN Cabang</th>
+                                    <th>Total</th>
+                                    <th style="display: none;">Harga Beli Pusat</th>
+                                    <th style="display: none;">Diskon Pusat</th>
+                                    <th style="display: none;">HPP</th>
+                                    <th style="display: none;">Value BPP</th>
+                                    <th style="display: none;">Pot Pusat</th>
+                                    <th style="display: none;">PPN Pusat</th>
+                                    <!-- <th>Batch Ref</th> -->
+                                    <!-- <th>Exp Ref</th> -->
+                                    <!-- <th>No GMS</th> -->
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer" align="center">
+                    <button class="btn btn-primary" style="width: 100px;" onclick="savedata(event)">Save</button>
+                    <button class="btn btn-default" style="width: 100px;">Reset</button>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block js %}
+<script>
+    
+    var jml_row = 0;
+    var tabel;
+    var ardi1 = new Vue({
+        el:'#vue1',
+        data:{
+            data_bkb    : [],
+            produks      : []
+        }
+    });
+    $(document).ready(function() {
+
+        $('.selectpicker').selectpicker({
+          style: 'btn-info',
+          size: 14
+        });
+
+        $('#progressGIF').show();
+        $.getJSON("{{base_url}}listDataBKB2", function(data){
+            ardi1.data_bkb = data;
+            setTimeout(() => {
+                    $('.selectpicker').selectpicker();
+                    $('.selectpicker').selectpicker('refresh');
+                    $('#progressGIF').hide();
+                }, 1000);
+        })
+    })
+
+    function load_bkb(s){
+        $('#progressGIF').show();
+        $('#table-barang tbody').empty();
+        var detail_data = '';
+        var no = $('[name='+s.name+']').val();
+        var data_bkb = jQuery.grep(ardi1.data_bkb, function (value) { return value.NoDokumen == no });
+        $("[name=prinsipal]").val(data_bkb[0].Prinsipal);
+        $("[name=supplier]").val(data_bkb[0].Supplier);
+        $.ajax({
+            url : "{{ base_url }}dataDetailBKB",
+            type: "POST",
+            data:{no:no},
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i = 0; i < data.length; i++) {
+                    detail_data = '';
+                    // console.log(i);
+                    detail_data += '<tr id="itemRow'+i+'">';
+                    detail_data += '<td></td>';
+                    detail_data += '<td><input baris='+i+' class="delRow" name="produk[]" value="'+data[i].Produk+'~'+data[i].NamaProduk+'" id="produk'+i+'" onkeyup="cariKode('+i+')" onchange="getProduk('+i+')" readonly="" style="background-color:#ccc" title="'+data[i].Nama_Produk+'"></td>'
+                    detail_data += '<td><input baris='+i+' name="qtypesan[]" value="'+(data[i].Qty * -1)+'" id="qtypesan'+i+'" readonly="" style="background-color:#ccc; width:50px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' name="satuan[]" value="'+data[i].Satuan+'" id="satuan'+i+'" readonly="" style="background-color:#ccc; width:100px;"></td>'
+                    detail_data += '<td><input baris='+i+' type="text" name="qtyterima[]" id="qtyterima'+i+'" onkeyup="nomor(this); hitung('+i+')" onchange="hitung('+i+')" value="'+(data[i].Qty * -1)+'" style=" width:50px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' name="batchno[]" id="batchno'+i+'" value="" style="width="100px;></td>'
+                    detail_data += '<td><input baris='+i+' type="date" name="expdate[]" onchange="validateBatch('+i+')" id="expdate'+i+'" value="" style="width:120px;"></td>'
+                    detail_data += '<td><input baris='+i+' type="text" name="hargabeli[]" value="'+accounting.format(data[i].HrgBeli)+'" id="hargabeli'+i+'" onkeyup="hitung('+i+')" onchange="hitung('+i+')" style="width:75px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' type="text" name="diskon[]" value="'+accounting.format(data[i].Disc,2)+'" id="diskon'+i+'" onkeyup="hitung('+i+')" onchange="hitung('+i+')" style="width:50px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' type="text" name="bonus[]" value="'+(data[i].Bonus*-1)+'" id="bonus'+i+'" onkeyup="nomor(this); hitung('+i+')" onchange="hitung('+i+')" style="width:50px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' name="hpc[]" id="hpc'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;" value="'+accounting.format(data[i].HPC)+'"></td>'
+                    detail_data += '<td style="display: none;"><input type="hidden" baris='+i+' name="hpcawal[]" id="hpcawal'+i+'" value="'+accounting.format(data[i].HPC1)+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' name="valuebpb[]" id="valuebpb'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"" value="'+accounting.format(data[i].Value * -1)+'" style="width:75px; text-align:right;"></td>'
+                    detail_data += '<td><input baris='+i+' name="banyak[]" id="banyak'+i+'" readonly="" style="background-color:#ccc; width:50px; text-align:right;" value="'+accounting.format(data[i].Banyak * -1)+'"></td>'
+                    detail_data += '<td><input baris='+i+' name="potcabang[]" id="potcabang'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;" value="'+accounting.format(data[i].Potongan * -1)+'"></td>'
+                    detail_data += '<td><input baris='+i+' name="ppncabang[]" id="ppncabang'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;" value="'+accounting.format(data[i].PPN * -1)+'"></td>'
+                    detail_data += '<td><input baris='+i+' name="total[]" id="total'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;" value="'+accounting.format(data[i].Total * -1)+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' name="gross[]" id="gross'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' name="ppn[]" id="ppn'+i+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="hargabelipusat[]" id="hargabelipusat'+i+'" value="'+data[i].Harga_Beli_Pst+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="diskonpusat[]" id="diskonpusat'+i+'" value="'+data[i].Disc_Pst+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="hpp[]" id="hpp'+i+'" value="'+data[i].HPP+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="valuebpp[]" id="valuebpp'+i+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="potpusat[]" id="potpusat'+i+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="ppnpusat[]" id="ppnpusat'+i+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="batchref[]" id="batchref'+i+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="expref[]" id="expref'+i+'"></td>'
+                    detail_data += '<td style="display: none;"><input baris='+i+' type="hidden" name="nogms[]" id="nogms'+i+'" class="newRow"></td>'
+                    detail_data += '<td><input baris='+i+' type="text" name="unitcogs[]" id="unitcogs'+i+'" class="newRow"></td>'
+                    detail_data += '<td><input baris='+i+' type="text" name="totalcogs[]" id="totalcogs'+i+'" class="newRow"></td>'
+                    detail_data += '</tr>';
+                    $('#table-barang').append(detail_data);
+                    jml_row += 1;
+                    hitung(i);
+                }
+
+                ardi1.produks = data.map(function(value,index) { return value.Produk+"~"+value.NamaProduk });
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function addrow(e){
+        e.preventDefault();
+        $("#notif").empty();
+        
+        if(ardi1.produks.length == 0){
+            notif("warning","Silahkan pilih BKB");
+            return;
+        }
+        var valid = validasi();
+        if(valid === false){
+            notif("warning","Periksa kembali data anda");
+            return;
+        }
+
+        detail_data = '';
+        data_produk = '';
+        detail_data += '<tr id="itemRow'+jml_row+'">';
+        detail_data += '<td><button id="btn'+jml_row+'" baris='+i+' class="btn glyphicon glyphicon-trash" onclick="remove_row('+jml_row+')" title="Hapus" /></td>';
+        detail_data += '<td>';
+        detail_data += '<select baris='+jml_row+' id="produk'+jml_row+'" name="produk[]" class="form-control selectpicker2" onchange="pilih_produk('+jml_row+')">';
+        detail_data += '<option selected disabled value="">Pilih Produk</option>';
+        detail_data += '</select>';
+        detail_data += '</td>'
+        detail_data += '<td><input baris='+jml_row+' name="qtypesan[]" id="qtypesan'+jml_row+'" readonly="" style="background-color:#ccc; width:50px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="satuan[]" id="satuan'+jml_row+'" readonly="" style="background-color:#ccc; width:100px;"></td>'
+        detail_data += '<td><input baris='+jml_row+' type="text" name="qtyterima[]" id="qtyterima'+jml_row+'" onkeyup="nomor(this); hitung('+jml_row+')" onchange="hitung('+jml_row+')" style=" width:50px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="batchno[]" id="batchno'+jml_row+'" value="" style="width="100px;></td>'
+        detail_data += '<td><input baris='+jml_row+' type="date" name="expdate[]" onchange="validateBatch('+jml_row+')" id="expdate'+jml_row+'" value="" style="width:120px;"></td>'
+        detail_data += '<td><input baris='+jml_row+' type="text" name="hargabeli[]" id="hargabeli'+jml_row+'" onkeyup="nomor(this); hitung('+jml_row+')" onchange="hitung('+jml_row+')" style="width:75px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' type="text" name="diskon[]" id="diskon'+jml_row+'" onkeyup="nomor(this); hitung('+jml_row+')" onchange="hitung('+jml_row+')" style="width:50px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' type="text" name="bonus[]" id="bonus'+jml_row+'" value="0" onkeyup="nomor(this); hitung('+jml_row+')" onchange="hitung('+jml_row+')" style="width:50px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="hpc[]" id="hpc'+jml_row+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+        detail_data += '<td style="display: none;"><input type="hidden" baris='+jml_row+' name="hpcawal[]" id="hpcawal'+jml_row+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="valuebpb[]" id="valuebpb'+jml_row+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;" style="width:75px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="banyak[]" id="banyak'+jml_row+'" readonly="" style="background-color:#ccc; width:50px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="potcabang[]" id="potcabang'+jml_row+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="ppncabang[]" id="ppncabang'+jml_row+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+        detail_data += '<td><input baris='+jml_row+' name="total[]" id="total'+jml_row+'" readonly="" style="background-color:#ccc; width:75px; text-align:right;"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="gross[]" id="gross'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="ppn[]" id="ppn'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="hargabelipusat[]" id="hargabelipusat'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="diskonpusat[]" id="diskonpusat'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="hpp[]" id="hpp'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="valuebpp[]" id="valuebpp'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="potpusat[]" id="potpusat'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="ppnpusat[]" id="ppnpusat'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="batchref[]" id="batchref'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="expref[]" id="expref'+jml_row+'"></td>'
+        detail_data += '<td style="display: none;"><input baris='+jml_row+' type="hidden" name="nogms[]" id="nogms'+jml_row+'" class="newRow"></td>'
+        detail_data += '<td><input baris='+jml_row+' type="text" name="unitcogs[]" id="unitcogs'+jml_row+'" class="newRow"></td>'
+        detail_data += '<td><input baris='+jml_row+' type="text" name="totalcogs[]" id="totalcogs'+jml_row+'" class="newRow"></td>'
+        detail_data += '</tr>';
+        detail_data += '</tr>';
+        $('#table-barang').append(detail_data);
+        for (var i = 0; i < ardi1.produks.length; i++) {
+            data_produk += '<option value="'+ardi1.produks[i]+'">'+ardi1.produks[i]+'</option>';
+        }
+        $('#produk'+jml_row).append(data_produk);
+        jml_row += 1;
+    }
+
+    function pilih_produk(x){
+        // s = document.getElementById(x.id).getAttribute("baris");
+        s = x;
+        var produk = document.getElementById('produk'+s).value;
+
+        for (var i = 0; i < jml_row; i++) {
+            var ada = document.getElementById("itemRow"+i);
+            if(ada){
+                if(produk == document.getElementById('produk'+i).value){
+                    document.getElementById('qtypesan'+s).value = document.getElementById('qtypesan'+i).value;
+                    document.getElementById('satuan'+s).value = document.getElementById('satuan'+i).value;   
+                    document.getElementById('hpc'+s).value = document.getElementById('hpc'+i).value;   
+                    document.getElementById('hargabeli'+s).value = document.getElementById('hargabeli'+i).value;
+                    document.getElementById('diskon'+s).value = document.getElementById('diskon'+i).value;
+                }
+            }
+        }
+        // document.getElementById('valuebpb'+s).value = document.getElementById('valuebpb0').value;
+        // document.getElementById('potcabang'+s).value = document.getElementById('potcabang0').value;
+    }
+
+    function hitung(x){
+        $("#notif").empty();    
+        if(jml_row==0){
+            return;
+        }
+        // s = document.getElementById(x.id).getAttribute("baris");
+        s = x;
+        var banyak = 0;
+        var potongan = 0;
+        var disc_value = 0;
+        var bonus_value = 0;
+        var harga = 0;
+        var gross = 0;
+        var ppn = 0;
+        var row_value = 0;
+        var total = 0;
+
+        var qty = accounting.unformat(document.getElementById('qtyterima'+s).value);
+        var bonus = accounting.unformat(document.getElementById('bonus'+s).value);
+        var harga_beli = accounting.unformat(document.getElementById('hargabeli'+s).value.replace(/,/g, ""));
+        var hpc = accounting.unformat(document.getElementById('hpc'+s).value.replace(/,/g, ""));
+        var disc = accounting.unformat(document.getElementById('diskon'+s).value);
+
+        disc        = disc/100;
+        harga       = harga_beli>0 ? harga_beli : hpc;
+        banyak      = qty + bonus;
+        gross       = harga * banyak;
+        disc_value  = (harga * qty) *  disc;
+        bonus_value = harga * bonus;
+        potongan    = disc_value + bonus_value;
+        row_value   = gross - potongan;
+        ppn         = row_value * 0.1;
+        total       = row_value + ppn;
+        unitcogs    = row_value / banyak;
+        totalcogs    = unitcogs * banyak;
+
+        document.getElementById('banyak'+s).value = banyak;
+        document.getElementById('gross'+s).value = accounting.format(gross);
+        document.getElementById('ppn'+s).value = accounting.format(ppn);
+        document.getElementById('valuebpb'+s).value = accounting.format(row_value);
+        document.getElementById('potcabang'+s).value = accounting.format(potongan);
+        document.getElementById('ppncabang'+s).value = accounting.format(ppn);
+        document.getElementById('total'+s).value = accounting.format(total);
+        document.getElementById('unitcogs'+s).value = unitcogs;
+        document.getElementById('totalcogs'+s).value = totalcogs;
+        validasi();
+    }
+
+    function validasi(){
+        var warning = 0;
+        var total_qty = 0;
+        var total_gross = 0;
+        var total_disc = 0;
+        var total_potongan = 0;
+        var total_value = 0;
+        var total_ppn = 0;
+        var total_net = 0;
+        var unitcogs = 0;
+        var totalcogs = 0;
+        var qty_awal = accounting.unformat(document.getElementById('qtypesan0').value);
+        for (var i = 0; i < jml_row; i++) {
+            var ada = document.getElementById("itemRow"+i);
+            if(ada){
+                var batchno = document.getElementById('batchno'+i).value;
+                var expdate = document.getElementById('expdate'+i).value;
+                // if(batchno == "" || expdate == ""){
+                //     notif("warning","Periksa Batch dan exp date");
+                //     warning += 1;
+                // }
+                jumlah_produk_sama = cari_duplikat(document.getElementById('produk'+i).value)
+                if(jumlah_produk_sama>qty_awal){
+                    notif("warning","qty tidak boleh melebihi usulan");
+                    warning += 1;
+                }
+                total_gross += accounting.unformat( document.getElementById('gross'+i).value);
+                total_potongan += accounting.unformat(document.getElementById('potcabang'+i).value);
+                total_value = total_gross - total_potongan;
+                total_ppn += accounting.unformat(document.getElementById('ppn'+i).value);
+                total_net = total_value + total_ppn;
+                $('[name=total_gross]').val(accounting.format(total_gross));
+                $('[name=total_potongan]').val(accounting.format(total_potongan));
+                $('[name=total_value]').val(accounting.format(total_value));
+                $('[name=total_ppn]').val(accounting.format(total_ppn));
+                $('[name=total_net]').val(accounting.format(total_net));
+            }
+        }
+        if (warning > 0) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    function cari_duplikat(produk){
+        var qty = 0
+        for (var i = 0; i < jml_row; i++) {
+            var ada = document.getElementById("itemRow"+i);
+            if(ada){
+                if(produk = document.getElementById('produk'+i).value){
+                    qty += parseFloat(document.getElementById('qtyterima'+i).value);
+                }
+            }
+        }
+        return qty;
+    }
+
+    function validateBatch(){
+        return;
+    }
+
+    function savedata(e){
+        e.preventDefault();
+        var valid = validasi();
+        // console.log(valid);
+        // return;
+        
+        // if(valid === false){
+        //     notif("warning","Periksa kembali data anda");
+        //     return;
+        // }
+        var formdata = new FormData();
+        // var Dokumen = $('#mDokumen')[0].files[0];
+        // formdata.append('Dokumen', Dokumen);
+
+        // $.each($('#myForm').serializeArray(), function(a, b){
+        //     formdata.append(b.name, b.value);
+        // });
+
+        var formData = new FormData($('#myForm')[0]);
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}saveDataTerimaRetur",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == 'gagal') {
+                    notif('warning', data.pesan);
+                    $('#progressGIF').hide();
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan no Doc = '+data.pesan);
+                    reset_form();
+                    $('#progressGIF').hide();
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                // notif('danger', 'PERHATIAN! Save Data Usulan Beli GAGAL');
+                // clearRow('all');
+                // $('#myForm')[0].reset();
+                $('#progressGIF').hide();
+                // setTipe();
+            }
+        });
+    }
+
+    function remove_row(s){
+        // s = document.getElementById(x.id).getAttribute("baris");
+        jQuery('#itemRow'+s).remove();
+        var rowCount = $('#table-barang tbody tr').length;
+        if(rowCount == 0){
+            reset_form();
+        }
+        validasi();
+    }
+
+    function reset_form(){
+        $("#myForm")[0].reset();
+        $('#table-barang tbody').empty();
+    }
+</script>
+    {% endblock %}

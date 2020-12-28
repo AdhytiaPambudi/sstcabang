@@ -1,0 +1,868 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    /*.rata-kanan{
+    text-align: right;
+    }
+    .huruf-tebal{
+        font-weight: bold;
+    }
+	table tbody tr td {
+		padding: 5px;
+	}*/
+ .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+}
+.detail-item td{
+    border-right: solid 1px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+
+<div id="vuejs">
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Data DO Pusat</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <br>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="margin-bottom: 10px">
+            <button id="reload" class="btn btn-default" onclick="reloadTable(event)"><i class="fa fa-refresh"></i> Reload</button>
+            <button class="btn btn-primary" onclick="updateData(event)"><i class="fa fa-refresh"></i> Update</button>
+        </div>
+        <!-- <div class="col-lg-6" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data
+        </div> -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Datatable DO Pusat</b>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tanggal</th>
+                                        <th>No.Dokumen</th>
+                                        <th>Prinsipal</th>
+                                        <th>Supplier</th>
+                                        <th>Gross</th>
+                                        <th>Potongan</th>
+                                        <th>Value</th>
+                                        <th>PPN</th>
+                                        <th>Biaya Kirim</th>
+                                        <th>Total</th>
+                                        <th>Total Biaya</th>
+                                        <th>Status</th>
+                                        <th>Detail</th>
+                                        <th>Print</th>
+                                        <th>Closed</th>
+                                        <th>Batal</th>
+                                        <th>Update Value DO Pusat</th>
+                                    </tr>
+                                </thead>
+                                
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail Data</h3>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto">
+                <h3>Data Header</h3> 
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="headerDataFaktur">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:100px">No. Dokumen</th>
+                            <th style="min-width:100px">Tanggal Dokumen</th>
+                            <th style="min-width:100px">Prinsipal</th>
+                            <th style="min-width:100px">Total</th>
+                            <th style="min-width:100px">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr>
+                    		<td><span v-text="data_header[0]['NoDokumen']"></span></td>
+                    		<td><span v-text="data_header[0]['TglDokumen']|date_format"></span></td>
+                    		<td><span v-text="data_header[0]['Prinsipal']"></span></td>
+                    		<td align="right"><span v-text="data_header[0]['Total']|currencyDisplay"></span></td>
+                    		<td><span v-text="data_header[0]['Status']"></span></td>
+                    	</tr>
+                    </tbody>
+                </table><br>
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="headerDataFaktur">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:100px">No. Usulan</th>
+                            <th style="min-width:100px">No. PR</th>
+                            <th style="min-width:100px">No. PO</th>
+                            <th style="min-width:100px">No. BPB</th>
+                            <th style="min-width:100px">No. SJ</th>
+                            <th style="min-width:100px">No. BEX</th>
+                            <th style="min-width:100px">No. INV</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span v-text="data_header[0]['NoUsulan']"></span></td>
+                            <td><span v-text="data_header[0]['NoPR']"></span></td>
+                            <td><span v-text="data_header[0]['NoPO']"></span></td>
+                            <td><span v-text="data_header[0]['NoBPB']"></span></td>
+                            <td><span v-text="data_header[0]['NoSJ']"></span></td>
+                            <td><span v-text="data_header[0]['NoBEX']"></span></td>
+                            <td><span v-text="data_header[0]['NoInv']"></span></td>
+                        </tr>
+                    </tbody>
+                </table><br>
+                <hr>
+                <h3>Data Detail(Item)</h3>
+                <table width="100%" class="table2 table-striped table-bordered table-hover" id="detailDataFaktur">
+                    <thead style="line-height: 2">
+                        <tr>
+                            <th style="min-width:50px">No</th>
+                            <th style="min-width:220px">Produk</th>
+                            <th style="min-width:100px">Batch</th>
+                            <th style="min-width:100px">Exp Date</th>
+                            <th style="min-width:50px">Qty</th>
+                            <th style="min-width:80px">Satuan</th>
+                            <th style="min-width:100px">Prinsipal</th>
+                            <th style="min-width:100px">Supplier</th>
+                            <th style="min-width:100px">Harga Beli</th>
+                            <th style="min-width:100px">Gross</th>
+                            <th style="min-width:100px">Bonus</th>
+                            <th style="min-width:100px">Disc</th>
+                            <th style="min-width:100px">Potongan</th>
+                            <th style="min-width:100px">PPN</th>
+                            <th style="min-width:100px">Harga</th>
+                            <th style="min-width:100px">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	<tr v-for="item in data_detail">
+                    		<td><span v-text="$index+1"></span></td>
+                    		<td><span v-text="item.Produk"></span> - <span v-text="item.NamaProduk"></span></td>
+                    		<td><span v-text="item.BatchNo"></td>
+                    		<td><span v-text="item.ExpDate"></td>
+                    		<td><span v-text="item.Qty"></td>
+                    		<td><span v-text="item.Satuan"></td>
+                    		<td><span v-text="item.Prinsipal"></td>
+                    		<td><span v-text="item.Supplier"></td>
+                            <td align="right"><span v-text="item.HrgBeli|currencyDisplay"></td>
+                    		<td align="right"><span v-text="item.Gross|currencyDisplay"></td>
+                            <td align="right"><span v-text="item.Bonus|currencyDisplay"></td>
+                            <td align="right"><span v-text="item.Disc|currencyDisplayDecimal"></td>
+                            <td align="right"><span v-text="item.Potongan|currencyDisplay"></td>
+                            <td align="right"><span v-text="item.PPN|currencyDisplay"></td>
+                    		<td align="right"><span v-text="item.Harga|currencyDisplay"></td>
+                    		<td align="right"><span v-text="item.Total|currencyDisplay"></td>
+                    	</tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" role="dialog"  id="example-cetak" role="dialog">
+    <div class="modal-content">
+    <div class="modal-body form">
+    <div id ="print_out">
+    <table  border="0" cellspacing="0">
+        <tr>
+            <td height="80px" width="80px" valign="top">
+                <div id="logo"><img src="{{base_url}}assets/logo/1489135837049.jpg"></div>
+            </td>
+            <td width="200px" valign="top">
+                PT. SAPTA SARITAMA<br>
+                Jl. Caringin No. 254 A BABAKAN, BANDUNG
+            </td>
+            <td rowspan="3" valign="top">
+                <table cellspacing="0">
+                    <tr>
+                        <td width="170px">No. DO</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px"  v-html="NoDokumen"></td>
+                    </tr>
+                    <tr>
+                        <td>No.PO &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="250px" nowrap v-html="NoPO"></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="TglDokumen"></td>
+                    </tr>
+                    <tr>
+                        <td>Cabang &nbsp;</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Cabang"></td>
+                    </tr>
+                    <tr>
+                        <td>No SJ </td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="NoSJ"></td>
+                        
+                    </tr>
+                    <tr>
+                        <td>No Invoice</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="NoInv"></td>  
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>:&nbsp;</td>
+                        <td width="100px" nowrap v-html="Status"></td>  
+                    </tr>                    
+                </table>
+            </td>
+             <td valign="top">
+                    <H5>Delivery Order</H5>
+            </td>
+            <!-- <td valign="top" width="150px">Barcode</td> -->
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>Prinsipal</td>
+                        <td>: <span v-html='Prinsipal'></span> - <span v-html='Supplier'></span></td>
+                    </tr>
+                    <tr>
+                        <td>Alamat</td>
+                        <td>: - </td>
+                    </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <table cellspacing="0">
+    <thead>
+        <tr class="detail atas" align="center">
+            <td rowspan="2" width="20" class="awal">No.</td>
+            <td rowspan="2" width="80">ID PRODUK</td>
+            <td rowspan="2" width="220">NAMA PRODUK</td>
+            <td colspan="4">DATA</td>
+            <td rowspan="2" width="80">HARGA</td>
+            <td rowspan="2" width="80">DISKON</td>
+            <td rowspan="2" width="80">Gross</td>
+            <td rowspan="2" width="80">Potongan</td>
+            <td rowspan="2" width="80">Value</td>
+        </tr>
+        <tr class="detail" align="center">
+            <td width="40">Qty</td>
+            <td width="40">Bonus</td>
+            <td width="30">Satuan</td>
+            <td width="30">Batch</td>
+        </tr>
+    </thead>
+         <tbody class="report-body">
+        <tr v-for = "(index,datas) in data_detail_cetak" class="detail-item" style="font-size: 11px; page-break-after: always;" >
+            <td v-html='index + 1' class='awal'> {{ index }}</td>
+            <td v-html='datas.Produk' style='padding-left:5px;'></td>
+            <td v-html='datas.NamaProduk' style='padding-left:2px;'></td>
+            <td v-html='datas.Qty | currencyDisplay' style='padding-right:2px;' align='right'> </td>
+            <td v-html='datas.Bonus | currencyDisplay' style='padding-right:2px;' align='right'> </td>
+            <td v-html='datas.Satuan' style='padding-left:2px;'></td>
+            <td v-html='datas.BatchNo' style='padding-left:2px;'></td>
+            <td v-html='datas.HrgBeli | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Disc | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Gross | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Potongan | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+            <td v-html='datas.Value | currencyDisplay' style='padding-right:2px;'  align="right"></td>
+        </tr>
+    </tbody>
+    <!-- <tr class="page-break"> -->
+    <tr v-if="data_detail.length <= 10 ">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;" ></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 10 && data_detail.length <= 20">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length > 20 && data_detail.length < 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:auto"></div>
+
+        </td>
+    </tr>
+    <tr v-if="data_detail.length >= 35">
+        <td style="border-bottom: solid 1px;"  colspan='11'>
+            <div style="border-bottom: solid 1px;"></div>
+            <div style="page-break-before:always"></div>
+
+        </td>
+    </tr>
+    <!-- <tfoot class="report-footer"> -->
+        <tr class="detail atas" style="font-size: 11px;">
+            <td class='awal' colspan="3" valign="top">Jumlah</td>
+            <td align='right' v-html='total_qty | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_bonus | currencyDisplay' style='padding-right:2px;'></td>
+            <td></td>
+            <td></td>
+            <td align='right' v-html='total_Harga_Beli | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Disc | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Gross | currencyDisplay' style='padding-right:2px;'></td>
+            <td align='right' v-html='total_Potongan | currencyDisplay' style='padding-right:2px;'></td>
+            <td id ='total_Value' align='right' v-html='total_Value | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail atas">
+            <td style='padding-left:5px;' colspan="9" rowspan='4' valign="top" class="awal">Terbilang : <br> <span id ="terbilang_value"></span></td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Biaya</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPN</td>
+            <td align='right' v-html='ppn_header | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">PPn BM</td>
+            <td></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="3" rowspan="4" class="awal"></td>
+            <td colspan="4" rowspan="4"></td>
+            <td colspan="2" rowspan="4"></td>
+            <td colspan="2">Jumlah Tagihan</td>
+            <td align='right' v-html='total_header | currencyDisplay' style='padding-right:2px;'></td>
+        </tr>
+        <tr class="detail">
+            <td colspan="2">Dasar Pengenaan Pajak</td>
+            <td></td>
+        </tr>
+    <!-- </tfoot> -->
+    </table>
+    <table width="840px;">
+        <tr>
+            <td>
+                
+            </td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    var tabel;
+    $(document).ready(function(){
+        tabel = $('#dataTables-example').DataTable({
+                "ordering": false,
+                "processing": true,
+                "serverSide": true, 
+                "ajax": {
+                    "url": "{{ base_url }}load_datadopusat",
+                    "data":{status:status},
+                    "type": "POST"
+                },
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                responsive: true,
+                dom: 'Bfrtip',
+                columnDefs: [
+                {
+                    targets: [4,5,6,7,8,9,10],
+                    className: 'rata-kanan huruf-tebal',
+                    "render": function( data, type, row, meta ) {
+                      return numberWithCommas(data);
+                    }
+                },
+            ],
+                buttons: [
+                    'copy', 'csv', 'excel', 
+                    {
+                        extend:'pdfHtml5',
+                        title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData BPB ',
+                        exportOptions: {
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                        },
+                        download: 'open',
+                        // orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            // doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            doc.pageMargins = [25, 20, 10,10 ];
+                            doc.styles.tableHeader.fontSize = 7;
+                            doc.defaultStyle.fontSize = 7;
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: ':visible',
+                        }
+                    }, 
+                    'pageLength', 'colvis'
+                ],
+                "pageLength": 25,
+                "language": {
+                        "emptyTable":     "Tidak ada data.."
+                    }
+            });
+    });
+    vue_cetak = new Vue({
+            el : '#example-cetak',
+            data : {
+                jml_halaman : 1,
+                TglDokumen      :'',
+                NoDokumen       : '',
+                Supplier        :'',
+                Prinsipal       :'',
+                Cabang          : '',
+                NoPO            :'',
+                NoSJ            :'',
+                NoInv           :'',
+                NoIDPaket       :'',
+                Status          :'',
+                statusPusat     :'',
+                ppn_header      :'',
+                total_header    :'',
+                total_qty : 0,
+                total_Disc : 0,
+                total_Disc_Pst : 0,
+                total_Gross : 0,
+                total_Harga_Beli : 0,
+                total_Harga_Beli_Pst : 0,
+                total_Potongan : 0,
+                total_Value : 0,
+                data_detail_cetak : []
+            },
+            computed:{
+                jml_halaman:function(){
+                    var halaman = 1;
+                    halaman = Math.ceil(this.data_detail_cetak.length / 10);
+                    return halaman;
+                },
+                total_qty:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Qty);
+                    });
+                    return gross;
+                },
+                total_bonus:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Bonus);
+                    });
+                    return gross;
+                },
+                total_Disc_Pst:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Disc_Pst);
+                    });
+                    return gross;
+                },
+                total_Disc:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Disc);
+                    });
+                    return gross;
+                },
+                total_Gross:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Gross);
+                    });
+                    return gross;
+                },
+                total_Harga_Beli:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Harga_Beli);
+                    });
+                    return gross;
+                },
+                total_Harga_Beli_Pst:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Harga_Beli_Pst);
+                    });
+                    return gross;
+                },
+                total_Potongan:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Potongan);
+                    });
+                    return gross;
+                },
+                total_Value:function(){
+                    var gross = 0;
+                    $.each(this.data_detail_cetak, function (i, e) {
+                        gross += Math.round(e.Value);
+                    });
+                    return gross;
+                },
+            }
+    });
+
+    vuejs = new Vue({
+	    el : '#vuejs',
+	    data : {
+	        data_header : [],
+	        data_detail : []
+	    }
+	});
+
+	Vue.filter('currencyDisplay',{
+        read: function(val){
+            return accounting.formatNumber(val);
+        },
+        write: function(val,oldVal){
+            return accounting.unformat(val,",")
+        }
+    });
+
+    Vue.filter('currencyDisplayDecimal',{
+        read: function(val){
+            return accounting.formatNumber(val,2);
+        },
+        write: function(val,oldVal){
+            return accounting.unformat(val,",")
+        }
+    });
+    
+    Vue.filter('date_format',function(val){
+        return f_tanggal(val);
+    })
+    
+function view_detail(no){
+	vuejs.data_header = [];
+	vuejs.data_detail = [];
+    $('.modal-title').text('Detail DO Pusat'); // Set title to Bootstrap modal title
+    jQuery('.itemRow').remove();
+    $.getJSON( "{{ base_url }}detaildopusat",{ "no": no}, function( data ) {
+		vuejs.data_header = data['header'];
+		vuejs.data_detail = data['detail'];
+	});
+	$('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+}
+
+function cetak(no,cabang){
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}printdataDOBeli",
+            type: "POST",
+            data:{no:no,cabang:cabang},
+            dataType: "JSON",
+            success: function(data)
+            {
+                console.log(data);
+                console.log(data[0].TglDokumen);
+                vue_cetak.TglDokumen     = data[0].TglDokumen,
+                vue_cetak.NoDokumen      = data[0].NoDokumen,
+                vue_cetak.NoPO           = data[0].NoPO,
+                vue_cetak.Supplier       = data[0].Supplier,
+                vue_cetak.Prinsipal      = data[0].Prinsipal,
+                vue_cetak.Cabang         = data[0].Cabang,
+                vue_cetak.NoSJ           = data[0].NoSJ,
+                vue_cetak.NoInv          = data[0].NoInv,
+                vue_cetak.Status         = data[0].Status,
+                vue_cetak.statusPusat    = data[0].statusPusat,
+                vue_cetak.ppn_header     = data[0].ppn_header,
+                vue_cetak.total_header   = data[0].total_header,
+                vue_cetak.data_detail_cetak   = data;
+                var total_value = Math.round(data[0].total_header);
+                document.getElementById("terbilang_value").innerHTML = terbilang(total_value);
+                setTimeout(function(){
+                    $('#print_out').print();
+                },1000);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+            }
+        });
+       
+    }
+
+function updateData(e){
+    e.preventDefault();
+    var url = "{{ base_url }}updatedataDOBelipusat";
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                    $('#progressGIF').hide();
+                }else if (data.ket == 'stok') {
+                    notif('warning', 'PERHATIAN! Transaksi Closed karena belum closing atau sudah settlement Bulanan');
+                    $('#progressGIF').hide();
+
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                    $('#progressGIF').hide();
+                    reloadTable(event)
+                    // setTimeout(function(){ reloadTable(event); }, 3000);
+                    
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Gagal Menyimpan Data');
+                $('#progressGIF').hide();
+            }
+        });
+}
+
+function closed(cabang,no,status){
+        $('#progressGIF').show();
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}closedataDO",
+            type: "POST",
+            data:{no:no,cabang:cabang,status:status},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status == true){
+                    notif('success', 'Sukses ! DO sudah di close');
+                }else{
+                    notif('Warning', 'Warning ! Data DO Pusat belum di close');
+                }
+                reloadTable(event);
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+                reloadTable();
+                $('#progressGIF').hide();
+            }
+        });
+       
+    }
+    function batal(cabang,no,status){
+        $('#progressGIF').show();
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}closedataDO",
+            type: "POST",
+            data:{no:no,cabang:cabang,status:status},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status == true){
+                    notif('success', 'Sukses ! DO sudah di batalkan');
+                }else{
+                    notif('error', 'Warning ! Data DO Tdk bisa dibatalin / DO sudah menjadi BPB');
+                }
+                reloadTable(event);
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+                reloadTable();
+                $('#progressGIF').hide();
+            }
+        });
+       
+    }
+
+     function valDO(cabang,no,status){
+        $('#progressGIF').show();
+        $("#notif").empty();
+        jQuery('.itemRow').remove();
+        $.ajax({
+            url : "{{ base_url }}closedataDO",
+            type: "POST",
+            data:{no:no,cabang:cabang,status:status},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status == true){
+                    notif('success', 'Sukses ! value DO sudah di update');
+                }else{
+                    notif('error', 'Warning ! value Data DO Tdk bisa diupdate ');
+                }
+                $('#progressGIF').hide();
+                reloadTable(event); 
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'GAGAL! Error get data from ajax');
+                reloadTable(event);
+                $('#progressGIF').hide();
+            }
+        });
+       
+    }
+
+function reloadTable(e){
+    e.preventDefault();
+    tabel.ajax.reload(null,false);
+}
+
+</script>
+
+{% endblock %}

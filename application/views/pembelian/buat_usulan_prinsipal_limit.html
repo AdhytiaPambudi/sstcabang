@@ -1,0 +1,481 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+    }
+    .hide{
+        display: none;
+    }
+    input, select{
+        font-family: inherit;
+        font-size: 11px;
+        line-height: normal;
+    }
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+ <div class="row">
+        <div class="col-lg-12">
+
+            <!-- <h1 class="page-header">Buat Usulan Beli</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <!-- <form role="form" method="post" id="myForm" enctype="multipart/form-data"> -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h3 class="page-header">Usulan Limit Beli By Prinsipal</h3>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <button class="btn btn-success" onclick="addData()"><i class="fa fa-plus"></i> Add Prinsipal Limit</button>
+        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Prinsipal Limit
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Cabang</th>
+                                        <th>Prinsipal</th>
+                                        <th>Limit</th>
+                                        <th>Limit Outstanding</th>
+                                        <th>Limit Usulan</th>
+                                        <th>Keterangan Usulan</th>
+                                        <th>Waktu Usulan</th>
+                                        <!-- <th>Waktu Approv</th> -->
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <!-- </form> -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div class="modal-body form">
+                            <form role="form" method="post" id="myForm">
+                                <input type="hidden" value="" name="id" id="id" /> 
+                               <!--  <div class="form-group">
+                                    <label class="control-label">Cabang</label>
+                                    <input class="typeahead form-control" name="Cabang" id="cabangMask" > 
+                                </div> -->
+                                <td class="form-group">
+                                   <label class="control-label">Prinsipal</label>
+                                    <input  class="form-control" name="Prinsipal" id="Prinsipal" onfocus="getPrinsipal()" onchange="getLimit()" autocomplete="off">
+                                </td>
+                                <div class="form-group">
+                                    <label class="control-label">Limit</label>
+                                    <input class="form-control" name="Limit" id="Limit" placeholder="" readonly="">
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Limit Outstanding</label>
+                                    <input class="form-control" name="Limit_Outstanding" id="Limit_Outstanding" placeholder="" readonly="">
+                                    <span class="help-block"></span>
+                                </div>
+                                 <div class="form-group">
+                                    <label class="control-label">Sisa Limit</label>
+                                    <input class="form-control" name="Limit_Sisa" id="Limit_Sisa" placeholder="" readonly="">
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Limit Usulan</label>
+                                    <input type="text" min="0" class="form-control" name="Limit_Usulan" id="Limit_Usulan" placeholder="">
+                                    <span class="help-block"></span>
+                                </div>
+                               <!--  <div class="form-group">
+                                    <label class="control-label col-md-3">Waktu Usulan</label>
+                                    <input name="Waktu_Usulan" id="Waktu_Usulan" placeholder="yyyy-mm-dd" class="form-control datepicker" type="text">
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-3">Waktu Approv</label>
+                                    <input name="Waktu_Approv" id="Waktu_Approv" placeholder="yyyy-mm-dd" class="form-control datepicker" type="text">
+                                    <span class="help-block"></span>
+                                </div> -->
+                                <div class="form-group">
+                                    <label class="control-label">Keterangan Usulan</label>
+                                    <textarea class="form-control" name="Keterangan_Usulan" id="Keteranan_Usulan" placeholder="">
+                                    </textarea>
+                                    <span class="help-block"></span>
+                                </div>
+                            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var saveMethod;
+    var tabel;
+    $(document).ready(function() {
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            "serverSide": true, //Feature control DataTables' server-side processing mode.
+            "order": [], //Initial no order.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": "{{ base_url }}listDataPrinsipalLimit",
+                "type": "POST"
+            },
+                //Set column definition initialisation properties.
+                 "columnDefs": [
+
+            { 
+                "targets": [ -1 ], //last column
+                "orderable": false, //set not orderable
+            },
+                 ],
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+
+       $("input[type='text']").keyup(function(event){
+          if(event.which >= 37 && event.which <= 40){
+              event.preventDefault();
+          }
+          var $this = $(this);
+          var num = $this.val().replace(/,/gi, "").split("").reverse().join("");
+          var num2 = RemoveRougeChar(num.replace(/(.{3})/g,"$1,").split("").reverse().join(""));
+          $this.val(num2);
+      });
+   
+
+    
+        //datepicker
+    $('.datepicker').datepicker({
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        todayHighlight: true,
+        orientation: "top auto",
+        todayBtn: true,
+        todayHighlight: true,  
+    });
+    //set input/textarea/select event when change value, remove class error and remove text help block 
+    // $("input").change(function(){
+    //     $(this).parent().parent().removeClass('has-error');
+    //     $(this).next().empty();
+    // });
+    // $("textarea").change(function(){
+    //     $(this).parent().parent().removeClass('has-error');
+    //     $(this).next().empty();
+    // });
+    //$("select").change(function(){
+     //   $(this).parent().parent().removeClass('has-error');
+    //    $(this).next().empty();
+    //});
+
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+
+    // START AUTOCOMPLETE CABANG
+
+        var cabangSource = [];
+
+        $.ajax({
+            url : "{{ base_url }}listCabangPrinsipalLimit",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    cabangSource[i] = data[i].Cabang;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data Cabang from ajax');
+            }
+        });   
+
+        $('#cabangMask').typeahead({
+                source: cabangSource,
+                });
+    // FINISH AUTOCOMPLETE CABANG
+
+    // START AUTOCOMPLETE PRINSIPAL
+    //     var prinsipalSource = [];
+
+    //     $.ajax({
+    //         url : "{{ base_url }}listPrinsipalLimitx",
+    //         type: "GET",
+    //         dataType: "JSON",
+    //         success: function(data)
+    //         {
+    //             for (var i in data) {
+    //                 prinsipalSource[i] = data[i].Prinsipal;
+    //             }
+
+    //         },
+    //         error: function (jqXHR, textStatus, errorThrown)
+    //         {
+    //             alert('Error get data Prinsipal from ajax');
+    //         }
+    //     });   
+
+    //     $('#prinsipalMask').typeahead({
+    //                 source: prinsipalSource,
+    //             });
+    // // FINISH AUTOCOMPLETE PRINSIPAL
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function RemoveRougeChar(convertString){
+        if(convertString.substring(0,1) == ","){
+            return convertString.substring(1, convertString.length)             
+        }
+        return convertString;
+    }
+
+
+    function addData()
+    {
+        saveMethod = 'add';   
+        document.getElementById('id').value = '';     
+        $('#modal_form').modal('show'); // show bootstrap modal
+        $('.modal-title').text('Prinsipal Limit Form Input'); // Set Title to Bootstrap modal title
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.selectpicker').selectpicker('val', '');
+        $('.help-block').empty(); // clear error string
+        $('.form-group').removeClass('has-error'); // clear error class
+    }
+
+    function updateData(id)
+    {
+        saveMethod = 'update';
+        $('#myForm')[0].reset(); // reset form on modals
+        $('.form-group').removeClass('has-error'); // clear error class
+        $('.help-block').empty(); // clear error string
+
+        //Ajax Load data from ajax
+        $.ajax({
+            url : "{{ base_url }}getDataPrinsipalLimit/" + id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+
+                $('[name="id"]').val(data.id);
+                $('[name="Cabang"]').val(data.Cabang); 
+                $('[name="Prinsipal"]').val(data.Prinsipal);          
+                $('[name="Limit"]').val(data.Limit);
+                $('[name="Limit_Outstanding"]').val(data.Limit_Outstanding);
+                $('[name="Limit_Usulan"]').val(data.Limit_Usulan);
+                $('[name="Keterangan_Usulan"]').val(data.Keterangan_Usulan);
+                $('[name="Waktu_Usulan"]').datepicker('update',data.Waktu_Usulan);
+                $('[name="Waktu_Approv"]').datepicker('update',data.Waktu_Approv);
+                $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+                $('.modal-title').text('Prinsipal Limit Form Update'); // Set title to Bootstrap modal title
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data from ajax');
+            }
+        });
+    }
+
+    function deleteData(id)
+    {
+        if(confirm('Are you sure delete this data?'))
+        {
+            // ajax delete data to database
+            $.ajax({
+                url : "{{ base_url }}deleteDataPrinsipalLimit/" + id,
+                type: "POST",
+                dataType: "JSON",
+                success: function(data)
+                {
+                    reloadTable();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert('Error deleting data');
+                }
+            });
+
+        }
+    }
+
+    function saveData()
+    {
+        $('#btnSave').text('Saving...'); //change button text
+        $('#btnSave').attr('disabled',true); //set button disable 
+        var url;
+
+        if(saveMethod == 'add') {
+            url = "{{ base_url }}addDataPrinsipalLimit";
+        } else {
+            url = "{{ base_url }}updateDataPrinsipalLimit";
+        }
+        var usulan = document.getElementById('Limit_Usulan').value; 
+        if(usulan == ""){
+            notif("warning","Usulan Limit Tidak Boleh Kosong");
+            return;
+        } 
+        // ajax adding data to database
+        $.ajax({
+            url : url,
+            type: "POST",
+            data: $('#myForm').serialize(),
+            dataType: "JSON",
+            success: function(data)
+            {
+                if(data.status) //if success close modal and reload ajax table
+                {
+                    $('#modal_form').modal('hide');
+                    reloadTable();
+                }
+                else
+                {
+                for (var i = 0; i < data.inputerror.length; i++) 
+                    {
+                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
+                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+                    }
+                }
+
+                $('#btnSave').text('save'); //change button text
+                $('#btnSave').attr('disabled',false); //set button enable 
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                
+                $('#btnSave').text('save'); //change button text
+                $('#btnSave').attr('disabled',false); //set button enable 
+
+            }
+        });
+    }
+
+    var prinsipalSource = [];
+    function getPrinsipal() {
+        var i = 0;
+        $('#Prinsipal').typeahead('destroy');
+        prinsipalSource.length = 0;
+        // var tipe = document.getElementById('tipe').value;
+            // if (tipe == 'Usulan Beli') {
+                {% for prinsipal in prinsipal %}
+                    {% if prinsipal.Prinsipal != 'E-KATro'%}
+                        prinsipalSource[i] = '{{prinsipal.Prinsipal}}~{{prinsipal.Supplier}}';                
+                        i++;
+                    {% endif %}      
+                {% endfor %}      
+            // }
+            // else{
+            //         prinsipalSource[0] = 'E-KAT~';
+            //         // loadProduk();
+            //  }
+        $('#Prinsipal').typeahead({
+                    source: prinsipalSource
+                });
+    }
+
+    var supplierSource = [];
+    function getLimit() {
+        var data = document.getElementById('Prinsipal').value;
+        var split = data.split("~");
+        var prinsipal = split[0];
+
+        $.ajax({
+                url : "{{ base_url }}getprinsipalLimit",
+                type: "POST",
+                data:{prinsipal:prinsipal},
+                dataType: "JSON",
+                success: function(data)
+                {
+                    $('#Limit').val(numberWithCommas(data.limit));
+                    $('#Limit_Outstanding').val(numberWithCommas(data.outstanding));
+                    $('#Limit_Sisa').val(numberWithCommas(data.limit - data.outstanding));
+                    // setNo();
+                    // hitung();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $("#notif").empty();
+                    notif('danger','Error get list Produk from ajax');
+                }
+            });
+    }
+
+</script>
+    {% endblock %}

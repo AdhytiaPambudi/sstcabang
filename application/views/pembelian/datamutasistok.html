@@ -1,0 +1,965 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <b>Kartu Stok Gudang</b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:30px">Tanggal </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input type="hidden" name="tglgrid" id ="tglgrid"><input type="text" name="tgldoc" id ="tgldoc"></td>
+                        <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-success" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px;color:black">Proses</span></i></a> </td>
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_settlement();return false;" title="Settlement Stok" class="btn btn-warning" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px;color:black">Settlement Stok Harian</span></i></a> </td>
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_settlement_bulan();return false;" title="Settlement Stok Bulanan" class="btn btn-info" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px;color:black">Settlement Stok Bulanan</span></i></a> </td>
+                      
+   
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div id="msgBox"></div>
+<div id = 'cetak_list'>
+   <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+   <!-- <br>
+   <hr width="100%" size="10">
+   <div><center><strong>DATA GUDANG</strong></center></div>
+   <br>
+   <div id="grid_summary"> -->
+</div>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        var today1 = new Date();
+        $("#tgldoc").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgldoc").data("kendoDatePicker").value(today1);
+        $.ajax({
+            url : "{{ base_url }}listProdukAll",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk + "~" + data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data produk');
+            }
+        });   
+
+    });
+    function cariKode(){    
+        $('#produk').typeahead({
+                source: produkSource
+            });
+    }
+
+    function f_get_data(){
+        $("#grid").data("kendoGrid").destroy();
+        $("#grid").empty();
+        var nilai_saldo_awal = 0;
+        var dataheader = $(myForm).serialize();
+        var saldo_akhir = 0;//parseInt(nilai_saldo_awal);
+        var cabang = document.getElementById("Cabang").value;
+        var tgl_mulai   = $("#tgldoc").data("kendoDatePicker").value();
+        var firstDay    = new Date(tgl_mulai.getFullYear(), tgl_mulai.getMonth(), 1);
+        var tgl_selesai = $("#tgldoc").data("kendoDatePicker").value();
+        document.getElementById("tglgrid").value = tgl_selesai;
+        if ((!Date.parse(tgl_mulai) > !Date.parse(tgl_selesai)) ){
+            toastr.error("Ada kesalahan pada tanggal ! ");
+            return;
+        };
+        var tgl_start   = f_tanggal(firstDay);
+        var tgl_end = f_tanggal(tgl_selesai);
+        var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}getmutasistok",   
+                        dataType: 'json',
+                        data: {tgldoc:tgl_end},
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        return data.Result;
+                    },
+                    model: {
+                            fields: {
+                                rownumber       : { editable: false, nullable: true },
+                                Kode_Produk     : {type:"string", editable:false},
+                                NamaProduk      : {type:"string", editable:false},
+                                Satuan          : {type:"string", editable:false},
+                                saldo_awal      : {type:"number",   editable:false},
+                                qty_terima      : {type:"number", editable:false},
+                                qty_relokasi_terima      : {type:"number", editable:false},
+                                qty_plus        : {type:"number", editable:false},
+                                qty_retur       : {type:"number", editable:false},
+                                qty_returbeli   : {type:"number", editable:false},
+                                qty_do          : {type:"number", editable:false},
+                                qty_returdo     : {type:"number", editable:false},
+                                qty_relokasi_kirim      : {type:"number", editable:false},
+                                qty_min         : {type:"number",   editable:false},
+                                qty_stok        : {type:"number",   editable:false},
+                                qty_stokdetail  : {type:"number",   editable:false},
+                                Status_stok_detail : {type:"string",   editable:false},
+                                saldo_akhir     : {type:"number",   editable:false},
+                                status          : {type:"string", editable:false},
+                            }
+                    },     
+                },
+                aggregates: [{ field: "saldo_awal", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_terima", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_relokasi_terima", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_plus", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_retur", aggregate: "sum" ,  format: '{0:n0}'},
+                                 { field: "qty_returbeli", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_do", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_returdo", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_relokasi_kirim", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_min", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_stok", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "qty_stokdetail", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "saldo_akhir", aggregate: "sum" ,  format: '{0:n0}'},
+                                ], 
+        });
+
+             $("#grid").kendoGrid({
+                    dataSource : ds,
+                    scrollable: true,
+                    filterable: true,
+                    sortable: true,
+                    navigatable: true,
+                    resizable: true,
+                    width:"100%",
+                    height: 700,
+                    pageable:true,
+                    selectable: "single",
+                    save: function (e) {
+                            e.sender.refresh();
+                    }, // untuk menghitung ulang 
+                    toolbar: ["excel"],
+                    excel: {
+                    fileName: "Laporan mutasi stok.xlsx",
+                            filterable: true
+                        },
+                    pdf: {
+                            fileName: "Laporan mutasi stok.pdf",
+                        },
+                    columns: [
+                    {
+                        title: "LAPORAN MUTASI STOK GUDANG" + " CABANG : " + cabang.toUpperCase(),
+                        headerAttributes: {style: "text-align: center"},
+                        columns:[
+                        {
+                            title: "Start Date :" + tgl_start + " End Date : " + tgl_end ,
+                            headerAttributes: {style: "text-align: left"},
+                            columns:[
+                                    {
+                                        field: "rowNumber",
+                                        title: "No",
+                                        width: 40,
+                                        editable : false,
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true,
+                                        template: "#= renderNumber(data) #" 
+                                    },
+                                    {
+                                        // hidden:true,
+                                        field: "Kode_Produk",
+                                        title: "Kode Produk",
+                                        nullable: false,
+                                        width: 100,
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        filterable: { 
+                                          // ui: IDFilter
+                                        },
+                                        // editor: dropdownproduct
+                                    },
+                                    {
+                                        field: "NamaProduk",
+                                        title: "Produk",
+                                        width: 250,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Satuan",
+                                        title: "Satuan",
+                                        width: 50,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                ]
+                            }, 
+                            {
+                                title: "Stok Terima ",
+                                headerAttributes: {style: "text-align: Center"},
+                                columns:
+                                [
+                                     {
+                                        field: "saldo_awal",
+                                        title: "Saldo Awal",
+                                        width: 75,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // aggregates: ['sum'], 
+                                        // footerTemplate: "Total Sum: #=sum#",
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_terima",
+                                        title: "Terima Dari Supplier",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_relokasi_terima",
+                                        title: "Relokasi Terima",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_plus",
+                                        title: "Adjustment (+)",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_retur",
+                                        title: "Terima Dari Pelanggan",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+                                    },
+                                    {
+                                        field: "qty_returdo",
+                                        title: "Retur DO Dari Pelanggan",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+                                    },
+                                ]
+                            },
+                            {
+                                title: "Stok Keluar",
+                                headerAttributes: {style: "text-align: Center"},
+                                columns:
+                                [
+                                     {
+                                        field: "qty_do",
+                                        title: "Kirim Ke Pelanggan",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+                                    },
+                                    {
+                                        field: "qty_returbeli",
+                                        title: "Retur ke Supplier",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+                                    },
+                                     {
+                                        field: "qty_relokasi_kirim",
+                                        title: "Relokasi Kirim",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_min",
+                                        title: "Adjustment (-)",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                       // editor:dropdownunit
+
+                                    },
+                                ]
+                            },
+                            {
+                                title: "Saldo",
+                                headerAttributes: {style: "text-align: Center"},
+                                columns:
+                                [
+                                    {
+                                        field: "saldo_akhir",
+                                        title: "Saldo Akhir",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center;white-space: nowrap"
+                                        },
+                                                // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                               // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_stok",
+                                        title: "Qty Stok",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center;white-space: nowrap"
+                                        },
+                                                // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                               // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "qty_stokdetail",
+                                        title: "Stok detail",
+                                        width: 100,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center;white-space: nowrap"
+                                        },
+                                                // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                               // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Status_stok_detail",
+                                        title: "Status Stok",
+                                        width: 100,
+                                        // type: "String",
+                                        nullable: false,
+                                        // format: '{0:n2}',
+                                        attributes:{style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center;white-space: nowrap"
+                                        },
+                                                // footerTemplate:"Total :<div style='float: right'>#= kendo.toString(sum, 'n') #</div>",
+                                               // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "status",
+                                        title: "Status",
+                                        width: 50,
+                                        attributes: {style:"text-align:center;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                ]
+                            }
+                           
+                        ]
+                    }
+                                              
+                    ],//end of columns
+                    // detailTemplate: kendo.template($("#template").html()),
+                    // detailInit: f_show_pos,  
+                    dataBound: function (e) {
+                        resetRowNumber();
+                        var items = this._data;
+                        var tableRows = $(this.table).find("tr");
+                        tableRows.each(function(index) {
+                            var row = $(this);
+                            var Item = items[index];
+                            var saldo_akhir = Item.saldo_akhir;
+                            var status = Item.status;
+                            var stok = Item.qty_stok;
+                            var detail = Item.qty_stokdetail;
+                            var stok_detail = Item.Status_stok_detail;
+                            if(detail < stok){
+                                $(this).closest("tr").css("background-color", "YellowGreen");
+                                status = 'Selisih stok';
+                            }
+                           if (saldo_akhir < 0 || stok_detail == 'Minus') {
+                                $(this).closest("tr").css("background-color", "YellowGreen");
+                                status = 'Selisih';
+                            }else if(saldo_akhir == stok)
+                            {
+                                $(this).closest("tr").css("color", "black");
+                                status = 'Ok';
+                            }else if(saldo_akhir != stok)
+                            {
+                                $(this).closest("tr").css("background-color", "Crimson");
+                                $(this).closest("tr").css("color", "white");
+                                status = 'Selisih';
+                            }
+                            
+                        });
+                    },
+                    dataBinding: function(){
+                        var grid = $("#grid").data("kendoGrid");
+                         var gridData = grid.dataSource.view();
+                         status = "";
+                        for (var i = 0; i < gridData.length; i++) {
+                            if (gridData[i].saldo_akhir != gridData[i].qty_stok)
+                            {
+                                status = 'Selisih'; 
+                                   
+                            }else{
+                                status = 'Ok'; 
+                            }
+                            gridData[i].status=status;
+                            if(gridData[i].qty_stokdetail != gridData[i].qty_stok){
+                                gridData[i].Status_stok_detail=gridData[i].Status_stok_detail + 'Selisih Stok detail';
+                            }
+                            
+                            // gridData[i].rownumber=i+1;
+                        }                     
+                        
+                    }
+
+                });
+            $("#grid").data("kendoGrid").setDataSource(ds);
+
+        }//end f_getdata_detail
+
+        function f_settlement(){
+            var datagrid = $("#grid").data("kendoGrid").dataSource.data();
+            var gridlength = datagrid.length;
+            var tgl_grid = document.getElementById("tglgrid").value;
+            var tgl_grid = new Date(tgl_grid);
+            var serverdate = document.getElementById("serv_date").value;
+            var serv_date  = new Date(serverdate);
+            var tgl_client  = $("#tgldoc").data("kendoDatePicker").value();
+            var servday = serv_date.getDate(); 
+            var servmonth = serv_date.getMonth(); 
+            var servyear = serv_date.getFullYear();
+
+            var clday = tgl_client.getDate(); 
+            var clmonth = tgl_client.getMonth(); 
+            var clyear = tgl_client.getFullYear();
+            
+            var gridday = tgl_grid.getDate(); 
+            var gridmonth = tgl_grid.getMonth(); 
+            var gridyear = tgl_grid.getFullYear();
+            var tgl_grid  = f_tanggal(tgl_grid);
+            var tgl_trans  = f_tanggal(tgl_client);
+            var getdate    = f_tanggal(serv_date);
+
+            if((gridday != clday) || (gridmonth != clmonth) || (gridyear != clyear)){
+                notif("warning","Tanggal Report dan Tanggal Settlement Harus Sama");
+                return;
+            }
+
+            if((servday != clday) || (servmonth != clmonth) || (servyear != clyear)){
+                notif("warning","Tanggal Mutasi dan Tanggal System Harus Sama");
+                return;
+            }
+            $('#progressGIF').show();
+            var grid = kendo.stringify(datagrid);
+            $.ajax({
+                url : "{{ base_url }}setSettlement",
+                type: "POST",
+                dataType: "JSON",
+                data:{grid},
+                success: function(data)
+                {
+                    if (data.status == false) {
+                            notif('warning', 'PERHATIAN! Tidak dapat Posting Settlement Stok / Terdapat Selisih');
+                        }
+                        if (data.status["update"] == false) {
+                            if(data.status["message"] == "no_balance"){
+                                notif('warning', 'Warning! terdapat Saldo Akhir dan Unit Stok yang tidak Balance, Cek data yg berwarna merah atau yg berstatus selisih');
+                                // reloadTable();
+                            }else if(data.status["message"] == "data_ada"){
+                                notif('warning', 'Warning! Hari Ini Sudah Proses Settlement');
+                                // reloadTable();
+                            }else{
+                                 notif('warning', 'Error Proses Settlement');
+                            }
+                            // reloadTable();
+                        }else if(data.status["update"] == true){
+                            if(data.status["message"] == "sukses_month"){
+                                notif('success', 'SUKSES! Data berhasil Posting Settlement Stok Harian dan Bulanan');
+                            }
+                        }
+                    $('#progressGIF').hide();
+
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    notif('warning', 'PERHATIAN! Server Error');
+                    $('#progressGIF').hide();
+                }
+            });   
+
+        }
+
+        function f_settlement_bulan(){
+            var status =false;
+            var datagrid = $("#grid").data("kendoGrid").dataSource.data();
+            var gridlength = datagrid.length;
+            var tgl_grid = document.getElementById("tglgrid").value;
+            var tgl_grid = new Date(tgl_grid);
+            var serverdate = document.getElementById("serv_date").value;
+            var serv_date  = new Date(serverdate);
+            var tgl_client  = $("#tgldoc").data("kendoDatePicker").value();
+            var servday = serv_date.getDate(); 
+            var servmonth = serv_date.getMonth(); 
+            var servyear = serv_date.getFullYear();
+
+            var clday = tgl_client.getDate(); 
+            var clmonth = tgl_client.getMonth(); 
+            var clyear = tgl_client.getFullYear();
+            
+            var gridday = tgl_grid.getDate(); 
+            var gridmonth = tgl_grid.getMonth(); 
+            var gridyear = tgl_grid.getFullYear();
+            var tgl_grid  = f_tanggal(tgl_grid);
+            var tgl_trans  = f_tanggal(tgl_client);
+            var getdate    = f_tanggal(serv_date);
+
+            if((gridday != clday) || (gridmonth != clmonth) || (gridyear != clyear)){
+                notif("warning","Tanggal Report dan Tanggal Settlement Harus Sama");
+                return;
+            }
+
+            if((servday != clday) || (servmonth != clmonth) || (servyear != clyear)){
+                notif("warning","Tanggal Mutasi dan Tanggal System Harus Sama");
+                return;
+            }
+            var r = confirm("Anda Sedang Melakukan Settlement Bulanan, Jika Ok, Transaksi Yg Berhubungan Dengan Stok di Bulan Ini Tidak Akan Bisa dilakukan Sebelum Melakukan Closing Bulanan");
+            if (r == true) {
+                status = true;
+            } else {
+                status = false;
+            }
+            if(status==true){
+                $('#progressGIF').show();
+                var grid = kendo.stringify(datagrid);
+                $.ajax({
+                    url : "{{ base_url }}setSettlement_bulan",
+                    type: "POST",
+                    dataType: "JSON",
+                    data:{grid},
+                    success: function(data)
+                    {
+                        if (data.status == false) {
+                            notif('warning', 'PERHATIAN! Tidak dapat Posting Settlement Stok / Terdapat Selisih');
+                        }
+                        if (data.status["update"] == false) {
+                            if(data.status["message"] == "no_balance"){
+                                notif('warning', 'Warning! terdapat Saldo Akhir dan Unit Stok yang tidak Balance, Cek data yg berwarna merah atau yg berstatus selisih');
+                                // reloadTable();
+                            }else if(data.status["message"] == "data_ada"){
+                                notif('warning', 'Warning! Bulan Ini Sudah Proses Settlement');
+                                // reloadTable();
+                            }else{
+                                 notif('warning', 'Error Proses Settlement');
+                            }
+                            // reloadTable();
+                        }else if(data.status["update"] == true){
+                            if(data.status["message"] == "sukses_month"){
+                                notif('success', 'SUKSES! Data berhasil Posting Settlement Stok Harian dan Bulanan');
+                            }
+                        }
+                        $('#progressGIF').hide();
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        notif('warning', 'PERHATIAN! Server Error');
+                        $('#progressGIF').hide();
+                    }
+                });   
+            }
+
+        }
+
+        var rowNumber = 0;
+        function resetRowNumber(e) {
+            rowNumber = 0;
+        }
+         
+        function renderNumber(data) {
+            return ++rowNumber;
+        }
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+         function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },1500);
+        }
+      
+</script>
+    {% endblock %}

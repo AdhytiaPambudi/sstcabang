@@ -1,0 +1,437 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Data Order</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->                           
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- /.panel -->
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading">
+                    Order
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body"> 
+                    <div class="form-group-sm">
+                        <label class="control-label">No Order</label>
+                        <input class="form-control" type="text" name="noorder" id="noorder" value="{{noOrder}}">
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                    <div class="form-group-sm">
+                        <label class="control-label">Tanggal Order</label>
+                        <input class="form-control" type="text" name="tgl" id="tgl" value="{{tgl}}" readonly="">
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <!-- /.panel -->
+            <div class="panel panel-default" id="divPelanggan">
+                <div class="panel-heading">
+                    Pelanggan
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body"> 
+                    <div class="form-group-sm">
+                        <label class="control-label">Pelanggan</label>
+                        <table width="100%">
+                            <tr>
+                                <td width="90%"><input class="form-control" name="pelangganMask" id="pelangganMask"></td>
+                                <td width="10%" align="right"><button type="button" class="btn-sm btn-info" onclick="showModal()">Info</button></td>
+                            </tr>
+                        </table>
+                        <input class="form-control" type="hidden" name="pelanggan" id="pelanggan">
+                        <input class="form-control" type="hidden" name="tipePelanggan" id="tipePelanggan">
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                    <div class="form-group-sm">
+                        <label class="control-label">Salesman</label>
+                        <input class="form-control" name="salesMask" id="salesmanMask">
+                        <input class="form-control" type="hidden" name="sales" id="salesman">
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <!-- /.panel -->
+            <div class="panel panel-default" id="divBayar">
+                <div class="panel-heading">
+                    Bayar
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">                    
+                    <div class="form-group-sm">
+                        <label class="control-label">Acu</label>
+                        <input class="form-control" type="text" name="acu" id="acu">
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                    <div class="form-group-sm">
+                        <label class="control-label">Cara Bayar</label>
+                        <select class="form-control" name="carabayar" id="carabayar" onchange="cashDiskon()">
+                            <option value="">--- Silahkan Piilh Cara Bayar ---</option>
+                            {% for caraBayar in caraBayar %}
+                                <option value="{{caraBayar.Cara_Bayar}}">{{caraBayar.Cara_Bayar}}</option>
+                                {% endfor%}
+                        </select>
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                    <div class="form-group-sm" id="divCashDiskon" style="display: none;">
+                        <label class="control-label">Cash Diskon</label>
+                        <input class="form-control" type="text" name="cashdiskon" id="cashdiskon">
+                        <!-- <p class="help-block">notifikasi disini...</p> -->
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Produk
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">  
+                    <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table class="table" id="table-produk">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Produk</th>
+                                        <th>Jumlah</th>
+                                        <th>Batch</th>
+                                        <th>Harga</th>
+                                        <th>Dsc Cab 1</th>
+                                        <th>Dsc Cab 2</th>
+                                        <th>Dsc Prins 1</th>
+                                        <th>Dsc Prins 2</th>
+                                        <th>Bns Cab</th>
+                                        <th>Bns Prins</th>
+                                        <th>Total Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in 0..19 %}
+                                        <tr>
+                                            <td>{{i + 1}}</td>
+                                            <!-- <td><input type="checkbox" name="" onclick="emptyRow({{i}})"></td> -->
+                                            <td><input type="text" name="produk[{{i}}]" id="produk{{i}}" class="form-control"  onkeyup="cariKode({{i}})" ></td>
+                                            <td><input type="text" name="jumlah[{{i}}]" id="jumlah{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="batch[{{i}}]" id="batch{{i}}" class="form-control" readonly=""></td>
+                                            <td><input type="text" name="harga[{{i}}]" id="harga{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="dsccab1[{{i}}]" id="dsccab1{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="dsccab2[{{i}}]" id="dsccab2{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="dscprins1[{{i}}]" id="dscprins1{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="dscprins2[{{i}}]" id="dscprins2{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="bnscab[{{i}}]" id="bnscab{{i}}" class="form-control"></td>
+                                            <td><input type="text" name="bnsprins[{{i}}]" id="bnsprins{{i}}" class="form-control bnsprins" onblur="getBatch({{i}})"></td>
+                                            <td><input type="text" name="totalvalue[{{i}}]" id="totalvalue{{i}}" class="form-control"></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>      
+                        </div>
+                    </div>
+                    <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table class="table" id="table-total">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Grosir</th>
+                                        <th>Potongan</th>
+                                        <th>Value</th>
+                                        <th>Cash Diskon</th>
+                                        <th>PPN</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="text" name="grosir" id="grosir" class="form-control"></td>
+                                        <td><input type="text" name="potongan" id="potongan" class="form-control"></td>
+                                        <td><input type="text" name="value" id="value" class="form-control"></td>
+                                        <td><input type="text" name="cashdiskontotal" id="cashdiskontotal" class="form-control"></td>
+                                        <td><input type="text" name="ppn" id="ppn" class="form-control"></td>
+                                        <td><input type="text" name="total" id="total" class="form-control"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->   
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Info Pelanggan</h3>
+            </div>
+            <div class="modal-body form">
+                <div class="form-group-sm">
+                    <div class="table-responsive">
+                        <table class="table" id="table-total">
+                            <thead>
+                                <tr>
+                                    <th>Limit</th>
+                                    <th>Piutang</th>
+                                    <th>Umur/Top</th>
+                                    <th>STO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" name="limit" id="limit" class="form-control"></td>
+                                    <td><input type="text" name="piutang" id="piutang" class="form-control"></td>
+                                    <td><input type="text" name="top" id="top" class="form-control"></td>
+                                    <td><input type="text" name="sto" id="sto" class="form-control"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+// $(document).on('keydown', '.bnsprins', function(e) { 
+//   var keyCode = e.keyCode || e.which; 
+
+//   if (keyCode == 9) { 
+//     alert(keyCode);
+//     // call custom function here
+//   } 
+// });
+
+var produkSource = [];
+$(document).ready(function() {      
+    // START AUTOCOMPLETE PELANGGAN
+        var pelangganSource = [];
+
+        $.ajax({
+            url : "{{ base_url }}listPelanggan",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    pelangganSource[i] = data[i].Kode+"-"+data[i].Nama_Faktur+"-"+data[i].Alamat;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data pelanggan');
+            }
+        });   
+
+        $('#pelangganMask').typeahead({
+                    source: pelangganSource,
+                });
+    // FINISH AUTOCOMPLETE PELANGGAN
+
+    // START AUTOCOMPLETE SALESMAN
+        var salesmanSource = [];
+
+        $.ajax({
+            url : "{{ base_url }}listSales",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    salesmanSource[i] = data[i].Kode + "-" + data[i].Nama + "-" + data[i].Jabatan;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data salesman');
+            }
+        });   
+
+        $('#salesmanMask').typeahead({
+                    source: salesmanSource
+                });
+    // FINISH AUTOCOMPLETE SALESMAN
+
+    // START AUTOCOMPLETE Produk
+
+        $.ajax({
+            url : "{{ base_url }}listProduk",
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk + "-" + data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data produk');
+            }
+        });   
+    // FINISH AUTOCOMPLETE SALESMAN
+});
+
+// START LOAD DATA PELANGGAN
+$('#pelangganMask').on('change', function() {
+    var split = this.value.split("-");
+    var Kode = split[0];
+    $.ajax({
+        url : "{{ base_url }}dataPelanggan/" + Kode,
+        type: "GET",
+        dataType: "JSON",
+        success: function(data)
+        {   
+            if (data) {
+                $('#limit').val(data.Limit_Kredit);
+                $('#piutang').val(data.Saldo_Piutang);
+                $('#top').val(data.TOP);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            
+        }
+    });
+});
+// FINISH LOAD DATA PELANGGAN
+
+function cashDiskon() {
+    var carabayar = document.getElementById('carabayar').value;
+    if (carabayar == 'Cash') {
+        $('#divCashDiskon').show();
+    }
+    else{
+        $('#divCashDiskon').hide();   
+    }
+}
+
+function cariKode(e){    
+    $('#produk'+e).typeahead({
+            source: produkSource
+        });
+}
+
+function showModal() {
+    $('#modal_form').modal('show');
+}
+
+function emptyRow(e){    
+    $('#produk'+e).val("").attr('readonly', false);
+    $('#jumlah'+e).val("").attr('readonly', false);
+    $('#batch'+e).val("").attr('readonly', false);
+    $('#dsccab1'+e).val("").attr('readonly', false);
+    $('#dsccab2'+e).val("").attr('readonly', false);
+    $('#dscprins1'+e).val("").attr('readonly', false);
+    $('#dscprins2'+e).val("").attr('readonly', false);
+    $('#bnscab'+e).val("").attr('readonly', false);
+    $('#bnsprins'+e).val("").attr('readonly', false);
+}
+
+function getBatch(e) {
+    var val = document.getElementById('produk'+e).value;
+    var split = val.split("-");
+    var Kode = split[0];
+    var jml = document.getElementById('jumlah'+e).value;
+    var dsccab1 = document.getElementById('dsccab1'+e).value;
+    var dsccab2 = document.getElementById('dsccab2'+e).value;
+    var dscprins1 = document.getElementById('dscprins1'+e).value;
+    var dscprins2 = document.getElementById('dscprins2'+e).value;
+    var bnscab = document.getElementById('bnscab'+e).value;
+    var bnsprins = document.getElementById('bnsprins'+e).value;
+
+    if (jml > 0) {
+        $.ajax({
+            url : "{{ base_url }}getBatch/" + Kode,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {   
+                 for (var i in data) {
+                    var n = parseInt(e)+parseInt(i);
+                    if (e != n) {
+                        $('#produk'+n).attr('readonly', true);
+                        $('#jumlah'+n).attr('readonly', true);
+                        $('#batch'+n).attr('readonly', true);
+                        $('#dsccab1'+n).attr('readonly', true);
+                        $('#dsccab2'+n).attr('readonly', true);
+                        $('#dscprins1'+n).attr('readonly', true);
+                        $('#dscprins2'+n).attr('readonly', true);
+                        $('#bnscab'+n).attr('readonly', true);
+                        $('#bnsprins'+n).attr('readonly', true);
+                    }            
+                    $('#produk'+n).val(val);
+                    $('#dsccab1'+n).val(dsccab1);
+                    $('#dsccab2'+n).val(dsccab2);
+                    $('#dscprins1'+n).val(dscprins1);
+                    $('#dscprins2'+n).val(dscprins2);
+                    $('#bnscab'+n).val(bnscab);
+                    $('#bnsprins'+n).val(bnsprins);                    
+                    $('#batch'+n).val(data[i].BatchNo);
+                    if (parseInt(jml) < parseInt(data[i].UnitStok)) {
+                        $('#jumlah'+n).val(jml);
+                        break;
+                    }
+                    else{                                     
+                        $('#jumlah'+n).val(data[i].UnitStok);
+                        jml = jml - data[i].UnitStok;
+                    }
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                
+            }
+        });
+    }
+}
+</script>
+
+{% endblock %}

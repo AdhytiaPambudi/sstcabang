@@ -1,0 +1,282 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    input[type=text] 
+        {
+           padding: 2px 8px;
+        }
+    select
+        {
+           padding: 2px 8px;
+        }
+    textarea {
+        resize: none;
+    }
+    .dropdown-menu{
+        font-size: 12px !important;
+    }
+    th{
+        text-align: center !important;
+    }
+    .hide{
+        display: none;
+    }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="vuejs">
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header">Form Data Inventaris</h3>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Form Data Inventaris
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12 responsive">
+                                <!-- <table style="border-spacing: 5px; border-collapse: separate;">
+                                    <tr>
+                                        <th>Cabang/Pusat</th>
+                                        <th>Pemegang</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <select class="form-control">
+                                                <option value="" disabled selected>Pilih</option>
+                                                <option value="PST" >Pusat</option>
+                                                <option v-for="cabangs in cabang" :value="cabangs.Kode" v-text=cabangs.Cabang></option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control" type="text" name="pemegang" v-model="pemegang"></td>
+                                    </tr>
+                                </table> -->
+                                <hr>
+                                <button class="btn btn-success" v-on:click="add_item()">Tambah Item</button><br><br>
+                                <div class="table-responsive">
+                                <table>
+                                    <tr>
+                                        <th width="20" nowrap></th>
+                                        <th width="20" nowrap>No</th>
+                                        <th width="70" nowrap>Kode</th>
+                                        <th width="70" nowrap>Cabang</th>
+                                        <th width="70" nowrap>Pemegang</th>
+                                        <th width="200" nowrap>Nama Barang</th>
+                                        <th width="70" nowrap>Jenis</th>
+                                        <th width="130" nowrap>Merk</th>
+                                        <th width="100" nowrap>Tipe</th>
+                                        <th width="100" nowrap>lokasi</th>
+                                        <th width="100" nowrap>Ruang2</th>
+                                        <th width="80" nowrap>Kondisi</th>
+                                        <th width="200" nowrap>Keterangan</th>
+                                    </tr>
+                                    <tr v-for="(detail_index,detail) in detail">
+                                        <td><span class="glyphicon glyphicon-trash" title="Hapus" v-on:click="remove_item(detail_index)"></span></td>
+                                        <td><span v-text="detail_index + 1"></span></td>
+                                        <td><input class="form-control" type="text" name="kode" v-model="detail.kode" readonly></td>
+                                        <td>
+                                        <select class="form-control" v-model="detail.scabang" style="width:140px;" v-on:change="get_cabang(detail_index);">
+                                                <option value="" disabled selected>Pilih</option>
+                                                <option value="PST" >Pusat</option>
+                                                <option v-for="cabangs in cabang" :value="cabangs.Kode" v-text=cabangs.Cabang></option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control" type="text" name="pemegang" v-model="detail.pemegang" style="width:150px;"></td>
+                                        <td><input class="form-control" type="text" name="barang" v-model="detail.barang" style="width:300px;"></td>
+                                        <td>
+                                            <!-- <input class="form-control" type="text" name="jenis" v-model="detail.jenis" style="width: 100px;"> -->
+                                            <select class="form-control" name="kode" v-model="detail.kode" style="width: 100px;" v-on:change="get_kode(detail_index)">
+                                                <option value="" disabled selected>Pilih</option>
+                                                <option value="ELT">Elektronik</option>
+                                                <option value="NEL">Non Elektronik</option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control" type="text" name="merk" v-model="detail.merk" style="width: 120px;"></td>
+                                        <td><input class="form-control" type="text" name="tipe" v-model="detail.tipe" style="width: 100px;"></td>
+                                        <td><input class="form-control" type="text" name="lokasi" v-model="detail.lokasi" style="width: 100px;"></td>
+                                        <td><input class="form-control" type="text" name="ruang" v-model="detail.ruang" style="width: 100px; text-transform: uppercase;"></td>
+                                        <td>
+                                            <select class="form-control" name="kondisi" v-model="detail.kondisi" style="width: 100px;">
+                                                <option value="" disabled selected>Pilih</option>
+                                                <option value="Baik">Baik</option>
+                                                <option value="Rusak">Rusak</option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control" type="text" name="keterangan" v-model="detail.keterangan"></td>
+                                    </tr>
+                                </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.row (nested) -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+                <div align="center">
+                    <button class="btn btn-primary" v-on:click="save_data()" style="width: 100px;">Save</button>
+                    <button class="btn btn-success" v-on:click="reset_data()" style="width: 100px;">Reset</button>
+                </div>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var vuejs = new Vue({
+        el : "#vuejs",
+        data : {
+            cabang      : [],
+            pemegang    : "abdul",
+            detail:[]
+        },
+        ready:function(){
+            self = this
+            $.get( "{{ base_url }}listCabangRayon", function( data ) {
+                self.cabang = JSON.parse(data);
+            });
+            this.header={
+                cabang      : "",
+                pemegang    : "asde"
+            },
+            this.detail = [{
+                scabang     : "",
+                cabang      : "",
+                pemegang    : "",
+                kode        : "",
+                jenis       : "",
+                barang      : "",
+                merk        : "",
+                ruang       : "",
+                lokasi      : "",   
+                kondisi     : "",
+                keterangan  : ""
+            }]
+        },
+        methods:{
+            add_item: function(){
+                var self = this;
+                for (var i = 0; i < self.detail.length; i++) {
+                    if(self.detail[i].jenis == "" || self.detail[i].merk == ""||self.detail[i].kondisi == ""||self.detail[i].lokasi == ""){
+                        notif('warning','Data baris ke '+ (i+1) +' belum benar');
+                        return;
+                        break;
+                    }
+                    
+                }
+
+                self.detail.push({
+                    scabang     : "",
+                    cabang      : "",
+                    pemegang    : "",
+                    kode        : "",
+                    jenis       : "",
+                    barang      : "",
+                    merk        : "",
+                    ruang       : "",
+                    lokasi      : "",   
+                    kondisi     : "",
+                    keterangan  : ""
+                })
+            },
+            get_kode:function(i){
+                if(i=="ELT")
+                    this.detail[i].jenis = "Elektronik"
+                else
+                    this.detail[i].jenis = "Non Elektronik"
+            },
+            get_cabang:function(i){
+                var x = this.detail[i].scabang;
+                var x2 = this.cabang.filter(function (person) { return person.Kode == x });
+                this.detail[i].cabang = x2[0].Cabang;
+            },
+            reset_data:function(){
+                this.detail = [{
+                    scabang     : "",
+                    cabang      : "",
+                    pemegang    : "",
+                    kode        : "",
+                    jenis       : "",
+                    barang      : "",
+                    merk        : "",
+                    ruang       : "",
+                    lokasi      : "",   
+                    kondisi     : "",
+                    keterangan  : ""
+                }]
+            },
+            remove_item: function(index){
+                if(this.detail.length == 1){
+                    this.detail = [{
+                    scabang     : "",
+                    cabang      : "",
+                    pemegang    : "",
+                    kode        : "",
+                    jenis       : "",
+                    barang      : "",
+                    merk        : "",
+                    ruang       : "",
+                    lokasi      : "",   
+                    kondisi     : "",
+                    keterangan  : ""
+                }];
+                }else{
+                    this.detail.splice(index, 1);
+                }
+            },
+            save_data: function(){
+                var self = this;
+                // if(self.header.cabang == "" || self.header.pemegang == "" ){
+                //     notif('warning','Header belum terisi');
+                //     return;
+                // }
+                for (var i = 0; i < self.detail.length; i++) {
+                    if(self.detail[i].cabang == "" || self.detail[i].pemegang == "" || self.detail[i].jenis == "" || self.detail[i].merk == ""||self.detail[i].kondisi == ""||self.detail[i].lokasi == ""||self.detail[i].ruang == ""){
+                        notif('warning','Data baris ke '+ (i+1) +' belum benar');
+                        return;
+                        break;
+                    }
+                }
+                $('#progressGIF').show();
+                $.ajax({
+                    url : "{{base_url}}save_data_inventaris",
+                    type : "POST",
+                    // dataType: "JSON",
+                    data:{
+                        detail : vuejs.detail
+                    },
+                    success: function(data){
+                        $('#progressGIF').hide();
+                        notif('success', 'Sukses');
+                        vuejs.reset_data();
+                    },
+                    error: function(error){
+                        notif('warning', 'PERHATIAN! error save data');
+                        $('#progressGIF').hide();
+                    }
+                })
+            }
+        }
+    });
+</script>
+    {% endblock %}

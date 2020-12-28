@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<!-- <head>
+	<title>test</title>
+</head>
+<body> -->
+<!-- <form action="upload.php" method="post" enctype="multipart/form-data">
+
+  <input type="file" name="uploadedfile" accept="image/*" capture>
+
+  <input type="submit" value="Upload">
+
+</form> -->
+<head>
+  <title>Geocode  Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+ 
+</head>
+<body>
+<span>Your Latitude : </span><span id="lat"></span><br>
+<span>Your Longitude : </span><span id="lng"></span><br>
+<button id="btn">Click Here To Get Lat And Lng</button>
+<script>
+$(document).ready(function() {
+    $('#btn').click(function(e) {
+         $.ajax({
+		type : 'POST',
+		data: '', 
+		url: "https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyCW0lvagDP67ulkwwP7yAIBHJoj2HT0apM", 
+		success: function(result){
+        		$('#lat').html(result['location']['lat']);
+				$('#lng').html(result['location']['lng']);
+					
+    		}});
+					
+    });
+} );
+</script>
+</body>
+</html>

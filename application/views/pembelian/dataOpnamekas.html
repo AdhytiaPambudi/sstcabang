@@ -1,0 +1,475 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Data Opname Kas</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:30px">Tanggal </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input type="text" name="tanggal" id ="tanggal"></td>
+                        <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses</span></i></a> </td>
+                         <!-- <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_pdf();return false;" title="Print to pdf" class="btn btn-primary" ><i class="fa fa-file-pdf-o"><span style="padding-left:10px;padding-right:20px">Print to PDF</span></i></a> </td> -->
+                         <td style="padding-left:5px"> <a v-bind:href="javascript:" onclick="f_excel();return false;" title="Excell" class="btn btn-primary" > <i class="fa fa-file-excel-o"><span style="padding-left:10px;padding-right:20px">Excell</span></i></a> </td>
+                    </tr>
+                </table>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    <!-- /.row -->
+    <div class="row" id="opnamekas">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Datatable Kas
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <td colspan="7">Total Opname Kas Tanggal : <span id='tgl'></span></td>
+                                    </tr>
+                                    <tr style="text-align: center;">
+                                        <th>Tanggal</th>
+                                        <th>Cabang</th>
+                                        <th>Tipe Kas</th>
+                                        <th>Keterangan</th>
+                                        <th>Saldo Kas</th>
+                                        <th>Nilai Opname</th>
+                                        <th>Selisih</th>                                        
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+            </div>
+            <div class="panel panel-default" id="divtotal">
+                <div class="panel-heading">
+                    <p><span><b>Kas Besar</b></span></p>
+                </div>
+                <div class="panel-body"> 
+                    <table width="50%" class="table table-striped table-bordered table-hover" id="table-kertas">
+                        <tr>
+                            <td colspan="6">Detail Kas Besar</td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.100,000</td>
+                            <td style="width:10px">:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totalseratusribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px" >Jumlah @ Rp.1000</td>
+                            <td style="width:10px">:</td>
+                            <td style="width:150px;"><p align="right"><span id="totalseribulogam"></span></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.50,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totallimapuluhribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Jumlah @ Rp.500</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="totallimaratus"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.20,000 </td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totalduapuluhribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Jumlah @ Rp.200</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="totalduaratus"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.10,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totalsepuluhribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Jumlah @ Rp.100</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="totalseratus"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.5,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totallimaribu"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.2,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totalduaribu"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.1,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totalseribu"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Total Uang Kertas</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="totaluangkertas"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Total Uang Logam</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="totaluanglogam"></span></p></td>
+                        </tr>
+                    </table>
+                   <!--  <table width="50%" class="table table-striped table-bordered table-hover" id="table-kertas">
+                        <tr>
+                            <td width="100px">Total Uang Kertas</td>
+                            <td style="width:10px">:</td>
+                            <td width="100px"><span id="totaluangkertas"></span></td>
+                            <td width="100px">Total Uang Logam</td>
+                            <td width="10px">:</td>
+                            <td width="100px"><span id="totaluanglogam"></span></td>
+                        </tr>
+                    </table> -->
+                    
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <div class="panel panel-default" id="divtotal">
+                <div class="panel-heading">
+                    <p><b>Kas Kecil</b></p>
+                </div>
+                <div class="panel-body"> 
+                    <table width="50%" class="table table-striped table-bordered table-hover" id="table-kertas">
+                       <tr>
+                            <td colspan="6">Detail Kas Kecil</td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.100,000</td>
+                            <td style="width:10px">:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="kseratusribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px" >Jumlah @ Rp.1000</td>
+                            <td style="width:10px">:</td>
+                            <td style="width:150px;"><p align="right"><span id="kseribulogam"></span></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.50,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="klimapuluhribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Jumlah @ Rp.500</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="klimaratus"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.20,000 </td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="kduapuluhribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Jumlah @ Rp.200</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="kduaratus"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.10,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="ksepuluhribu"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Jumlah @ Rp.100</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="kseratus"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.5,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="klimaribu"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.2,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="kduaribu"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Jumlah @ Rp.1,000</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="kseribu"></span></p></td>
+                        </tr>
+                        <tr>
+                            <td style="width:50px;padding-right:20px">Total Uang Kertas</td>
+                            <td>:</td>
+                            <td style="width:150px;padding-right:30px"><p align="right"><span id="kuangkertas"></span></p></td>
+                            <td style="width:50px;padding-left: 10px">Total Uang Logam</td>
+                            <td>:</td>
+                            <td style="width:150px;"><p align="right"><span id="kuanglogam"></span></p></td>
+                        </tr>
+                    </table>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block js %}
+<script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+<script>
+    var tabel;
+    $(document).ready(function() {
+        // var kat = "{{kat}}";
+        // tabel = $('#dataTables-example').DataTable({
+
+        //     "processing": true, //Feature control the processing indicator.
+        //     // Load data for the table's content from an Ajax source
+        //     "ajax": {
+        //         "url": "{{ base_url }}listDataOpnameKas",
+        //         "data":
+        //         "type": "POST"
+        //     },
+        //     responsive: true,
+        //     dom: 'Bfrtip',
+        //     buttons: [
+        //         'copy', 'csv', 'excel', 
+        //         {
+        //             extend:'pdf',
+        //             exportOptions: {
+        //                 columns: ':visible',
+        //             },
+        //             download: 'open',
+        //             customize: function (doc) {
+        //                 doc.content[1].table.widths = 
+        //                     Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+        //               }
+        //         },
+        //         {
+        //             extend: 'print',
+        //             exportOptions: {
+        //                 columns: ':visible',
+        //             }
+        //         }, 
+        //         'pageLength', 'colvis'
+        //     ],
+        //     "pageLength": 10,
+        //     "language": {
+        //             "emptyTable":     "Tidak ada data.."
+        //         }
+        //     });
+
+        $("#tanggal").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            format: 'yyyy-mm-dd',
+            onClose: function(dateText, inst) { 
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+            }
+        });
+    });
+
+    
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function updateData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataTransaksiPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function f_get_data()
+    {
+        $("#notif").empty();
+
+        if ( $.fn.dataTable.isDataTable( '#dataTables-example' ) ) {
+            tabel.destroy();
+        }
+        var tgl = document.getElementById('tanggal').value
+        var url = "{{ base_url }}listDataOpnameKas"; 
+        // ajax adding data to database
+        // $('#progressGIF').show();
+        tabel = $('#dataTables-example').DataTable({
+
+            "processing": true, //Feature control the processing indicator.
+            // Load data for the table's content from an Ajax source
+            "ajax": {
+                "url": url,
+                "data":{tgl:tgl},
+                "type": "POST"
+            },
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 
+                {
+                    extend:'pdf',
+                    exportOptions: {
+                        columns: ':visible',
+                    },
+                    download: 'open',
+                    customize: function (doc) {
+                        doc.content[1].table.widths = 
+                            Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                      }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: ':visible',
+                    }
+                }, 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 10,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+
+        $.ajax({
+                url : "{{ base_url }}listdetailOpnameKas/",
+                type: "POST",
+                data: {tgl:tgl},
+                dataType: "JSON",
+                success: function(data)
+                {                
+                    view(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                   notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat. Data hanya tersimpan di server cabang.');
+                }
+            });
+    }
+    function allData() {   
+        var tipex = document.getElementById('tipe').value; 
+        tabel.ajax.url('{{ base_url }}listDataTransaksi/'+tipex);
+        reloadTable();
+    }   
+
+     function view(data){
+       var tgl = document.getElementById('tanggal').value;
+       document.getElementById("tgl").innerHTML = tgl;
+        //========== Kas Besar ===================
+        var totalseratusribu = numberWithCommas(parseInt(data.besar[0].seratusribu * data.besar[0].valseratusribu));
+        document.getElementById("totalseratusribu").innerHTML = totalseratusribu;
+        var totallimapuluhribu = numberWithCommas(parseInt(data.besar[0].limapuluhribu * data.besar[0].vallimapuluhribu));
+        document.getElementById("totallimapuluhribu").innerHTML = totallimapuluhribu;
+        var totalduapuluhribu = numberWithCommas(parseInt(data.besar[0].duapuluhribu * data.besar[0].valduapuluhribu));
+        document.getElementById("totalduapuluhribu").innerHTML = totalduapuluhribu;
+        var totalsepuluhribu = numberWithCommas(parseInt(data.besar[0].sepuluhribu * data.besar[0].valsepuluhribu));
+        document.getElementById("totalsepuluhribu").innerHTML = totalsepuluhribu;
+        var totallimaribu = numberWithCommas(parseInt(data.besar[0].limaribu * data.besar[0].vallimaribu));
+        document.getElementById("totallimaribu").innerHTML = totallimaribu;
+        var totalduaribu = numberWithCommas(parseInt(data.besar[0].duaribu * data.besar[0].valduaribu));
+        document.getElementById("totalduaribu").innerHTML = totalduaribu;
+        var totalseribu = numberWithCommas(parseInt(data.besar[0].seribu * data.besar[0].valseribu));
+        document.getElementById("totalseribu").innerHTML = totalseribu;
+        var totalseribulogam = numberWithCommas(parseInt(data.besar[0].seribulogam * data.besar[0].valseribulogam));
+        document.getElementById("totalseribulogam").innerHTML = totalseribulogam;
+        var totallimaratus = numberWithCommas(parseInt(data.besar[0].limaratus * data.besar[0].vallimaratus));
+        document.getElementById("totallimaratus").innerHTML = totallimaratus;
+        var totalduaratus = numberWithCommas(parseInt(data.besar[0].duaratus * data.besar[0].valduaratus));
+        document.getElementById("totalduaratus").innerHTML = totalduaratus;
+        var totalseratus = numberWithCommas(parseInt(data.besar[0].seratus * data.besar[0].valseratus));
+        document.getElementById("totalseratus").innerHTML = totalseratus;
+        var totalkertas = numberWithCommas(parseInt(data.besar[0].totaluangkertas));
+        document.getElementById("totaluangkertas").innerHTML = totalkertas;
+        var totallogam = numberWithCommas(parseInt(data.besar[0].totaluanglogam));
+        document.getElementById("totaluanglogam").innerHTML = totallogam;
+
+        //========== Kas Kecil ===================
+        var kseratusribu = numberWithCommas(parseInt(data.kecil[0].seratusribu * data.kecil[0].valseratusribu));
+        document.getElementById("kseratusribu").innerHTML = kseratusribu;
+        var klimapuluhribu = numberWithCommas(parseInt(data.kecil[0].limapuluhribu * data.kecil[0].vallimapuluhribu));
+        document.getElementById("klimapuluhribu").innerHTML = klimapuluhribu;
+        var kduapuluhribu = numberWithCommas(parseInt(data.kecil[0].duapuluhribu * data.kecil[0].valduapuluhribu));
+        document.getElementById("kduapuluhribu").innerHTML = kduapuluhribu;
+        var ksepuluhribu = numberWithCommas(parseInt(data.kecil[0].sepuluhribu * data.kecil[0].valsepuluhribu));
+        document.getElementById("ksepuluhribu").innerHTML = ksepuluhribu;
+        var klimaribu = numberWithCommas(parseInt(data.kecil[0].limaribu * data.kecil[0].vallimaribu));
+        document.getElementById("klimaribu").innerHTML = klimaribu;
+        var kduaribu = numberWithCommas(parseInt(data.kecil[0].duaribu * data.kecil[0].valduaribu));
+        document.getElementById("kduaribu").innerHTML = kduaribu;
+        var kseribu = numberWithCommas(parseInt(data.kecil[0].seribu * data.kecil[0].valseribu));
+        document.getElementById("kseribu").innerHTML = kseribu;
+        var kseribulogam = numberWithCommas(parseInt(data.kecil[0].seribulogam * data.kecil[0].valseribulogam));
+        document.getElementById("kseribulogam").innerHTML = kseribulogam;
+        var klimaratus = numberWithCommas(parseInt(data.kecil[0].limaratus * data.kecil[0].vallimaratus));
+        document.getElementById("klimaratus").innerHTML = klimaratus;
+        var kduaratus = numberWithCommas(parseInt(data.kecil[0].duaratus * data.kecil[0].valduaratus));
+        document.getElementById("kduaratus").innerHTML = kduaratus;
+        var kseratus = numberWithCommas(parseInt(data.kecil[0].seratus * data.kecil[0].valseratus));
+        document.getElementById("kseratus").innerHTML = kseratus;
+        var kkertas = numberWithCommas(parseInt(data.kecil[0].totaluangkertas));
+        document.getElementById("kuangkertas").innerHTML = kkertas;
+        var klogam = numberWithCommas(parseInt(data.kecil[0].totaluanglogam));
+        document.getElementById("kuanglogam").innerHTML = klogam;
+     }
+
+     function f_excel()
+        {
+           setTimeout(function(){
+                $('#opnamekas').table2excel({
+                    exclude:".noExl",
+                    name:"Opname Kas",
+                    filename: "Opname Kas"
+                });
+            },500);
+        }
+</script>
+
+{% endblock %}

@@ -1,0 +1,508 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Kiriman</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <br>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables1">
+            <thead>
+                <tr>
+                    <td style="text-align:center;">DO/Faktur Header</td>
+                    <td style="text-align:center">DO/Faktur Detail</td>
+                    <td style="text-align:center">DO/Kiriman</td>
+                    <td style="text-align:center">CN/DN</td>
+                </tr>
+            </thead>
+                <tbody>
+                    <tr>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="DoHeader" id="DoHeader" readonly></td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="Dodetail" id="Dodetail" readonly></td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="DOKirim" id="DOKirim" readonly></td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="cndn" id="cndn" readonly></td>
+                    </tr>
+                </tbody>
+            </table>
+        <hr>
+        <table>
+            <tr>
+                <td style="padding-left:20px"><label>Cek Transaksi</label></td>
+                <td style="padding-left:10px">:</td>
+                <td style="padding-left:10px">
+                    <select id="tipe" name="tipe">
+                        <option value="">===> Pilih Cek Validasi <===</option>
+                        <option value="do">DO Faktur Header & Detail</option>
+                        <option value="faktur">Faktur Komersil Header dan Detail</option>
+                        <option value="header">DO & Faktur Komersil Header</option>
+                        <option value="detail">DO & Faktur Komersil Detail</option>
+                        <option value="saldo">Saldo Faktur & Pelunasan</option>
+                        <option value="cndn">CNDN Header & Detail</option>
+                        <option value="dokirim">DO & Kiriman</option>
+                    </select>
+                </td>
+                
+                <td style="padding-left:10px"><label>Periode dari</label></td>
+                <td style="padding-left:10px">:</td>
+                <td style="padding-left:10px"><input type="date" name="tgl1" id="tgl1" class="form-control input-sm"></td>
+                <td style="padding-left:20px"><label>Sampai</label></td>
+                <td style="padding-left:10px">:</td>
+                <td style="padding-left:10px"><input type="date" name="tgl2" id="tgl2" class="form-control input-sm"></td>
+                <td style="padding-left:10px"><button id="buttonload" class="btn btn-primary" onclick="load_data(event,this)">Tampilkan data</button></td>
+            </tr>
+        </table>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Datatable List Kiriman</b>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>No Dokumen</th>
+                                        <th>Tgl Dokumen</th>
+                                        <th>Tipe</th>
+                                        <th>Status</th>
+                                        <th>Total Dokumen</th>
+                                        <th>Total Pembanding</th>
+                                        <!-- <th>Value Pelunasan</th> -->
+                                        <!-- <th>View Data</th> -->
+                                        <th>Fix Data</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example1">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Cabang</th>
+                                        <th>No Faktur</th>
+                                        <th>Tgl Faktur</th>
+                                        <th>Tipe Dokumen</th>
+                                        <th>Value Faktur</th>
+                                        <th>Total</th>
+                                        <th>Saldo</th>
+                                        <th>Saldo Giro</th>
+                                        <th>Value Pelunasan</th>
+                                        <th>Saldo Perbandingan</th>
+                                        <th>Selisih</th>
+                                        <th>Fix Data</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+
+{% block js %}
+<script>
+    var vue_detail = new Vue({
+        el:"#modal_form",
+        data:{
+            data_detail: []
+        }
+    })
+    var tabel;
+    $(document).ready(function() {
+        var status = 'Open';
+        $('#dataTables-example').on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                $("#buttonload").html('<i class="fa fa-refresh fa-spin"></i>&nbsp;silahkan tunggu Loading');
+                $("#buttonload").prop('disabled', true);
+            } else {
+                // console.log('it is not loadding'); // **I get this**
+                $("#buttonload").text('Tampilkan data');
+                $("#buttonload").prop('disabled', false);
+            }
+        });
+        $('#dataTables-example1').on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                $("#buttonload").html('<i class="fa fa-refresh fa-spin"></i>&nbsp;silahkan tunggu Loading');
+                $("#buttonload").prop('disabled', true);
+            } else {
+                // console.log('it is not loadding'); // **I get this**
+                $("#buttonload").text('Tampilkan data');
+                $("#buttonload").prop('disabled', false);
+            }
+        });
+        $("#dataTables-example1").hide();
+        f_get_data();
+    }); 
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+    function allData() { 
+        var all = document.getElementById('all').value;       
+        if($("#all").is(':checked')){ 
+            tabel.ajax.url('{{ base_url }}listcekDataKiriman/all');
+        }   
+        else{
+            tabel.ajax.url('{{ base_url }}listcekDataKiriman');
+        }
+        reloadTable();
+    }   
+
+    function fix(No,tipe,$status)
+    {
+        var x_status = "";
+        if(tipe == 'dokirim'){
+            x_status = $status;
+        }
+        var url = "{{ base_url }}prosesfixfaktur"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            data:{No:No,tipe:tipe,status:x_status},
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Data gagal diproses');
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diproses');
+                    reloadTable();
+                }
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function updateData()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}updateDataKirimanPusat"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.ket == 'GAGAL') {
+                    // notif('danger', 'PERHATIAN! Data Pelanggan & Salesman Harus Sesuai Dengan List.', 'saveResult');
+                    notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                }
+                // else if (data.ket == 'CEK') {
+                //     notif('warning', 'PERHATIAN! Periksa kembali, masih ada data usulan belum di proses ke pusat');   
+                // }
+                else{
+                    notif('success', 'SUKSES! Data berhasil diupdate dari server pusat');
+                }
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Tidak dapat terhubung dengan server pusat');
+                $('#progressGIF').hide();
+            }
+        });
+    }
+
+    function load_data(e,x){
+        e.preventDefault();
+        $("#notif").empty();
+        var status = 'Open';
+        var tgl1 = $('[name=tgl1]').val();
+        var tgl2 = $('[name=tgl2]').val();
+        var tipe = $('#tipe').val();
+        // if(tgl1 == "" || tgl2 == ""){
+        //     notif("warning", "<h4>Mohon isi periode</h4> <br> ");
+        //     $('[name=tgl1]').focus();
+        //     return;
+        // }
+        if(tipe == ""){
+            notif("warning", "<h4>Mohon pilih transaksi yg akan di cek</h4> <br> ");
+            $('#tipe').focus();
+            return;
+        }
+        
+        if ($.fn.dataTable.isDataTable('#dataTables-example')) {
+            tabel.destroy();
+            $('#tblRemittanceList tbody').empty();
+        }
+        if ($.fn.dataTable.isDataTable('#dataTables-example1')) {
+            tabel.destroy();
+            $('#tblRemittanceList tbody').empty();
+        }
+        
+        $(x).prop('disabled', true);
+        if(tipe != 'saldo'){
+            $("#dataTables-example1").hide();
+            $("#dataTables-example").show();
+            tabel = $('#dataTables-example').DataTable({
+                "ordering": false,
+                "processing": true,
+                // "serverSide": true,
+                scrollX:        true,
+                scrollCollapse: true,
+                fixedColumns:   {
+                    leftColumns: 1,
+                    rightColumns: 1
+                },
+                "ajax": {
+                    "url": "{{ base_url }}listvalidasiDOFaktur",
+                    "data":{
+                        tgl1: tgl1,
+                        tgl2: tgl2,
+                        tipe:tipe
+                    }, 
+                    "type": "POST"
+                },
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                // responsive: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel',
+                    // 'copy', 'csv', 'excel', 
+                    {
+                        extend:'pdfHtml5',
+                        title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData Faktur ',
+                        exportOptions: {
+                            columns: [ 0, 1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                        },
+                        download: 'open',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            // doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            doc.pageMargins = [20, 20, 10,10 ];
+                            doc.styles.tableHeader.fontSize = 8;
+                            doc.defaultStyle.fontSize = 8;
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: ':visible',
+                        }
+                    },
+                    'pageLength', 'colvis'
+                ],
+                "pageLength": 100,
+                "language": {
+                        "emptyTable":     "Tidak ada data.."
+                    }
+            });
+        }else{
+            $("#dataTables-example").hide();
+            $("#dataTables-example1").show();
+            tabel = $('#dataTables-example1').DataTable({
+                "ordering": false,
+                "processing": true,
+                "serverSide": true,
+                scrollX:        true,
+                scrollCollapse: true,
+                fixedColumns:   {
+                    leftColumns: 1,
+                    rightColumns: 1
+                },
+                "ajax": {
+                    "url": "{{ base_url }}listvalidasiDOFaktur",
+                    "data":{
+                        tgl1: tgl1,
+                        tgl2: tgl2,
+                        tipe:tipe
+                    }, 
+                    "type": "POST"
+                },
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                // responsive: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel',
+                    // 'copy', 'csv', 'excel', 
+                    {
+                        extend:'pdfHtml5',
+                        title: 'PT. SAPTA SARITAMA\n-----------------------------------\nData Faktur ',
+                        exportOptions: {
+                            columns: [ 0, 1, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                        },
+                        download: 'open',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function (doc) {
+                            // doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                            doc.pageMargins = [20, 20, 10,10 ];
+                            doc.styles.tableHeader.fontSize = 8;
+                            doc.defaultStyle.fontSize = 8;
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: ':visible',
+                        }
+                    },
+                    'pageLength', 'colvis'
+                ],
+                "pageLength": 100,
+                "language": {
+                        "emptyTable":     "Tidak ada data.."
+                    }
+            });
+        }       
+    }
+
+    function f_get_data(){
+        $('.itemRowDetail').remove();
+         //cek do header
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}getclosingdoheader",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"daily"},
+            success: function(data)
+            {
+                document.getElementById('DoHeader').value="";
+                document.getElementById('DoHeader').value=data;
+                if(data == 0){
+                    $("#DoHeader").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#DoHeader").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Header</h3>');  
+                }
+                // $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                $('#progressGIF').hide();
+            }
+        }); 
+        //cek do detail
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}getclosingdodetail",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"daily"},
+            success: function(data)
+            {
+                document.getElementById('Dodetail').value="";
+                document.getElementById('Dodetail').value=data;
+                if(data == 0){
+                    $("#Dodetail").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#Dodetail").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Detail</h3>');
+                                // f_closing("nostok");   
+                }
+                // $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                    $('#progressGIF').hide();
+            }
+        });
+            //cek do kirim
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}getclosingdokirim",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"daily"},
+            success: function(data)
+            {
+                document.getElementById('DOKirim').value="";
+                document.getElementById('DOKirim').value=data;
+                if(data == 0){
+                    $("#DOKirim").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#DOKirim").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if(data > 0 ){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Kirim</h3>'); 
+                }
+                // $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                $('#progressGIF').hide();
+            }
+        }); 
+        //cek cndn
+        $('#progressGIF').show();
+        $.ajax({
+            url : "{{ base_url }}getclosingcndn",
+            type: "POST",
+            dataType: "JSON",
+            data:{status:"daily"},
+            success: function(data)
+            {
+                document.getElementById('cndn').value="";
+                document.getElementById('cndn').value=data;
+                if(data == 0){
+                    $("#cndn").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                }else{
+                    $("#cndn").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                }
+                if((data > 0) ){
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data CNDN</h3>');
+                                // f_closing("nostok");   
+                }
+                // $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                $('#progressGIF').hide();
+            }
+        }); 
+        $('#progressGIF').hide();       
+
+    }//end f_getdata_detail
+</script>
+{% endblock %}

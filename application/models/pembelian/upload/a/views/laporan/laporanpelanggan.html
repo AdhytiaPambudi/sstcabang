@@ -1,0 +1,384 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+        <style type="text/css">
+        .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+a {
+  color: #0087C3;
+  text-decoration: none;
+}
+
+/*body {
+  position: relative;
+  width: 21cm;  
+  height: 29.7cm; 
+  margin: 0 auto; 
+  color: #555555;
+  background: #FFFFFF; 
+  font-family: Arial, sans-serif; 
+  font-size: 14px; 
+  font-family: SourceSansPro;
+}*/
+
+header {
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #AAAAAA;
+}
+
+table {
+    font-size: 11px;
+}
+.detail td{
+    border-right: solid 1px;
+    border-bottom: solid 1px;
+    font-size: 10px;
+}
+.detail-item td{
+    border-right: solid 1px;
+    font-size: 10px;
+}
+.atas td{
+    border-top: solid 1px;
+}
+.awal{
+    border-left: solid 1px;
+    font-size: 10px;
+}
+
+#logo {
+  float: left;
+  margin-top: 8px;
+}
+
+#logo img {
+  height: 70px;
+}
+
+#company {
+  float: right;
+  text-align: right;
+}
+
+
+#details {
+  margin-bottom: 50px;
+}
+
+#client {
+  padding-left: 6px;
+  border-left: 6px solid #0087C3;
+  float: left;
+}
+
+#client .to {
+  color: #777777;
+}
+
+h2.name {
+  font-size: 1.4em;
+  font-weight: normal;
+  margin: 0;
+}
+
+#invoice {
+  float: right;
+  text-align: right;
+}
+
+#invoice h1 {
+  color: #0087C3;
+  font-size: 2.4em;
+  line-height: 1em;
+  font-weight: normal;
+  margin: 0  0 10px 0;
+}
+
+#invoice .date {
+  font-size: 1.1em;
+  color: #777777;
+}
+
+@media print {
+
+    .style1 {
+        width: 100%;
+        border-top: 1px solid #000;
+        margin-bottom: 5px;
+    }
+
+    .style2 {
+        border-top: 4px double #000;
+    }
+
+    .atas{
+        border-top: solid 1px;
+    }
+    .bawah{
+        border-bottom: solid 1px;
+    }
+    .kiri{
+        border-left: solid 1px;
+    }
+    .kanan{
+        border-right: solid 1px;
+    }
+
+    table.report-container {
+    /*page-break-after:always;*/
+    }
+    thead.report-header {
+        display:table-header-group;
+    }
+    tfoot{
+        /*display: block;*/
+        /*display: table-footer-group;*/
+    } 
+    tr.page-break  { display: block; page-break-before: always; }
+
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Faktur</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <form role="form" method="post" id="myForm">
+    <div class="row">
+        <div class="col-lg-6" style="margin-bottom: 10px">
+            <button id="reload" class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+            <!-- <button class="btn btn-primary" onclick="updateData()"><i class="fa fa-refresh"></i> Update</button> -->
+        </div>
+        <div class="col-lg-6" style="margin-bottom: 10px; text-align: right;"> 
+        </div>
+        <div class="col-lg-12" style="text-align: right;">
+            <input type="checkbox" name="all" id="all" value="all" onclick="allData()"> tampilkan semua data
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Laporan Pelanggan</b>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Date Created</th>
+                                        <th>Cabang</th>
+                                        <th>Kode</th>
+                                        <th>Kode2</th>
+                                        <th>Nama</th>
+                                        <th>No. Izin Usaha</th>
+                                        <th>No. Izin Apoteker</th>
+                                        <th>Saldo</th>
+                                        <th>Nama Faktur</th>
+                                        <th>Alamat</th>
+                                        <th>Alamat2</th>
+                                        <th>Alamat Kirim</th>
+                                        <th>Nama Pajak</th>
+                                        <th>Alamat Pajak</th>
+                                        <th>NPWP</th>
+                                        <th>Tipe Pajak</th>
+                                        <th>Kota</th>
+                                        <th>Grup Pelanggan</th>
+                                        <th>Grup Pelanggan2</th>
+                                        <th>Area</th>
+                                        <th>Class</th>
+                                        <th>Telpon</th>
+                                        <th>Fax</th>
+                                        <th>Limit</th>
+                                        <th>TOP</th>
+                                        <th>Cara Bayar</th>
+                                        <th>Status Aktif</th>
+                                        <th>Kat</th>
+                                        <th>Tipe_2</th>
+                                        <th>Tipe_Harga</th>
+                                        <th>Rayon_1</th>
+                                        <th>Wilayah</th>
+                                        <th>Kategori_2</th>
+                                        <th>Prioritas</th>
+                                        <th>Prins_Onf</th>
+                                        <th>Cab_Onf</th>
+                                        <th>Kode_Prov</th>
+                                        <th>Salesman</th>
+                                        <th>Salesman2</th>
+                                        <th>SIPA</th>
+                                        <th>EDSIPA</th>
+                                        <th>Apoteker</th>
+                                        <th>Asst_Apoteker</th>
+                                        <th>TTK</th>
+                                        <th>EDTTK</th>
+                                        <th>Email_Pelanggan</th>
+                                        <th>Email_Apoteker</th>
+                                        <th>Email_Asst_Apoteker</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    </form>
+</div>
+<!-- /#page-wrapper -->
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var tabel;
+    $(document).ready(function() {
+        var status = 'Open';
+        tabel = $('#dataTables-example').DataTable({
+            "ordering": false,
+            "processing": true,
+            "serverSide": true,
+            responsive: false,
+            "scrollX": true,
+            "scrollY": "400px",
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            // columns:[
+            //     { data : "" },
+            //     { data : "Created_at" },
+            //     { data : "Cabang" },
+            //     { data : "Kode" },
+            //     { data : "Kode2" },
+            //     { data : "Pelanggan" },
+            //     { data : "No_Ijin_Usaha" },
+            //     { data : "No_Ijin_Apoteker" },
+            //     { data : "SaldoP" },
+            //     { data : "Nama_Faktur" },
+            //     { data : "Alamat" },
+            //     { data : "Alamat2" },
+            //     { data : "Alamat_Kirim" },
+            //     { data : "Nama_Pajak" },
+            //     { data : "Alamat_Pajak" },
+            //     { data : "NPWP" },
+            //     { data : "Tipe_Pajak" },
+            //     { data : "Kota" },
+            //     { data : "Grup_Pelanggan" },
+            //     { data : "Grup_Pelanggan2" },
+            //     { data : "Area" },
+            //     { data : "Class" },
+            //     { data : "Telp" },
+            //     { data : "Fax" },
+            //     { data : "Limit_Kredit" },  //xxxxx
+            //     { data : "TOP" },
+            //     { data : "Cara_Bayar" },
+            //     { data : "Aktif" },
+            //     { data : "Kat" },
+            //     { data : "Tipe_2" },
+            //     { data : "Tipe_Harga" },
+            //     { data : "Rayon_1" },
+            //     { data : "Wilayah" },
+            //     { data : "Kategori_2" },
+            //     { data : "Prioritas" },
+            //     { data : "Prins_Onf" },
+            //     { data : "Cab_Onf" },
+            //     { data : "Kode_Prov" },
+            //     { data : "Salesman" },
+            //     { data : "Salesman2" },
+            //     { data : "SIPA" },
+            //     { data : "EDSIPA" },
+            //     { data : "Apoteker" },
+            //     { data : "Asst_Apoteker" },
+            //     { data : "TTK" },
+            //     { data : "EDTTK" },
+            //     { data : "Email_Pelanggan" },
+            //     { data : "Email_Apoteker" },
+            //     { data : "Email_Asst_Apoteker" }
+            // ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    "render": function ( data, type, row, meta ) {
+                         return  meta.row + 1;
+                        }
+                },
+                {
+                    targets: [8,24],
+                    "render": function ( data, type, row, meta ) {
+                          return '<p style="text-align:right; color:maroon;"><b>'+accounting.format(data)+'</b></p>';
+                        }
+                }
+            ],
+            "ajax": {
+                "url": "{{ base_url }}laporanpelangganX",
+                "data":{tipe:'Faktur'}, 
+                "type": "POST"
+            },
+            "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            dom: 'Bfrtip',
+            buttons: [
+                'csv', 'excel', 
+                'pageLength', 'colvis'
+            ],
+            "pageLength": 100,
+            "language": {
+                    "emptyTable":     "Tidak ada data.."
+                }
+            });
+    // ---------------------------------------------------------------------------------------
+        $('#dataTables-example').on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                $("#progressGIF").show();
+            } else {
+                $("#progressGIF").hide();
+            }
+        });
+    // -----------------------------------------------------------------------------/
+
+    }); 
+
+    $("#checkAll").change(function () {
+        $("input:checkbox").not("#all").prop('checked', $(this).prop("checked"));
+    });
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+    }
+
+
+    function allData() { 
+        var all = document.getElementById('all').value;       
+        if($("#all").is(':checked')){ 
+            tabel.ajax.url('{{ base_url }}laporanpelangganX/all');
+        }   
+        else{
+            tabel.ajax.url('{{ base_url }}laporanpelangganX');
+        }
+        reloadTable();
+    }   
+
+</script>
+    {% endblock %}

@@ -1,0 +1,31 @@
+{% extends "layout.html" %} {% block content %}
+{% include "navigation.html" %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Dashboard Cabang : {{logs.cabang}}</h1>
+            <!-- <h2 class="page-header">Username : {{ logs.username }} || </h2><br> -->
+            <marquee width = "100%"><h3><b>Info terbaru:</b> Per Awal Bulan April 2019  <span style="color: red;"> Closing Harian Akan Mulai Diberlakukan !! </span> Menu ada di Closing -> Closing Harian</h3></marquee>
+           	<marquee width = "100%"><h3>Setiap hari sebelum melakukan transaksi,  <span style="color: red;"> wajib melakukan closing harian !! </span> Jika tidak, maka tidak akan bisa melakukan transaksi</h3></marquee>
+        </div>
+       <!-- <input type="hidden" id ="closing" value = "{{ closing }}" oninput="f_closing()">
+       <a class="btn btn-sm btn-default" title="close" onclick = "f_closing()" id="close"></a> -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+ $(document).ready(function() { 
+ 	$("#close").trigger("click");
+ });
+ function f_closing(){
+ 	 var closing = document.getElementById('closing').value;
+	 	if(closing == 0){
+	 		notif("warning","Tanggal Periode Transaksi dan Tanggal Periode Closing Tidak Sama !");
+	 	}
+ }
+
+</script>
+{% endblock %}

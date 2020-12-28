@@ -1,0 +1,354 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+.my_style {
+    font-weight:bold;
+    color:#B51454;
+}
+.kanan{
+    text-align: right;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+
+<div id="page-wrapper">
+    <div class="row">
+        <!-- <div class="col-lg-12">
+            <h1 class="page-header">Over TOP</h1>
+        </div> -->
+            <marquee width = "70%"><b> Nomor Faktur <span style="color: red;">Merah</span>, Wajib Isi Alasan</b> </marquee>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12" style="margin-bottom: 10px">
+            <table cellspacing="5px" border="0  ">
+                <tr>
+                    <td>
+                        <button class="btn btn-default" onclick="reloadTable()"><i class="fa fa-refresh"></i> Reload</button>
+                        
+                    </td>
+                    <td colspan="2" align="right" valign="bottom">
+                        <input type="checkbox" id="cek" name="cek" value="semua" onclick="load_data()">Tampilkan Semua
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td>
+                        <br><button class="btn btn-warning" onclick="update_all()"><i class="fa fa-save"></i> Update All </button>
+                        
+                    </td>
+                    <td colspan="2" align="right" valign="bottom">
+                    </td>
+                    
+                </tr>
+            </table>
+        <br><br>
+      
+        </div>
+        
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <table>
+                                <tr>
+                                    <td><b>Jumlah Ceklis Faktur : </b> </td>
+                                    <td><input type="text" class="form-control" id="jml_ceklis" value="0" disabled style="width:30%"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th><input type="checkbox"  name="checkall" id="checkall" onClick="check(this.checked);"></th>
+                                        <th>No Faktur <br> <input type="text" name="s_faktur" id="s_faktur" class="form-control" style="width: 100%;" onchange="load_data()"></th>
+                                        <th>Tgl Faktur <br> <input type="text" name="s_tglfaktur" id="s_tglfaktur" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Tgl JTO Faktur  <br> <input type="text" name="s_tgljto" id="s_tgljto" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Pelanggan <br> <input type="text" name="s_pelanggan" id="s_pelanggan" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Nama Pelanggan <br> <input type="text" name="s_namapelanggan" id="s_namapelanggan" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Tipe Pelanggan <br> <input type="text" name="s_tipepelanggan" id="s_tipepelanggan" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Salesman <br> <input type="text" name="s_salesman" id="s_salesman" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Nama Salesman <br> <input type="text" name="s_namasalesman" id="s_namasalesman" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Umur JTO <br> <input type="text" name="s_umur" id="s_umur" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>TOP <br> <input type="text" name="s_top" id="s_top" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Cara Bayar <br> <input type="text" name="s_carabayar" id="s_carabayar" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Acu <br> <input type="text" name="s_acu" id="s_acu" class="form-control" style="width: 80px;" onchange="load_data()"> </th>
+                                        <th>Acu 2 <br> <input type="text" name="s_acu2" id="s_acu2" class="form-control" style="width: 40px;" onchange="load_data()"> </th>
+                                        <th>Total <br> <input type="text" name="s_total" id="s_total" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Saldo <br> <input type="text" name="s_saldo" id="s_saldo" class="form-control" style="width: 100%;" onchange="load_data()"> </th>
+                                        <th>Alasan JTO</th>
+                                        <!-- <th>Tgl Deadline</th> -->
+                                        <th>#</th>
+                                        <!-- <th>Status Pusat</th> -->
+                                    </tr>
+                                </thead>
+                            <!--  <tfoot >
+                               <tr>
+                                   <th colspan="8" align="right">Total</th>
+                                   <th  class="kanan my_style" id="total-target"></th>
+                                   <th></th>
+                                   <th></th>
+                                   <th></th>
+                            
+                               </tr>
+                               
+                                                        </tfoot> -->
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+
+{% endblock %}
+
+{% block js %}
+<script>
+    var saveMethod;
+    var tabel;
+    $(document).ready(function() {
+
+      load_data();
+
+    });
+
+    function load_data(){
+        
+        cek = $('input:checked').val();
+        if (cek == undefined) {
+            cek = '';
+        }
+
+        var keyword = [];
+        keyword = {
+                    "s_faktur" : $("[name=s_faktur]").val(),
+                    "s_tglfaktur" : $("[name=s_tglfaktur]").val(),
+                    "s_tgljto" : $("[name=s_tgljto]").val(),
+                    "s_pelanggan" : $("[name=s_pelanggan]").val(),
+                    "s_namapelanggan" : $("[name=s_namapelanggan]").val(),
+                    "s_tipepelanggan" : $("[name=s_tipepelanggan]").val(),
+                    "s_salesman" : $("[name=s_salesman]").val(),
+                    "s_namasalesman" : $("[name=s_namasalesman]").val(),
+                    "s_umur" : $("[name=s_umur]").val(),
+                    "s_top" : $("[name=s_top]").val(),
+                    "s_carabayar" : $("[name=s_carabayar]").val(),
+                    "s_acu" : $("[name=s_acu]").val(),
+                    "s_acu2" : $("[name=s_acu2]").val(),
+                    "s_total" : $("[name=s_total]").val(),
+                    "s_saldo" : $("[name=s_saldo]").val()
+                }
+
+
+         if ($.fn.dataTable.isDataTable('#dataTables-example')) {
+            tabel.destroy();
+            $('#dataTables-example tbody').empty();
+        }
+
+        tabel = $('#dataTables-example').DataTable({
+
+                ordering: false,
+                processing: true,
+                searching: false,
+                serverSide: true,
+                ajax: {
+                  url: '{{ base_url }}listData_overTop',
+                  data: ({cek:cek,keyword : keyword}),
+                  type:'POST',
+                },
+                // responsive: true,
+                dom: 'Bfrtip',
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                buttons: [
+                    'copy', 'csv', 
+                    {
+                        extend:'pdf',
+                        exportOptions: {
+                            columns: ':visible',
+                        },
+                        download: 'open',
+                        customize: function (doc) {
+                            doc.content[1].table.widths = 
+                                Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                          }
+                    },
+                    {
+                        extend: 'print',
+                        exportOptions: {
+                            columns: ':visible',
+                        }
+                    }, 
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: ':visible',
+                        }
+                    }, 
+                    'pageLength', 'colvis'
+                ],
+
+                "pageLength": 25,
+                "language": {
+                        "emptyTable":     "Tidak ada data.."
+                    }
+            });
+
+    }
+
+    function reloadTable()
+    {
+        tabel.ajax.reload(null,false);
+        $("#jml_ceklis").val("0");
+    }
+
+ 
+    function update_one(no){
+
+        alasan = $("#txt-alasan-"+no).val();
+        // tgl = $("#txt-tgl-"+no).val();
+
+
+         
+        if (alasan == '') {
+            alert('Harap Pilih Alasan JTO');
+            return;
+        }
+
+        
+        alasan = alasan;
+
+        $("#btn-update-"+no).prop("disabled", true);
+
+
+        $.ajax({
+            url : "{{ base_url }}update_over_one/" ,
+            data:{no:no,alasan:alasan},
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                // $("#notif").empty();
+                notif('success', 'Berhasil');
+                reloadTable();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'Error Ajax');
+                $("#btn-update-"+no).prop("disabled", false);
+            }
+        });
+    }
+
+    function update_all(){
+
+        status = '2';
+        alasan_a ='';
+        no_do_a ='';
+
+        no = $("#jml_ceklis").val();
+
+        if (parseInt(no) > 20) {
+            alert('Maksimal 20 Faktur');
+            return;
+         }
+
+         $('input[name="cekfaktur"]:checked').each(function() {
+           alasan = $("#txt-alasan-"+this.value).val();
+           // tgl = $("#txt-tgl-"+this.value).val();
+
+
+           if (alasan == '') { 
+            
+            status = '0';
+            // break;
+           }else{
+            status = '1';
+            alasan_a += alasan +"||"; 
+            no_do_a += this.value +"||"; 
+           }
+        });
+         
+         if (status == '2') {
+            alert('Silahkan Pilih No Faktur dan Ceklis');
+            return;
+         }else if (status == '0') {
+            alert('Harap Pilih Alasan JTO');
+            return;
+         }
+
+         $('#progressGIF').show();
+       
+         // return;
+        $.ajax({
+            url : "{{ base_url }}update_over_all/" ,
+            data:{no:no_do_a,alasan:alasan_a},
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                // $("#notif").empty();
+                notif('success', 'Berhasil');
+                reloadTable();
+                $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('danger', 'Error Ajax');
+            }
+        });
+    }
+
+    function ceklis(param){
+        jml_sem = $("#jml_ceklis").val();
+        if(param.checked) {
+
+            $("#jml_ceklis").val(parseInt(jml_sem) + 1);
+        }
+        else{
+            $("#jml_ceklis").val(parseInt(jml_sem) - 1);
+        }
+        // document.getElementById('jmldih').value = vuejs.datalist.length;
+    }
+
+    function check(isChecked) {
+        if(isChecked) {
+          $('.aa').each(function() { 
+            this.checked = true; 
+          });
+        } else {
+          $('.aa').each(function() {
+            this.checked = false;
+          });
+        }
+
+        no = 0;
+          $('input[name="cekfaktur"]:checked').each(function() {
+               
+                no++;
+               
+            });
+          $("#jml_ceklis").val(no);
+      }
+  
+
+</script>
+    {% endblock %}

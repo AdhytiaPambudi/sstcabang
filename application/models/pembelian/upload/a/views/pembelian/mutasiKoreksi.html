@@ -1,0 +1,515 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    .modal .modal-body {
+    overflow-y: auto;
+    overflow-x: auto;
+}
+</style>
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none;">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<form role="form" id="myForm" enctype="multipart/form-data">
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- <h1 class="page-header">Data Order</h1> -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <span>Ket: F1(Tambah Baris), F2(Save Data), F4(Hapus Baris)</span>
+            <div class="panel panel-default" id="divOrder">
+                <div class="panel-heading" style="min-height: 35px">
+                    <div style="width:50%;float:left;">
+                        <b>Mutasi Koreksi</b>
+                    </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body"> 
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Cabang</label>
+                            <input class="form-control" type="text" name="cabang" id="cabang" value="{{logs.cabang}}" readonly="">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Tanggal</label>
+                            <input class="form-control" type="text" name="tgl" id="tgl" value="{{tgl}}" readonly="">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2" style="padding-Dokumen: 0px; padding-left: 10px"> 
+                        <div class="form-group-sm">
+                            <label class="control-label">No Koreksi</label>
+                            <input class="form-control" type="text" name="no" id="no" value="{{no}}" readonly="">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Gudang</label>
+                            <select name="gudang" id="gudang" class="form-control">
+                                <option>Pilih</option>
+                                <option>Baik</option>
+                                <!-- <option>Koreksi</option> -->
+                                <option>Git</option>
+                                <option>Relokasi</option>
+                                <option>Retur Supplier</option>
+                            </select>
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Tipe Koreksi</label>
+                            <select name="tipe" id="tipe" class="form-control">
+                                <option value= "">Pilih</option>
+                                <option value= "value">Value</option>
+                                <option value= "stok">Stok</option>
+                                <option value= "pemusnahan">Pemusnahan Produk</option>
+                            </select>
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Dokumen</label>
+                            <input class="form-control" type="file" name="Dokumen" id="Dokumen">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-6" style="padding-right: 0px; padding-left: 10px">
+                        <div class="form-group-sm">
+                            <label class="control-label">Catatan</label>
+                            <input class="form-control" type="text" name="catatan" id="catatan">
+                            <!-- <p class="help-block">notifikasi disini...</p> -->
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div></div>
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <b>Produk</b>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">  
+                    <div class="form-group-sm">
+                        <div class="table-responsive">
+                            <table class="table" id="table-produk">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nama Barang</th>
+                                        <th>QTY</th>
+                                        <th>Harga</th>
+                                        <th>Value</th>
+                                        <th>Pilih Batch</th>
+                                        <th>Batch No</th>
+                                        <th>Exp Date</th>
+                                        <th>Stok</th>
+                                        <th>No Dokumen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="itemRow0">
+                                        <td>1</td>
+                                        <td>
+                                            <input type="text" name="produk[0]" id="produk0" style="width: 400px" class="delRow"  onkeyup="cariKode(0)" onchange="getProduk(0)" autocomplete="off">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="qty[0]" id="qty0" style="width: 70px">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="harga[0]" id="harga0" style="width: 100px">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="value[0]" id="value0" style="width: 100px;background-color:#ccc;" readonly="">
+                                        </td>
+                                        <td>
+                                            <select name="batchdetail[0]" id="batchdetail0" onchange="setBatch(0)" style="width: 200px">
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="batch[0]" id="batch0" style="width: 150px;background-color:#ccc;" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="expdate[0]" id="expdate0" style="width: 100px;background-color:#ccc;" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="stok[0]" id="stok0" style="width: 70px;background-color:#ccc;" readonly="">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="docstok[0]" id="docstok0" style="background-color:#ccc;" readonly="">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>   
+                            <input type="hidden" name="bucket" id="bucket" value="0">   
+                        </div>
+                    </div>                    
+                    <div class="form-group" align="center">
+                        <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->   
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+</form>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(document).on('keydown', '.newRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (keyCode == 9 && e.shiftKey == false) { 
+    addRow();
+    // call custom function here
+  } 
+});
+
+$(document).on('keydown', '.delRow', function(e) { 
+  var keyCode = e.keyCode || e.which; 
+
+  if (e.shiftKey && keyCode === 9) { 
+    removeRow();
+    // call custom function here
+  } 
+});
+
+document.onkeydown=function(e){
+        if (e.which == 112) {
+            e.preventDefault();
+            addRow();
+            var b = document.getElementById('bucket').value;
+            $('#produk'+b).focus();
+        }
+        if (e.which == 113) {
+            e.preventDefault();
+            saveData();
+        }
+        if(e.which == 115) {
+            e.preventDefault();
+            var b = document.getElementById('bucket').value;
+            if (b > 0) {
+                removeRow();
+            }
+        }
+    }
+
+var produkSource = [];
+$(document).ready(function() {      
+    // START AUTOCOMPLETE PRODUK
+        $.ajax({
+            url : "{{ base_url }}ProdukInkoreksi",
+            type: "GET",
+            // dataType: "JSON",
+            success: function(data)
+            {
+                if(data.substr(0,2) != "[{"){
+                    var data = data.substr(1);
+                    var data = JSON.parse(data); 
+                }else{
+                    var data = JSON.parse(data);
+                }
+                
+                for (var i in data) {
+                    produkSource[i] = data[i].Kode_Produk + "~" + data[i].Produk;
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('warning', 'PERHATIAN! Gagal tarik data produk');
+            }
+        });   
+    // FINISH AUTOCOMPLETE PRODUK
+});
+
+
+    function cariKode(e){    
+        $('#produk'+e).typeahead({
+                source: produkSource
+            });
+    }
+
+    function getProduk(e){
+        var bucket =document.getElementById('bucket').value; 
+        var Value = document.getElementById('produk'+e).value;
+        var split = Value.split("~");
+        var Kode = split[0];
+
+        $.ajax({
+            url : "{{ base_url }}getHargaProduk/" + Kode,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data)
+            {   
+                if (data) {      
+                    $('#value'+e).val(data.HNA);
+                }
+                else{                           
+                    $('#value'+e).val(""); 
+                }
+                getBatch(e);
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                
+            }
+        });
+    }
+
+    var code =  "";
+    function getBatch(e) {
+        $("#batch"+e).val('');
+        $("#expdate"+e).val('');
+        $("#stok"+e).val('');
+        $("#docstok"+e).val('');
+        var val = document.getElementById('produk'+e).value;
+        var gudang = document.getElementById('gudang').value;
+        var split = val.split("~");
+        var Kode = split[0];
+        // if (code != code) {
+        $('#batchdetail'+e).empty();
+            $.ajax({
+                url : "{{ base_url }}batchInKoreksi/" + Kode +'~'+ gudang,
+                type: "GET",
+                dataType: "JSON",
+                success: function(data)
+                {   
+                    if(data != false){
+                        $("#batchdetail"+e).empty();
+                        $("#batchdetail"+e).append('<option value="">Pilih</option>');
+                        for (var i in data) {
+                            $("#batchdetail"+e).append('<option value="'+data[i].BatchNo+' - '+data[i].ExpDate+' - '+data[i].UnitStok+' - '+data[i].NoDokumen+'">'+data[i].BatchNo+' - '+data[i].ExpDate+' - '+data[i].UnitStok+' - '+data[i].NoDokumen+'</option>');
+                        }
+                    }else{
+                        notif('danger', '<h2>Stok Summary dan Stok Detail Tidak sama</h2><br> <h3>cek stok terlebih dahulu</h3>');
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    console.log(jqXHR);
+                }
+            });
+        //     code = Kode;
+        // }
+    }
+
+    function setBatch(e) {        
+        var detail =document.getElementById('batchdetail'+e).value;         
+        var split = detail.split(" - ");
+        $("#batch"+e).val('');
+        $("#expdate"+e).val('');
+        $("#stok"+e).val('');
+        $("#docstok"+e).val('');
+        $("#batch"+e).val(split[0]);
+        $("#expdate"+e).val(split[1]);
+        $("#stok"+e).val(split[2]);
+        $("#docstok"+e).val(split[3]);
+    }
+
+    var rowNum = 0;
+    function addRow(frm)
+    {
+        var b = document.getElementById('bucket').value;
+        $('#removeRow').show();
+        rowNum ++;
+
+        if (parseInt(b) > 19) {
+            notif('warning', 'PERHATIAN! Jumlah Produk Maksimal 20');
+            return;
+        }
+
+        var x = rowNum + 1;
+        $('#table-produk').append('<tr id="itemRow'+rowNum+'"><td>'+x+'</td><td><input type="text" name="produk['+rowNum+']" id="produk'+rowNum+'" style="width: 400px" class="delRow"  onkeyup="cariKode('+rowNum+')" onchange="getProduk('+rowNum+')" autocomplete="off"></td><td><input type="text" name="qty['+rowNum+']" id="qty'+rowNum+'" style="width: 70px"></td><td><input type="text" name="harga['+rowNum+']" id="harga'+rowNum+'" style="width: 100px"></td><td><input type="text" name="value['+rowNum+']" id="value'+rowNum+'" style="width: 100px;background-color:#ccc;" readonly=""></td><td><select name="batchdetail['+rowNum+']" id="batchdetail'+rowNum+'" onchange="setBatch('+rowNum+')" style="width: 200px;"  readonly=""></select></td><td><input type="text" name="batch['+rowNum+']" id="batch'+rowNum+'" style="width: 150px;background-color:#ccc;" readonly=""></td><td><input type="text" name="expdate['+rowNum+']" id="expdate'+rowNum+'" style="width: 100px;background-color:#ccc;" readonly=""></td><td><input type="text" name="stok['+rowNum+']" id="stok'+rowNum+'" style="width: 70px;background-color:#ccc;" readonly=""></td><td><input type="text" name="docstok['+rowNum+']" id="docstok'+rowNum+'" style="background-color:#ccc;" readonly=""></td></tr>');
+
+        $('#bucket').val(rowNum);
+    }
+
+    function removeRow() 
+    {        
+        if (rowNum>0) {
+            jQuery('#itemRow'+rowNum).remove();
+            rowNum--;
+        }
+        else{
+
+            notif('warning', 'PERHATIAN! Baris pertama tidak bisa dihapus');
+        }
+        $('#bucket').val(rowNum);
+    }
+
+    cek_produk = [];
+
+    function saveData()
+    {
+        cek_produk = [];
+        $("#notif").empty();
+        $('#progressGIF').show();
+        var bucket = document.getElementById('bucket').value;
+        var catatan = document.getElementById('catatan').value;
+        var tipe = document.getElementById('tipe').value;
+        var status = false;
+
+        if(catatan == ""){
+            notif("warning","Catatan Wajib Diisi");
+            $('#progressGIF').hide();
+            return;
+        }
+        if(tipe == ""){
+            notif("warning","Tipe Koreksi Wajib Dipilih");
+            $('#progressGIF').hide();
+            return;
+        }
+        var jumlah = 0;
+        for (var e = 0; e <= bucket; e++) {
+            jumlah++;
+            var batch = document.getElementById('batch'+e).value;
+            var produk = document.getElementById('produk'+e).value;
+            var harga = document.getElementById('harga'+e).value;
+            var qty = parseInt((document.getElementById('qty'+e).value) ? document.getElementById('qty'+e).value : 0);
+            var stok = parseInt((document.getElementById('stok'+e).value) ? document.getElementById('stok'+e).value : 0);
+            var docstok = document.getElementById('docstok'+e).value;
+            var expdate = document.getElementById('expdate'+e).value;
+
+            cek_produk.push(produk.split("~")[0]+'||'+batch+'||'+expdate+'||'+docstok);
+            if(tipe == 'pemusnahan'){
+            	if(qty >= 0){
+            		notif("warning","Qty pemusnahan harus minus");
+	                $('#progressGIF').hide();
+	                return;
+            	}
+            }
+            if(qty < 0){
+                var qty1 = qty * -1;
+            }
+            if(produk == ""){
+                notif("warning","Produk Wajib Di Isi");
+                $('#progressGIF').hide();
+                return;
+            }
+            if(qty == 0 || qty == ""){
+                 notif("warning","Qty Tidak Boleh Kosong");
+                 document.getElementById('qty'+e).value = 0;
+                 $('#progressGIF').hide();
+                return;
+            }
+            if(qty < 0){
+                if(qty1 > stok){
+                     notif("warning","Qty Tidak Boleh Melebihi Stok");
+                     document.getElementById('qty'+e).value = 0;
+                     $('#progressGIF').hide();
+                    return;
+                }
+            }
+            if(harga == ""){
+                notif("warning","Harga tidak boleh kosong");
+                document.getElementById('harga'+e).value=0;
+                $('#progressGIF').hide();
+                return;
+            }
+            if(batch == "" ){
+                notif("warning","Kode Batch tidak Boleh Kosong");
+                $('#progressGIF').hide();
+                return;
+            }
+            if(docstok == "" ){
+                notif("warning","Dokumen Batch tidak Boleh Kosong");
+                $('#progressGIF').hide();
+                return;
+            }
+
+
+        }
+        
+        if (jumlah > 20 ) {
+            notif("warning","Maksimal Produk 20");
+            $('#progressGIF').hide();
+            return;
+        }
+
+        let findDuplicates = arr => arr.filter((item, index) => arr.indexOf(item) != index);
+        // console.log(findDuplicates(cek_produk));
+        if (findDuplicates(cek_produk) != "") {
+            for (var i = 0 ; i < findDuplicates(cek_produk).length; i++) {
+                a = findDuplicates(cek_produk)[i].split("||");
+
+
+                notif("warning","Produk ="+a[0]+ " , batch = "+a[1]+" , expdate = "+a[2]+ " , docstok = "+a[3]+ " Double Data");
+                $('#progressGIF').hide();
+                
+
+            }   
+            return; 
+        }
+        
+
+        var formdata = new FormData();
+        var Dokumen = $('#Dokumen')[0].files[0];
+        formdata.append('Dokumen', Dokumen);
+
+        $.each($('#myForm').serializeArray(), function(a, b){
+            formdata.append(b.name, b.value);
+        });
+     
+        var formData = new FormData($('#myForm')[0]);
+
+
+        $.ajax({
+            url : "{{ base_url }}saveMutasiKoreksi/",
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: "JSON",
+            success: function(data)
+            {                
+                if (data.status == false) {
+                    notif('danger', '<h2>Adjustment Koreksi tidak bisa di simpan</h2><br><h3>Terdapat Item yg selisih stok summary dan detail</h3>');
+                    $('#progressGIF').hide();
+                }
+                else{
+                    notif('success', 'SUKSES! Data berhasil disimpan'); 
+                    $('#progressGIF').hide();
+                    location.reload();
+                }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+               notif('danger', 'Error Save Data');
+               $('#progressGIF').hide();
+               location.reload();
+            }
+        });      
+    }
+</script>
+
+{% endblock %}

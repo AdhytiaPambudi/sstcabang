@@ -1,0 +1,739 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:50%;float:left;">
+                <b>Laporan Relokasi Header</b>
+            </div>
+
+        </div>
+        <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table>
+                    <tr>
+                        <td>Cabang</td>
+                        <td style="padding-left:10px">:</td>
+                        <td style="padding-left:10px">
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td style="padding-left:30px">Periode </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input type="text" name="tgl1" id ="tgl1"></td>
+                        <td style="padding-left:30px">s/d </td>
+                        <td style="padding-left:10px">:</td>  
+                        <td style="padding-left:10px"><input type="text" name="tgl2" id ="tgl2"></td>
+                        <td style="padding-left:10px"><select id="tipe" name="tipe">
+                                <option value="">Pilih Jenis Relokasi</option>
+                                <option value="all">All</option>
+                                <option value="kirim">Relokasi Kirim</option>
+                                <option value="terima">Relokasi Terima</option>
+                            </select></td>
+                        <td style="padding-left:10px"> <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-success" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px;color:black">Proses</span></i></a> </td>
+                    </tr>
+                </table>
+            </div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+<div id="msgBox"></div>
+<div id = 'cetak_list'>
+   <div id="grid"  class="k-grid"  data-csrf="{!! csrf_token()!!}"></div>
+   <!-- <br>
+   <hr width="100%" size="10">
+   <div><center><strong>DATA GUDANG</strong></center></div>
+   <br>
+   <div id="grid_summary"> -->
+</div>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        $("#grid").kendoGrid({});
+        var today1 = new Date();
+        $("#tgl1").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgl1").data("kendoDatePicker").value(today1);
+        $("#tgl2").kendoDatePicker({format: "dd/MM/yyyy"});
+        $("#tgl2").data("kendoDatePicker").value(today1);
+        
+    });
+    
+    function f_get_data(){
+        $("#grid").data("kendoGrid").destroy();
+        $("#grid").empty();
+        var cabang = document.getElementById("Cabang").value;
+        var tgl_mulai = $("#tgl1").data("kendoDatePicker").value();
+        var tgl_selesai = $("#tgl2").data("kendoDatePicker").value();
+        var tipe = $('[name=tipe]').val();
+        if ((!Date.parse(tgl_mulai) > !Date.parse(tgl_selesai)) ){
+            toastr.error("Ada kesalahan pada tanggal ! ");
+            return;
+        };
+        var tgl_start   = f_tanggal(tgl_mulai);
+        var tgl_end = f_tanggal(tgl_selesai);
+        if(tipe == "" || tipe == "all"){
+            console.log("kesini");
+             var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}datarelokasiheader1",   
+                        dataType: 'json',
+                        data : {
+                            tgl1:tgl_start,
+                            tgl2:tgl_end,
+                            tipe:tipe,
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        return data.Result;
+                    },
+                    model: {
+                            fields: {
+                                rownumber       : { editable: false, nullable: true },
+                                Cabang_Pengirim : {type:"string", editable:false},
+                                Cabang_Penerima : {type:"string", editable:false},
+                                Tgl_kirim       : {type:"string", editable:false},
+                                Tgl_terima      : {type:"string",   editable:false},
+                                Jenis           : {type:"string",   editable:false},
+                                No_Relokasi     : {type:"string", editable:false},
+                                No_Terima       : {type:"string", editable:false},
+                                Status_kiriman  : {type:"string", editable:false},
+                                Gross           : {type:"number", editable:false},
+                                Potongan        : {type:"number", editable:false},
+                                Value           : {type:"number", editable:false},
+                                Keterangan      : {type:"string", editable:false},
+                            }
+                    },     
+                },
+                aggregate: [
+                                { field: "Gross", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "Value", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "Potongan",aggregate: "sum" ,format: '{0:n0}'},
+                            ], 
+            });
+
+        }else if(tipe == "kirim"){
+            console.log("kirim");
+             var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}datarelokasiheader1",   
+                        dataType: 'json',
+                        data : {
+                            tgl1:tgl_start,
+                            tgl2:tgl_end,
+                            tipe:tipe,
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        return data.Result;
+                    },
+                    model: {
+                            fields: {
+                                rownumber       : { editable: false, nullable: true },
+                                Cabang_Pengirim : {type:"string", editable:false},
+                                Cabang_Penerima : {type:"string", editable:false},
+                                Tgl_kirim       : {type:"string", editable:false},
+                                Tgl_terima      : {type:"string",   editable:false},
+                                Jenis           : {type:"string",   editable:false},
+                                No_Relokasi     : {type:"string", editable:false},
+                                No_Terima       : {type:"string", editable:false},
+                                Status_kiriman  : {type:"string", editable:false},
+                                Gross           : {type:"number", editable:false},
+                                Potongan        : {type:"number", editable:false},
+                                Value           : {type:"number", editable:false},
+                                Keterangan      : {type:"string", editable:false},
+                            }
+                    },     
+                },
+                group: {
+                    field: "Cabang_Penerima",
+                    aggregates: [
+                        {
+                            field: "Gross",
+                            aggregate: "sum"
+                        }, {
+                            field: "Potongan",
+                            aggregate: "sum"
+                        }, {
+                            field: "Value",
+                            aggregate: "sum"                    
+                        }
+                    ]
+                },
+                aggregate: [
+                                { field: "Gross", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "Value", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "Potongan",aggregate: "sum" ,format: '{0:n0}'},
+                            ], 
+            });
+
+        }else if(tipe == 'terima'){
+            console.log("terima");
+             var ds = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        type: 'Post',
+                        url: "{{ base_url }}datarelokasiheader1",   
+                        dataType: 'json',
+                        data : {
+                            tgl1:tgl_start,
+                            tgl2:tgl_end,
+                            tipe:tipe,
+                        }
+                    }
+                },
+                error: function(e) {
+                    alert(e);
+                },
+                schema: {
+                    data: function(data){
+                        return data.Result;
+                    },
+                    model: {
+                            fields: {
+                                rownumber       : { editable: false, nullable: true },
+                                Cabang_Pengirim : {type:"string", editable:false},
+                                Cabang_Penerima : {type:"string", editable:false},
+                                Tgl_kirim       : {type:"string", editable:false},
+                                Tgl_terima      : {type:"string",   editable:false},
+                                Jenis           : {type:"string",   editable:false},
+                                No_Relokasi     : {type:"string", editable:false},
+                                No_Terima       : {type:"string", editable:false},
+                                Status_kiriman  : {type:"string", editable:false},
+                                Gross           : {type:"number", editable:false},
+                                Potongan        : {type:"number", editable:false},
+                                Value           : {type:"number", editable:false},
+                                Keterangan      : {type:"string", editable:false},
+                            }
+                    },     
+                },
+                group: {
+                    field: "Cabang_Pengirim",
+                    aggregates: [
+                        {
+                            field: "Gross",
+                            aggregate: "sum"
+                        }, {
+                            field: "Potongan",
+                            aggregate: "sum"
+                        }, {
+                            field: "Value",
+                            aggregate: "sum"                    
+                        }
+                    ]
+                },
+                aggregate: [
+                                { field: "Gross", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "Value", aggregate: "sum" ,  format: '{0:n0}'},
+                                { field: "Potongan",aggregate: "sum" ,format: '{0:n0}'},
+                            ], 
+            });
+        }
+
+             $("#grid").kendoGrid({
+                    dataSource : ds,
+                    scrollable: true,
+                    filterable: true,
+                    sortable: true,
+                    navigatable: true,
+                    resizable: true,
+                    groupable: true,
+                    width:"100%",
+                    height: 700,
+                    pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },
+                    selectable: "single",
+                    save: function (e) {
+                            e.sender.refresh();
+                    }, // untuk menghitung ulang 
+                    toolbar: ["excel"],
+                    excel: {
+                    fileName: "Laporan Relokasi Header.xlsx",
+                            filterable: true
+                        },
+                    pdf: {
+                            fileName: "Laporan Relokasi Header.pdf",
+                        },
+                    columns: [
+                    {
+                        title: "LAPORAN RELOKASI HEADER" + " CABANG : " + cabang.toUpperCase(),
+                        headerAttributes: {style: "text-align: center"},
+                        columns:[
+                        {
+                            title: "Start Date :" + tgl_start + " End Date : " + tgl_end ,
+                            headerAttributes: {style: "text-align: left"},
+                            columns:[
+                                    {
+                                        field: "rowNumber",
+                                        title: "No",
+                                        width: 40,
+                                        editable : false,
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        nullable : true,
+                                        template: "#= renderNumber(data) #" 
+                                    },
+                                    {
+                                        // hidden:true,
+                                        field: "Cabang_Pengirim",
+                                        title: "Cabang Pengirim",
+                                        nullable: false,
+                                        width: 100,
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        filterable: { 
+                                          // ui: IDFilter
+                                        },
+                                        // editor: dropdownproduct
+                                    },
+                                    {
+                                        field: "Cabang_Penerima",
+                                        title: "Cabang Penerima",
+                                        width: 100,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Tgl_kirim",
+                                        title: "Tgl Kirim",
+                                        width: 100,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Tgl_terima",
+                                        title: "Tgl Terima",
+                                        width: 100,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Jenis",
+                                        title: "Jenis Relokasi",
+                                        width: 150,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "No_Relokasi",
+                                        title: "No Relokasi Kirim",
+                                        width: 100,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "No_Terima",
+                                        title: "No Relokasi Terima",
+                                        width: 100,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Status_kiriman",
+                                        title: "Status",
+                                        width: 100,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Gross",
+                                        title: "Gross",
+                                        width: 200,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate:"Total :#= kendo.toString(sum, 'n0') #",
+                                        groupFooterTemplate:"Total :#= kendo.toString(sum, 'n0') #",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Potongan",
+                                        title: "Potongan",
+                                        width: 200,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate:"Total :#= kendo.toString(sum, 'n0') #",
+                                        groupFooterTemplate:"Total :#= kendo.toString(sum, 'n0') #",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Value",
+                                        title: "Value",
+                                        width: 200,
+                                        type: "number",
+                                        nullable: false,
+                                        format: '{0:n0}',
+                                        attributes:{style:"text-align:right;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                        footerTemplate:"Total :#= kendo.toString(sum, 'n0') #",
+                                        groupFooterTemplate:"Total :#= kendo.toString(sum, 'n0') #",
+                                       // editor:dropdownunit
+
+                                    },
+                                    {
+                                        field: "Keterangan",
+                                        title: "Keterangan",
+                                        width: 200,
+                                        attributes: {style:"text-align:left;"},
+                                        headerAttributes: {
+                                            style: "text-align: center"
+                                        },
+                                    },
+                                ]
+                            }, 
+                        ]
+                    }
+                                              
+                    ],//end of columns
+                    // detailTemplate: kendo.template($("#template").html()),
+                    // detailInit: f_show_pos,  
+                    dataBound: function (e) {
+                        resetRowNumber();
+                        
+                    },
+                    dataBinding: function(){
+                        
+                    }
+
+                });
+            $("#grid").data("kendoGrid").setDataSource(ds);
+
+        }//end f_getdata_detail
+        var rowNumber = 0;
+        function resetRowNumber(e) {
+            rowNumber = 0;
+        }
+         
+        function renderNumber(data) {
+            return ++rowNumber;
+        }
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+         function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            // doctime = hour_value + ':' + min_value;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },1500);
+        }
+      
+</script>
+    {% endblock %}

@@ -1,0 +1,1014 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style>html { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }</style>
+    
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.dataviz.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.common-material.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href= "{{ base_url }}assets/kendo/styles/kendo.material.min.css" rel="stylesheet">
+    <link href="{{ base_url }}assets/css/easyui.css" rel="stylesheet">
+<style>
+    #keterangan {
+
+        width:700px;
+    }
+
+    .demo-section {
+        width:100%;
+    }
+    .fieldlist_garis_bawah 
+    {
+        margin: 0;
+        padding:0;
+
+    }
+
+    .fieldlist_garis_bawah li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    .fieldlist_garis_bawah label {
+        display: inline-block;
+        width: 150px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    #fieldlist
+    {
+        margin:0;
+        padding:0;
+    }
+
+    #fieldlist li
+    {
+        list-style:none;
+        padding:0;
+    }
+
+    #fieldlist label {
+        display: inline-block;
+        width: 150px;
+        font-size: 11px;
+        margin-right: 5px;
+        text-align: left;
+        border-bottom: 1px solid #DAD9DE;
+    }
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 10px
+    }
+    .form-group{
+        margin:1.5px;
+    }
+
+    .k-textbox{
+        font-size: 11px; 
+    }
+    .datepicker{
+        font-size: 11px; 
+    }
+
+    .k-grid td {
+        font-size: 11px;
+        padding: 3px;
+        line-height: 1.5em;
+    }
+    .k-grid {
+        font-size: 12px;
+    }
+            
+    .k-virtual-scrollable-wrap td {
+        font-size: 11px;        
+        white-space:nowrap;
+        line-height: 11px;
+    }
+
+    .k-grid .k-grid-header .k-header .k-link {
+        overflow: visible !important; white-space: normal !important; 
+    }
+
+    #grid .k-virtual-scrollable-wrap tr td{
+        height: 8px
+    }
+
+    .k-grid-header .wrap-header {
+        height:  5px;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .k-list-container{
+        min-width:400px !important;
+        width: auto!important;
+    }
+    .k-list
+    {
+         width:auto !important;
+    }
+    .highlighted-row {
+        background-color: #eeffee;
+    }
+    .highlighted-row.k-alt {
+        background-color: #ccffcc;
+    }
+    table > tbody > tr:hover,
+
+        .table > table > tbody > tr:hover
+
+    {
+        background-color: #fce7dd;
+
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #fff;
+
+    }
+    .page-template {
+          font-family: "DejaVu Sans", "Arial", sans-serif;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          font-size:10px;
+        }
+        .page-template .header {
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          right: 30px;
+          border-bottom: 1px solid #888;
+          color: #888;
+        }
+        .page-template .footer {
+          position: absolute;
+          bottom: 30px;
+          left: 30px;
+          right: 30px;
+          border-top: 1px solid #888;
+          text-align: center;
+          color: #888;
+        }
+        .page-template .watermark {
+          font-weight: bold;
+          font-size: 400%;
+          text-align: center;
+          margin-top: 30%;
+          color: #aaaaaa;
+          opacity: 0.1;
+          transform: rotate(-35deg) scale(1.7, 1.5);
+        }
+</style> 
+<div id="progressGIF" style="position: fixed; top:0px; left:0px; bottom:0px; right:0px; background-color: rgba(0, 0, 0, 0.10); z-index: 1000; display: none">
+    <center>
+    <img src="{{base_url}}assets/img/progress.gif" width="150px" style="padding-top: 15%; position: relative;">
+    <p style="position: relative; font-size: 18px;">DATA SEDANG DI PROSES</p>
+    </center>
+</div>
+<form role="form" method="post" id="myForm">
+<div class="row">
+    <div class="col-lg-12">
+        <marquee width = "100%"><span style="color:blue;font-weight:bold:font-size:12px">Info terbaru:</span> <span style="color: red;font-weight:bold">Ada penambahan fitur terbaru untuk mengecek selisih data, diantara nya selisih data faktur dan faktur komersil, dan saldo pelunasan. jika tidak ada selisih, maka nilai yg muncul adalah angka 0, jika ada selisih, nilai yg muncul adalah angka 1, cara membetulkannya, klik tombol cek di sampingnya untuk menampilkan data yg akan dibetulkan </span></marquee>
+        <marquee width = "100%">Tanda Closing sukses, Warna di tgl Closing menjadi Hijau dan tgl Closing sama dengan tgl server</marquee>
+        <div class="panel panel-default">
+        <div class="panel-heading" style="min-height: 35px">
+            <div style="width:100%;float:left;">
+                <table>
+                <tr>
+                    <td>Total user Login </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px"> {% for totaluser in totaluser %}
+                      <input class="form-control" type="text" style="width:50px;text-align:center" name="totaluser" id="totaluser" readonly value="{{ totaluser.totaluser }}">
+                    {% endfor %}
+                    </td>
+                    <td style="padding-left:10px">Tanggal Server </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px">  {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" name="server_date" style="width:100px;text-align:center" id="server_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                    </td>
+                    <td style="padding-left:10px">Tanggal Closing </td>
+                    <td style="padding-left:10px">: </td>
+                    <td style="padding-left:10px">  {% for dateclosing in dateclosing %}
+                        <input class="form-control" type="text" name="closing_date" style="width:100px;text-align:center" id="closing_date" readonly value="{{ dateclosing.tgl_daily_closing }}">
+                        <input class="form-control" type="hidden" name="flag_trans" id="flag_trans" readonly value="{{ dateclosing.flag_trans }}">
+                        {% endfor %}
+                    </td>
+                    <td style="padding-left:10px"><input type="checkbox" name="daily" id="daily" value="daily" onclick="allDay()"> <span style="color:red;font-weight:bold">Closing di Hari Yg Sama</span>
+                    </td>
+                    <td style="padding-left:30px"> 
+                        <button id="buttonload" class="btn btn-primary" onclick="f_get_data()"><i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses Closing</span></i></button>
+                        <!-- <a v-bind:href="javascript:" onclick="f_get_data();return false;" title="Proses" class="btn btn-primary" id="buttonload"> <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Proses Closing</span></i></a>  -->
+                    </td>
+                    <td style="padding-left:30px"> <a v-bind:href="javascript:" onclick="f_stok();return false;" title="Reproses Stok" class="btn btn-primary" readonly> <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Reproses Stok</span></i></a> 
+                    </td>
+                    <td style="padding-left:10px">
+                        {% if user == "cabang" %} 
+                            <a v-bind:href="javascript:" onclick="Unlock();return false;" title="Bypass Closing" class="btn btn-success" readonly> <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Bypass Closing</span></i></a> 
+                        {% endif %}
+                    </td>
+                </tr>
+                </table>
+               <!-- </b> -->
+            </div>
+            <div style="width:50%;float:right;">
+                <b><h5><b>CLOSING HARIAN<b></h5></b>
+            </div>
+
+        </div>
+        <div class="panel-body" style="width:100%;">
+        <div class="row">
+            <div class="col-lg-12">
+            <div class="form-group">
+            <form role="form" id="myForm">
+            <div class="table-responsive"> 
+                <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables1">
+                <thead>
+                    <tr>
+                        <td style="text-align:center;">Cabang</td>
+                        <td style="padding-left:10px;text-align:center">UserName</td>
+                        <td style="text-align:center;" colspan="2">DO/Faktur Header</td>
+                        <td style="text-align:center" colspan="2">DO/Faktur Detail</td>
+                        <td style="text-align:center" colspan="2">DO/Kiriman</td>
+                        <td style="text-align:center" colspan="2">CN/DN</td>
+                        <td style="text-align:center" colspan="2">Saldo Pelunasan</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="counter" value="{{counter}}">
+                            {% for cabang in cabang %}
+                                {% if cabang.Cabang == logs.cabang %} 
+                                    <input class="form-control" type="text" style="width:100px;text-align:center" name="Cabang" id="Cabang" readonly value="{{ cabang.Cabang }}-{{ cabang.Kode }}">
+                                    <input class="form-control" type="hidden" name="serv_date" id="serv_date" readonly value="{{ cabang.server_date }}">
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                              <input class="form-control" type="text" style="width:70px;text-align:center" name="username" id="username" readonly value="{{ user }}">
+                              <input class="form-control" type="hidden" style="width:70px;text-align:center" name="datastok" id="datastok" readonly>
+                        </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="DoHeader" id="DoHeader" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('doheader');return false;" title="Cek Faktur Header" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="Dodetail" id="Dodetail" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('dodetail');return false;" title="Cek Faktur Detail" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="DOKirim" id="DOKirim" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('dokirim');return false;" title="Cek Faktur Kirim" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="cndn" id="cndn" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('cndn');return false;" title="Cek Faktur CNDN" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td>
+                        <td><input class="form-control" style="width:70px;text-align:center" type="text"  name="vallunas" id="vallunas" readonly></td>
+                        <td> <a v-bind:href="javascript:" onclick="f_cek('vallunas');return false;" title="Cek Value Pelunasan" class="btn btn-danger" > <i class="fa fa-search-plus"><span style="padding-left:10px;padding-right:20px">Cek</span></i></a> </td> 
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id = 'cetak_list'>
+   <hr width="100%" size="10">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kode Produk</th>
+                                <th>Produk</th>
+                                <th>Saldo Awal</th> 
+                                <th>Saldo Akhir</th>
+                                <th>Saldo Stok</th>
+                                <th>Cek</th>          
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                        <!-- /.panel-body -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</form>
+{% endblock %}
+
+{% block js %}
+    <!-- <script src="{{ base_url }}assets/js/bootstrap.min.js"></script> -->
+    <!-- <script src="{{ base_url }}assets/kendo/js/jquery.min.js"> </script> -->
+    <script src="{{ base_url }}assets/kendo/js/kendo.all.min.js"> </script> 
+    <script src="{{ base_url }}assets/kendo/js/pako_deflate.min.js"> </script> 
+    <script src="{{ base_url }}assets/js/jQuery.print.js"> </script>
+    <script src="{{ base_url }}assets/js/jquery.table2excel.min.js"></script>
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+    <script src="{{ base_url }}assets/kendo/js/jszip.min.js"></script>
+<script>
+
+    var tabel;
+    var produkSource = [];
+    var s_doheader = false;
+    var s_dodetail = false;
+    var s_dokirim = false;
+    var s_cndn = false;
+    var s_vallunas = false;
+    var s_stok = false;
+    var s_datastok = false;
+    $(document).ready(function() {
+        var validator = $(".datepicker").kendoValidator({
+        rules: {
+            dateValidation: function (e) {
+                dateUniversal = $(e).val();
+                var currentDate =  kendo.parseDate(dateUniversal, "dd/MM/yyyy");
+                                if (!currentDate) {
+                                    return false;
+                                }
+                                return true;
+                            
+                    }
+                },messages: {
+                    dateValidation: "wrong format"
+                }
+            }).data("kendoValidator");
+        var dateserver = document.getElementById('server_date').value;
+        var dateclosing = document.getElementById('closing_date').value;
+        var trans = document.getElementById('flag_trans').value;
+        if(dateclosing == dateserver){
+            if(trans == 'Y'){
+                $("#closing_date").css('background-color','green').css('font-weight','bold').css('color','yellow');
+            }else{
+                $("#closing_date").css('background-color','red').css('font-weight','bold').css('color','yellow');
+            }
+        }else{
+            $("#closing_date").css('background-color','red').css('font-weight','bold').css('color','yellow');
+        }
+        $("#daily").prop( "checked", true );
+
+    });
+
+    function f_get_data(){
+        var status =false; 
+        s_doheader = false;
+        s_dodetail = false;
+        s_dokirim = false;
+        s_cndn = false;
+        s_vallunas = false;
+        s_stok = false;
+        s_datastok = false;
+        var daily = document.getElementById('daily').value;
+        var dateserver = document.getElementById('server_date').value;
+        var dateclosing = document.getElementById('closing_date').value;
+        var a = new Date(dateserver);
+        var b = new Date(dateclosing);
+        var diff = new Date(a - b);
+        var days = diff/1000/60/60/24;
+        if(daily == 'daily'){
+            if(dateserver == dateclosing){
+                var r = confirm("Closing harian di proses di hari yg sama, setelah closing, semua transaksi tidak bisa diakses hingga 1 hari kedepan, Lanjutkan Proses ?");
+            }else{
+                alert('PERHATIAN! Jika Closing di hari yg sama, checkbox (Closing di hari yg sama ) harus dicentang,Jika Closing di hari yg berbeda, hilangkan centangan di checkbox');
+                return;
+            }
+        }else{
+            if(parseInt(days) > 0){
+                var r = confirm("Proses Closing harian, Ok ?");
+            }else if(parseInt(days) < 0){
+                alert('PERHATIAN! Closing sudah dilakukan, tidak bisa melakukan closing ulang');
+                return;
+            }else{
+                alert('PERHATIAN! Jika Closing di hari yg sama, checkbox (Closing di hari yg sama ) harus dicentang,Jika Closing di hari yg berbeda, hilangkan centangan di checkbox');
+                return;
+            }
+            
+        }
+        
+        if (r == true) {
+            if(daily == 'daily'){
+                if(dateclosing == dateserver){
+                    status = true;
+                }
+            }else{
+                if(days > 0){
+                    status = true;
+                }else{
+                    status = false;
+                }
+            }  
+        } else {
+            status = false;
+        }
+        if(status == true){
+            
+            $("#buttonload").prop('disabled', true);
+            notif('success', '<h3>Proses Checking Data Sedang Berjalan</h3>');
+            $('.itemRowDetail').remove();
+            //cek stok
+            $.ajax({
+                url : "{{ base_url }}getclosingstokdaily",
+                type: "POST",
+                dataType: "JSON",
+                async: true,
+                cache: false,
+                beforeSend: function( xhr ) {
+                    $.messager.progress({
+                        title:'Please waiting Progress Stok',
+                        msg:'Loading data...'
+                    });
+                },
+                success: function(data)
+                {
+                    s_stok = true;
+                    $.messager.progress('close');
+                    var daynumber = getDayOfWeek(new Date(dateserver));
+                    if( daynumber != '07'){
+                        $('#datastok').val(data.length);
+                        if(data.length > 0){
+                            s_datastok = true;
+                            var x = 0;
+                            for(i in data)
+                            {
+                                x++;
+                                $('#dataTables-example').append('<tr class="itemRowDetail"><td>'+x+'</td><td><input type="text" name="Kode_Produk['+x+']" id="Kode_Produk'+x+'" style="width:100px" class="delRow" value="'+data[i].Kode_Produk+'" autocomplete="off" readonly></td><td><input type="text" name="produk['+x+']" id="produk'+x+'" style="width:200px" value="'+data[i].Produk+'" readonly></td><td><input type="text" name="saldo_awal['+x+']" id="saldo_awal'+x+'" style="width:100px" class="delRow" value="'+data[i].saldo_awal+'" autocomplete="off" readonly></td><td><input type="text" name="saldo_akhir['+x+']" id="saldo_akhir'+x+'" style="width:100px" class="delRow" value="'+data[i].saldo_akhir+'" autocomplete="off" readonly></td><td><input type="text" name="qty_stok['+x+']" id="qty_stok'+x+'" style="width:100px" class="delRow" value="'+data[i].qty_stok+'" autocomplete="off" readonly></td><td><a class="btn btn-sm btn-success" title="Fix Stok" onclick="summary('+data[i].Kode_Produk+')" id="summary"><i class="fa fa-eye"></i>Cek Stok</a></td></tr>');
+                            }
+                        }
+                    }
+                    f_cekdata(1);
+                    f_doheader();
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    f_cekdata(1);
+                    f_doheader();
+                    notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                }
+            });
+            
+        }else{
+            notif('danger', '<h3>PERHATIAN! Closing Harian Sudah Dilakukan</h3>');
+        }
+    }
+
+    function f_cekdata(nmr){
+        var doheader = document.getElementById('DoHeader').value;
+        var dodetail = document.getElementById('Dodetail').value;
+        var dokirim = document.getElementById('DOKirim').value;
+        var cndn = document.getElementById('cndn').value;
+        var vallunas = document.getElementById('vallunas').value;
+        var dateserver = document.getElementById('server_date').value;
+        var dateclosing = document.getElementById('closing_date').value;
+        if(s_doheader == true && s_dokirim == true && s_cndn == true && s_vallunas == true && s_stok == true && s_dodetail == true){
+            if(s_datastok == true){
+                if(dateclosing == dateserver){
+                    f_closing("nostok");
+                    // f_kirim("nostok");
+                }  
+                    notif('danger', '<h3>PERHATIAN! Terdapat Selisih Stok, Perbaiki Dengan Cara Klik Tombol Reproses Stok</h3>');
+            }else if(s_datastok == false){
+                if((doheader != 0) || (dodetail != 0) || (dokirim != 0) || (cndn != 0) || (vallunas != 0)){
+                    console.log("aaaa");
+                    notif('danger', '<h3>PERHATIAN! Masih Terdapat Selisih Data</h3>');
+                        f_closing("nostok");
+                        // f_kirim("nostok");   
+                }else{
+                    console.log("lsg closing");
+                    f_closing("ok");
+                        // f_kirim("ok");
+                        // location.reload(); 
+                }
+                            
+            }
+            $("#buttonload").prop('disabled', false);
+        } 
+    }
+
+    function f_stok()
+    {
+        $datastok = ((document.getElementById('datastok').value) ? document.getElementById('datastok').value : 0);
+        var status =false;
+        if($datastok == 0 ||$datastok == ""){
+            notif('warning', 'Data Transaksi Kosong, silahkan Proses Closing');
+        }else if($datastok > 0){
+            var r = confirm("Cek Mutasi / Kartu Stok untuk memastikan kesesuaian stok. Jika sudah yakin klik tombol Ok, Ok ?");
+            if (r == true) {
+                status = true;
+            } else {
+                status = false;
+            }
+            if(status==true){
+                $.ajax({
+                    url : "{{ base_url }}generatestok/",
+                    type: "POST",
+                    data: $('#myForm').serialize(),
+                    dataType: "JSON",
+                    async: true,
+                    cache: false,
+                    beforeSend: function( xhr ) {
+                        $.messager.progress({
+                            title:'Please waiting Progress Fix Stok',
+                            msg:'Loading data...'
+                        });
+                    },
+                    success: function(data)
+                    {           
+                        $.messager.progress('close');
+                        location.reload();
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        notif('danger', 'PERHATIAN! Proses Fix Stok Gagal');
+                        $.messager.progress('close');
+                        location.reload();
+                    }
+                });
+            }
+        }   
+    }
+
+    function f_closing(ok){
+        var daily = document.getElementById('daily').value;
+        $.ajax({
+            url : "{{ base_url }}setClosingdaily",
+            type: "POST",
+            data:{tipe:daily,status:ok},
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Closing',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                if (data == false) {
+                    notif('warning', 'PERHATIAN! Tidak dapat Closing');
+                }else if(data == true){
+                    if(ok == "nostok"){
+                        $.messager.show({
+                            title:'Proses Closing',
+                            msg:'<center><b><h3>Masih ada Selisih,Closing Hanya Lock Transaksi<h3></b></center>',
+                            showType:'show',
+                            style:{
+                                right:'',
+                                top:document.body.scrollTop+document.documentElement.scrollTop,
+                                bottom:''
+                            }
+                        });
+                    }else{
+                        $.messager.show({
+                            title:'Proses Closing',
+                            msg:'<center><b><h3>Closing Harian Sukses<h3></b></center>',
+                            showType:'show',
+                            style:{
+                                right:'',
+                                top:document.body.scrollTop+document.documentElement.scrollTop,
+                                bottom:''
+                            }
+                        });
+                    }
+                }
+                $.messager.progress('close');
+                f_kirim(ok);
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                // notif('warning', 'PERHATIAN! Server Error');
+                $.messager.show({
+                    title:'Proses Closing',
+                    msg:'<center><b><h3>Closing Harian Gagal<h3></b></center>',
+                    showType:'show',
+                    style:{
+                        right:'',
+                        top:document.body.scrollTop+document.documentElement.scrollTop,
+                        bottom:''
+                    }
+                });
+                $.messager.progress('close');
+            }
+        });     
+    }
+    function f_cek(status){
+        var doheader = document.getElementById('DoHeader').value;
+        var dodetail = document.getElementById('Dodetail').value;
+        var dokirim = document.getElementById('DOKirim').value;
+        var cndn = document.getElementById('cndn').value;
+        var vallunas = document.getElementById('vallunas').value;
+        var no = "";
+        if((doheader == 0 || doheader == "") && (dodetail == 0 || dodetail == "") && (dokirim == 0 || dokirim == "") && (cndn == 0 || cndn == "") && (vallunas == 0 || vallunas == "") ){
+            notif("danger","<h3>Tidak Ada Data yg perlu di cek</h3>");
+            return;
+        } 
+        $.redirect("{{ base_url }}FixDOFakturClosing",
+                {
+                    status: status,
+                    tipe:'daily'
+                },
+                "POST",
+                '_blank');     
+    }
+    function f_kirim(ok){
+        var daily = document.getElementById('daily').value;
+        notif('success', '<h3>Sedang Proses Kirim Data Ke Pusat</h3>');
+        $.ajax({
+            url : "{{ base_url }}setKirimdatadaily",
+            type: "POST",
+            data:{tipe:daily,status:ok},
+            dataType: "JSON",
+            async: true,
+            cache: false,
+            beforeSend: function( xhr ) {
+                $.messager.progress({
+                    title:'Please waiting Progress Kirim Data',
+                    msg:'Loading data...'
+                });
+            },
+            success: function(data)
+            {
+                if (data.status == false) {
+                    $.messager.show({
+                        title:'Proses Kirim Data',
+                        msg:'<center><b><h3>Kirim Data Gagal<h3></b></center>',
+                        showType:'show',
+                        style:{
+                            right:'',
+                            top:document.body.scrollTop+document.documentElement.scrollTop,
+                            bottom:''
+                        }
+                    });
+                }else if(data.status== true){
+                    if(ok == "ok"){
+                        $.messager.show({
+                            title:'Proses Kirim Data',
+                            msg:'<center><b><h3>Kirim Data Sukses<h3></b></center>',
+                            showType:'show',
+                            style:{
+                                right:'',
+                                top:document.body.scrollTop+document.documentElement.scrollTop,
+                                bottom:''
+                            }
+                        });
+                        $.messager.progress('close');
+                        location.reload();
+                    }else{
+                        $.messager.show({
+                            title:'Proses Kirim Data',
+                            msg:'<center><b><h3>Kirim Data Sukses, tapi masih terdapat selisih data<h3></b></center>',
+                            showType:'show',
+                            style:{
+                                right:'',
+                                top:document.body.scrollTop+document.documentElement.scrollTop,
+                                bottom:''
+                            }
+                        });
+                        $.messager.progress('close');
+                    }  
+                }
+                
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                $.messager.show({
+                    title:'Proses Kirim Data',
+                    msg:'<center><b><h3>Koneksi ke Server Error<h3></b></center>',
+                    showType:'show',
+                    style:{
+                        right:'',
+                        top:document.body.scrollTop+document.documentElement.scrollTop,
+                        bottom:''
+                    }
+                });
+                $.messager.progress('close');
+            }
+        });      
+    }
+
+    function f_doheader(){
+        $.ajax({
+                url : "{{ base_url }}getclosingdoheader",
+                type: "POST",
+                dataType: "JSON",
+                data:{status:"daily"},
+                async: true,
+                cache: false,
+                beforeSend: function( xhr ) {
+                    $.messager.progress({
+                        title:'Please waiting Progress DO Header',
+                        msg:'Loading data...'
+                    });
+                },
+                success: function(data)
+                {
+                    $.messager.progress('close');
+                    document.getElementById('DoHeader').value="";
+                    document.getElementById('DoHeader').value=data;
+                    if(data == 0){
+                       $("#DoHeader").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                    }else{
+                      $("#DoHeader").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                    }
+                    if(data > 0){
+                        notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Header</h3>');
+                                // f_closing("nostok");   
+                    }
+                    s_doheader = true;
+                    f_cekdata(2);
+                    f_dodetail();
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    f_cekdata(2);
+                    f_dodetail();
+                    notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                    $.messager.progress('close');
+                }
+        }); 
+    }
+    function f_dodetail(){
+        $.ajax({
+                url : "{{ base_url }}getclosingdodetail",
+                type: "POST",
+                dataType: "JSON",
+                data:{status:"daily"},
+                async: true,
+                cache: false,
+                beforeSend: function( xhr ) {
+                    $.messager.progress({
+                        title:'Please waiting Progress DO Detail',
+                        msg:'Loading data...'
+                    });
+                },
+                success: function(data)
+                {
+                    $.messager.progress('close');
+                    document.getElementById('Dodetail').value="";
+                    document.getElementById('Dodetail').value=data;
+                    if(data == 0){
+                       $("#Dodetail").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                    }else{
+                      $("#Dodetail").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                    }
+                    if(data > 0){
+                        notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Detail</h3>');
+                                // f_closing("nostok");   
+                    }
+                    s_dodetail = true;
+                    f_cekdata(3);
+                    f_dokirim();
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    f_cekdata(3);
+                    f_dokirim();
+                    notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                    $.messager.progress('close');
+                }
+        });
+    }
+    function f_dokirim(){
+        $.ajax({
+                url : "{{ base_url }}getclosingdokirim",
+                type: "POST",
+                dataType: "JSON",
+                data:{status:"daily"},
+                async: true,
+                cache: false,
+                beforeSend: function( xhr ) {
+                    $.messager.progress({
+                        title:'Please waiting Progress DO Kirim',
+                        msg:'Loading data...'
+                    });
+                },
+                success: function(data)
+                {
+                    $.messager.progress('close');
+                    document.getElementById('DOKirim').value="";
+                    document.getElementById('DOKirim').value=data;
+                    if(data == 0){
+                       $("#DOKirim").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                    }else{
+                      $("#DOKirim").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                    }
+                    if(data > 0 ){
+                        notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data DOFaktur Kirim</h3>');
+                                // f_closing("nostok");   
+                    }
+                    s_dokirim = true;
+                    f_cekdata(4);
+                    f_cndn();
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    f_cekdata(4);
+                    f_cndn();
+                    notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                    $.messager.progress('close');
+                }
+        });  
+    }
+    function f_cndn(){
+        $.ajax({
+                url : "{{ base_url }}getclosingcndn",
+                type: "POST",
+                dataType: "JSON",
+                data:{status:"daily"},
+                async: true,
+                cache: false,
+                beforeSend: function( xhr ) {
+                    $.messager.progress({
+                        title:'Please waiting Progress CNDN',
+                        msg:'Loading data...'
+                    });
+                },
+                success: function(data)
+                {
+                    $.messager.progress('close');
+                    document.getElementById('cndn').value="";
+                    document.getElementById('cndn').value=data;
+                    if(data == 0){
+                       $("#cndn").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                    }else{
+                      $("#cndn").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                    }
+                    if((data > 0) ){
+                        notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data CNDN</h3>');  
+                    }
+                    s_cndn = true;
+                    f_cekdata(5);
+                    f_vallunas();
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    f_cekdata(5);
+                    f_vallunas();
+                    notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                    $.messager.progress('close');
+                }
+            }); 
+    }
+    function f_vallunas(){
+            $.ajax({
+                url : "{{ base_url }}getclosingvallunas",
+                type: "POST",
+                dataType: "JSON",
+                data:{status:"daily"},
+                async: true,
+                cache: false,
+                beforeSend: function( xhr ) {
+                    $.messager.progress({
+                        title:'Please waiting Progress Value Pelunasan',
+                        msg:'Loading data...'
+                    });
+                },
+                success: function(data)
+                {
+                    $.messager.progress('close');
+                    document.getElementById('vallunas').value="";
+                    document.getElementById('vallunas').value=data;
+                    if(data== 0){
+                       $("#vallunas").css('background-color','green').css('font-weight','bold').css('color','yellow'); 
+                    }else{
+                      $("#vallunas").css('background-color','red').css('font-weight','bold').css('color','yellow');
+                    }
+                    if(data > 0){
+                        notif('danger', '<h3>PERHATIAN! Terdapat Selisih Data Pelunasan</h3>');
+                                // f_closing("nostok");   
+                    }
+                    s_vallunas = true;
+                    f_cekdata(6);
+                    // $('#progressGIF').hide();
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    f_cekdata(6);
+                    notif('danger', '<h3>PERHATIAN! Server Error</h3>');
+                    $.messager.progress('close');
+                }
+            });
+    }
+
+        var rowNumber = 0;
+        function resetRowNumber(e) {
+            rowNumber = 0;
+        }
+         
+        function renderNumber(data) {
+            return ++rowNumber;
+        }
+
+        function f_pdf()
+        {
+            $('#cetak_list').print();
+        }
+
+        function f_tanggal(tglx)
+        {
+            var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+            month_value = tglx.getMonth();
+            day_value = tglx.getDate();
+            year_value = tglx.getFullYear();
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            docdate = day_value + '-' + months[month_value] + '-' + year_value ;
+            return docdate;
+        }
+
+        function f_time(tglx)
+        {
+            hour_value = tglx.getHours();
+            min_value  = tglx.getMinutes();
+            doctime = hour_value + ':' + min_value;
+            return doctime;
+        }
+
+        function f_excel()
+        {
+            setTimeout(function(){
+                $('#cetak_list').table2excel({
+                    exclude:".noExl",
+                    name:"mutasi stok report",
+                    filename: "mutasi stok report"
+                });
+            },500);
+        }
+
+        function getDayOfWeek(date) {
+          var dayOfWeek = new Date(date).getDay();    
+          return isNaN(dayOfWeek) ? null : ['01', '02', '03', '04', '05', '06', '07'][dayOfWeek];
+        }
+
+        function allDay() {   
+        if($("#daily").is(':checked')){ 
+            document.getElementById('daily').value = 'daily'; 
+        }   
+        else{
+            document.getElementById('daily').value = 'nextday'; 
+        }
+        var daily = document.getElementById('daily').value; 
+    }  
+
+    function Unlock()
+    {
+        $("#notif").empty();
+        var url = "{{ base_url }}BypassClosing"; 
+        // ajax adding data to database
+        $('#progressGIF').show();
+        $.ajax({
+            url : url,
+            type: "POST",
+            dataType: "JSON",
+            success: function(data)
+            {
+                if (data.status == false) {
+                        notif('warning', 'PERHATIAN! gagal');
+                    }
+                    else{
+                        notif('success', 'SUKSES! ');
+                        f_kirim("nostok");
+                    }
+                    $('#progressGIF').hide();
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                notif('error', 'PERHATIAN! Proses Error');
+                $('#progressGIF').hide();
+            }
+        });
+    } 
+      
+</script>
+    {% endblock %}

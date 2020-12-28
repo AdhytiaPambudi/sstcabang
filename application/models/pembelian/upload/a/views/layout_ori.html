@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>PT. SAPTA SARITAMA</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/png" href="{{ base_url }}assets/img/favicon.jpg" />
+
+    <!-- Front CSS -->
+    <link href="{{ base_url }}assets/css/front.css" rel="stylesheet">
+    
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ base_url }}assets/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Menu Multilavel Dropdwon -->
+    <link href="{{ base_url }}assets/css/main.css" rel="stylesheet">
+    <!-- <link href="css/main.css" rel="stylesheet"> -->
+
+    <!-- Bootstrap Toggle Core CSS -->
+    <link href="{{ base_url }}assets/css/sidebar-toggle.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{{ base_url }}assets/css/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="{{ base_url }}assets/css/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="{{ base_url }}assets/css/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- DataTables Button Export CSS -->
+    <link href="{{ base_url }}assets/css/buttons.dataTables.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ base_url }}assets/css/sb-admin-2.css" rel="stylesheet">
+    
+    <!-- Custom Fonts -->
+    <link href="{{ base_url }}assets/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Select JS -->
+    <link href="{{ base_url }}assets/css/select.css" rel="stylesheet" type="text/css">
+
+    <!-- Datetimepicker  -->
+    <link href="{{ base_url }}assets/css/jquery.datetimepicker.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Datepacker -->
+    <link href="{{base_url}}assets/js/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div id="notif">
+</div>
+    <div id="wrapper">
+
+            {% block content %} {% endblock %}
+
+    </div>
+    <a href="javascript:" id="return-to-top"><img src="{{ base_url }}assets/img/up-arrow.png" width="50px"></a>
+    <!-- /#wrapper -->
+    
+    <!-- jQuery -->
+    <!-- <script src="{{ base_url }}assets/js/jquery.min.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>  -->
+    <script src="{{ base_url }}assets/js/js.js"></script>
+    
+    <!-- <script src="{{ base_url }}assets/js/jquery.chained.min.js"></script> -->
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ base_url }}assets/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{{ base_url }}assets/js/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="{{ base_url }}assets/js/jquery.dataTables.min.js"></script>
+    <script src="{{ base_url }}assets/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ base_url }}assets/js/dataTables.responsive.js"></script>
+
+    <!-- DataTables Button Export JavaScript -->
+    <script src="{{ base_url }}assets/js/dataTables.buttons.min.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.flash.min.js"></script>
+    <script src="{{ base_url }}assets/js/jszip.min.js"></script>
+    <script src="{{ base_url }}assets/js/pdfmake.min.js"></script>
+    <script src="{{ base_url }}assets/js/vfs_fonts.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.html5.min.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.print.min.js"></script>
+    <script src="{{ base_url }}assets/js/buttons.colVis.min.js"></script>
+    
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ base_url }}assets/js/sb-admin-2.js"></script>
+    <!-- Custom Theme JavaScript -->
+
+    <!-- Select JS -->
+    <script src="{{ base_url }}assets/js/select.js"></script>
+    <script src="{{ base_url }}assets/js/jquery.validate.min.js"></script>
+    
+    <!-- Datepicker -->
+    <script src="{{base_url}}assets/js/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Datetimepicker -->
+    <script src="{{base_url}}assets/js/jquery.datetimepicker.full.min.js"></script>
+    
+    <!-- REDIRECT JS -->
+    <script src="{{ base_url }}assets/js/redirect.js"></script>
+
+    <!-- AUTOCOMPLETE -->
+    <script src="{{ base_url }}assets/js/jquery.mockjax.js"></script>
+    <script src="{{ base_url }}assets/js/bootstrap-typeahead.js"></script>
+
+    <script type="text/javascript">
+        $(window).scroll(function() {
+            if ($(this).scrollTop() >= 50) {        // If page is scrolled more than 50px
+                $('#return-to-top').fadeIn(200);    // Fade in the arrow
+            } else {
+                $('#return-to-top').fadeOut(200);   // Else fade out the arrow
+            }
+        });
+        $('#return-to-top').click(function() {      // When arrow is clicked
+            $('body,html').animate({
+                scrollTop : 0                       // Scroll to top of body
+            }, 500);
+        });
+
+        function notif(status, text) {
+            $("#notif").append('<div class="alert alert-'+status+' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+text+'</div>');
+            $("#notif").fadeTo(36000, 100).slideUp(1000);
+        }
+
+        function numberWithCommas(x) {
+            if (x==null) {
+                x = 0.00;
+            }
+            var parts = x.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+
+        function currtoNumber(x) {
+            var currency = x;
+            var number = Number(currency.replace(/[^0-9\.]+/g,""));
+
+            return number;
+        }
+
+    </script>
+    {% block js %} {% endblock %}
+</body>
+
+</html>

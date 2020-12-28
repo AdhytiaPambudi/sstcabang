@@ -1,0 +1,2160 @@
+{% extends "layout.html" %} {% block content %} {% include "navigation.html" %}
+<style type="text/css">
+    textarea {
+   resize: none;
+}
+</style>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Laporan Insentif Salesman</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Laporan Insentif Salesman
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                        <form role="form" method="post" id="myForm">                             
+                        <div id="progressGIF" style="position: absolute; width: 100%; height: 370px; background-color: rgba(0, 0, 0, 0.05); z-index: 99; display: none;">
+                            <center>
+                            <img src="{{base_url}}assets/img/progress.gif" width="50px" style="padding-top: 15%; position: relative;">
+                            <p style="position: relative; font-size: 16px;">PROGRESS</p>
+                            </center>
+                        </div>
+                                <div class="form-group">
+                                    <label class="control-label">Cabang</label>
+                                    <input type="hidden" name="cabx" id="cabx" value="{{logs.cabang}}" readonly="">
+                                    {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                    <select class="form-control" name="cabang" id="cabang" onchange="getSalesman()">
+                                        {% for cabang in cabang %}
+                                        <option value="{{cabang.Cabang}}">{{cabang.Cabang}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% endif %}
+                                    {% if logs.usergroup == 'Cabang' or logs.usergroup == 'BM' or logs.usergroup == 'CabangSPV'%}
+                                    <input type="text" class="form-control" name="cabang" id="cabang" value="{{logs.cabang}}" readonly=""> 
+                                    {% endif %}
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                    {% if logs.usergroup == 'Admin' or logs.usergroup == 'Pusat' or logs.usergroup == 'Cabang' or logs.usergroup == 'BM' or logs.usergroup == 'CabangSPV'%}
+                                        <!-- AllCab -->
+                                        <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="AllCab()"><i class="fa fa-check"></i> Cek Data ALL Salesman Cabang</button>
+                                    {% endif %}
+                                </div>                                      
+                                <div class="form-group">
+                                    <label class="control-label">Tanggal</label>
+                                    <input type="text" class="form-control" name="tgl" id="tgl" onchange="getData()"> 
+                                    <!-- <p class="help-block">notifikasi disini...</p> -->
+                                </div>                                   
+                                <div class="form-group">
+                                    <label class="control-label">Salesman</label>
+                                    <select class="form-control" name="salesman" id="salesman" onchange="getData()">
+                                        {% for salesman in salesman %}
+                                            <option value="{{salesman.KodeSalesman}}">{{salesman.NamaSalesman}} - {{salesman.KodeSalesman}} - {{salesman.TipeSalesman}}- {{salesman.Jabatan}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div> 
+                              
+                            <label class="control-label" id="dataSalesmanDetail"></label>
+                            <div>{{time}} , <strong>***Mohon di cek ulang kembali Nilai insentif, agar tidak ada lagi perubahan data Insentif di lain hari</strong></div>
+                            <table width="100%" class="table table-striped table-bordered table-hover">
+                            <tr style="font-weight: bold;">
+                                <td width="20%">Insentif</td>
+                                <td width="60%" colspan="3">Keterangan</td>
+                                <td width="20%" >Value</td>
+                            </tr>
+                            <tr>
+                                <td width="80%" colspan="4" style="font-weight: bold;">Total Insentif</td>
+                                <td class="data" width="20%" id="totalInsentif"></td>
+                                    <input class="data" type="hidden"  name="totalInsentifDat" id="totalInsentifDat">
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Sales Total</td>
+                                <td class="data" width="20%" id="sales1"></td>
+                                <td class="data" width="20%" id="target1"></td>
+                                <td class="data" width="20%" id="persen1"></td>
+                                <td class="data" width="20%" id="val1"></td>
+                                    <input class="data" type="hidden" name="dataTipeSalesmanDetail" id="dataTipeSalesmanDetail"> 
+                                    <input class="data" type="hidden"  name="sales1Dat" id="sales1Dat">
+                                    <input class="data" type="hidden"  name="target1Dat" id="target1Dat">
+                                    <input class="data" type="hidden"  name="persen1Dat" id="persen1Dat">
+                                    <input class="data" type="hidden"  name="val1Dat" id="val1Dat">
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Efektif CALL</td>
+                                <td class="data" width="20%" id="ec1"></td>
+                                <td class="data" width="20%" id="target2"></td>
+                                <td class="data" width="20%" id="kerja1"></td>
+                                <td class="data" width="20%" id="val2"></td>
+                                    <input class="data" type="hidden"  name="ec1Dat" id="ec1Dat">
+                                    <input class="data" type="hidden"  name="target2ECtotDat" id="target2ECtotDat">
+                                    <input class="data" type="hidden"  name="target2ECtargetDat" id="target2ECtargetDat">
+                                    <input class="data" type="hidden"  name="target2ECcallDat" id="target2ECcallDat">
+                                    <input class="data" type="hidden"  name="kerja1Dat" id="kerja1Dat">
+                                    <input class="data" type="hidden"  name="val2Dat" id="val2Dat">
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Item perTransaksi</td>
+                                <td class="data" width="20%" id="kIPT"></td>
+                                <td class="data" width="20%" id="targetIPT"></td>
+                                <td class="data" width="20%" id="kerjaIPT"></td>
+                                <td class="data" width="20%" id="valIPT"></td>
+                                    <input class="data" type="hidden"  name="kIPTDat" id="kIPTDat">
+                                    <input class="data" type="hidden"  name="targetIPTDat" id="targetIPTDat">
+                                    <input class="data" type="hidden"  name="kerjaIPTDat" id="kerjaIPTDat">
+                                    <input class="data" type="hidden"  name="valIPTDat" id="valIPTDat">
+                            </tr>
+                            <tr>
+                                <td width="20%" style="font-weight: bold;">Komisi Outlet per Transaksi</td>
+                                <td class="data" width="20%" id="kOT"></td>
+                                <td class="data" width="20%" id="targetOT"></td>
+                                <td class="data" width="20%" id="kerjaOT"></td>
+                                <td class="data" width="20%" id="valOT"></td>
+                                    <input class="data" type="hidden"  name="kOTDat" id="kOTDat">
+                                    <input class="data" type="hidden"  name="targetOTDat" id="targetOTDat">
+                                    <input class="data" type="hidden"  name="kerjaOTDat" id="kerjaOTDat">
+                                    <input class="data" type="hidden"  name="valOTDat" id="valOTDat">
+                            </tr>
+                            <!-- <tr>
+                                <td width="20%" style="font-weight: bold;">Insentif NOO</td>
+                                <td class="data" width="20%" id="insentifNoo"></td>
+                                <td class="data" width="40%" colspan="2" id="komisiNoo"></td>
+                                <td class="data" width="20%" id="val4"></td>
+                            </tr> -->
+                            <tr>
+                                <td width="25%" rowspan="4" valign="middle" style="font-weight: bold;">Komisi Tagihan</td>
+                                <td width="25">
+                                        <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('tagihan','Komisi Tagihan < 30')"><i class="fa fa-eye"></i></button>
+                                    Tgh < 30</td>
+                                <td class="data" width="25" colspan="2" id="tagihanA"></td>
+                                <td class="data" width="25" id="val5"></td>
+                                    <input class="data" type="hidden"  name="tagihanADat" id="tagihanADat">
+                                    <input class="data" type="hidden"  name="val5Dat" id="val5Dat">
+                            </tr>                            
+                            <tr>
+                                <td width="25">
+                                        <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('tagihan','Komisi Tagihan < 45')"><i class="fa fa-eye"></i></button>
+                                    Tgh < 45</td>
+                                <td class="data" width="25" colspan="2" id="tagihanB"></td>
+                                <td class="data" width="25" id="val6"></td>
+                                    <input class="data" type="hidden"  name="tagihanBDat" id="tagihanBDat">
+                                    <input class="data" type="hidden"  name="val6Dat" id="val6Dat">
+                            </tr>                            
+                            <tr>
+                                <td width="25">
+                                        <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('tagihan','Komisi Tagihan > 45')"><i class="fa fa-eye"></i></button>
+                                    Tgh > 45</td>
+                                <td class="data" width="25" colspan="2" id="tagihanC"></td>
+                                <td class="data" width="25" id="val7"></td>
+                                    <input class="data" type="hidden"  name="tagihanCDat" id="tagihanCDat">
+                                    <input class="data" type="hidden"  name="val7Dat" id="val7Dat">
+                            </tr>                            
+                            <tr>
+                                <td width="25">
+                                        <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('tagihan','Penalti Tagihan')"><i class="fa fa-eye"></i></button>
+                                        Tgh > 60 
+                                </td>
+                                <td class="data" width="25" colspan="2" id="tagihanD"></td>
+                                <td class="data" width="25" id="val8"></td>
+                                    <input class="data" type="hidden"  name="tagihanDDat" id="tagihanDDat">
+                                    <input class="data" type="hidden"  name="val8Dat" id="val8Dat">
+                            </tr>             
+                            <tr>
+                                <td width="25%" colspan="3" valign="middle" style="font-weight: bold;">Komisi Sales Prinsipal</td>
+                                <td class='data' width='25' colspan="2" id='TargetPrinsipalALL'></td>
+                                    <input class="data" type="hidden"  name="TargetPrinsipalALLDat1" id="TargetPrinsipalALLDat1">
+                                    <input class="data" type="hidden"  name="TargetPrinsipalALLDat2" id="TargetPrinsipalALLDat2">
+                                    <input class="data" type="hidden"  name="TargetPrinsipalALLDat3" id="TargetPrinsipalALLDat3">
+                            </tr>
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                        <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Aditama Raya')"><i class="fa fa-eye"></i></button>
+                                Adi</td>
+                                <td class='data' width='25' id='SalesAdi'></td>
+                                <td class='data' width='25' id='TargetAdi'></td>
+                                <td class='data' width='25' id='PersenAdi'></td>
+                                <td class='data' width='25' id='KomisiAdi'></td>
+                                    <input class="data" type="hidden"  name="SalesAdiDat" id="SalesAdiDat">
+                                    <input class="data" type="hidden"  name="SalesAdiDiscDat" id="SalesAdiDiscDat">
+                                    <input class="data" type="hidden"  name="TargetAdiDat" id="TargetAdiDat">
+                                    <input class="data" type="hidden"  name="PersenAdiDat" id="PersenAdiDat">
+                                    <input class="data" type="hidden"  name="KomisiAdiDat" id="KomisiAdiDat">
+                           </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Alkes')"><i class="fa fa-eye"></i></button>
+                                Alkes</td>
+                                <td class='data' width='25' id='SalesAlkes'></td>
+                                <td class='data' width='25' id='TargetAlkes'></td>
+                                <td class='data' width='25' id='PersenAlkes'></td>
+                                <td class='data' width='25' id='KomisiAlkes'></td>
+                                    <input class="data" type="hidden" name="SalesAlkesDat" id="SalesAlkesDat">
+                                    <input class="data" type="hidden" name="SalesAlkesDiscDat" id="SalesAlkesDiscDat">
+                                    <input class="data" type="hidden" name="TargetAlkesDat" id="TargetAlkesDat">
+                                    <input class="data" type="hidden" name="PersenAlkesDat" id="PersenAlkesDat">
+                                    <input class="data" type="hidden" name="KomisiAlkesDat" id="KomisiAlkesDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Altamed')"><i class="fa fa-eye"></i></button>
+                                Altamed</td>
+                                <td class='data' width='25' id='SalesAltamed'></td>
+                                <td class='data' width='25' id='TargetAltamed'></td>
+                                <td class='data' width='25' id='PersenAltamed'></td>
+                                <td class='data' width='25' id='KomisiAltamed'></td>
+                                    <input class="data" type="hidden"  name="SalesAltamedDat" id="SalesAltamedDat">
+                                    <input class="data" type="hidden"  name="SalesAltamedDiscDat" id="SalesAltamedDiscDat">
+                                    <input class="data" type="hidden"  name ="TargetAltamedDat" id="TargetAltamedDat">
+                                    <input class="data" type="hidden"  name="PersenAltamedDat" id="PersenAltamedDat">
+                                    <input class="data" type="hidden"  name="KomisiAltamedDat" id="KomisiAltamedDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Andalan')"><i class="fa fa-eye"></i></button>
+                                Andalan</td>
+                                <td class='data' width='25' id='SalesAndalan'></td>
+                                <td class='data' width='25' id='TargetAndalan'></td>
+                                <td class='data' width='25' id='PersenAndalan'></td>
+                                <td class='data' width='25' id='KomisiAndalan'></td>
+                                    <input class="data" type="hidden"  name="SalesAndalanDat" id="SalesAndalanDat">
+                                    <input class="data" type="hidden"  name="SalesAndalanDiscDat" id="SalesAndalanDiscDat">
+                                    <input class="data" type="hidden"  name="TargetAndalanDat" id="TargetAndalanDat">
+                                    <input class="data" type="hidden"  name="PersenAndalanDat" id="PersenAndalanDat">
+                                    <input class="data" type="hidden"  name="KomisiAndalanDat" id="KomisiAndalanDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Armoxindo')"><i class="fa fa-eye"></i></button>
+                                Armoxindo</td>
+                                <td class='data' width='25' id='SalesArmoxindo'></td>
+                                <td class='data' width='25' id='TargetArmoxindo'></td>
+                                <td class='data' width='25' id='PersenArmoxindo'></td>
+                                <td class='data' width='25' id='KomisiArmoxindo'></td>
+                                    <input class="data" type="hidden"  name="SalesArmoxindoDat" id="SalesArmoxindoDat">
+                                    <input class="data" type="hidden"  name="SalesArmoxindoDiscDat" id="SalesArmoxindoDiscDat">
+                                    <input class="data" type="hidden"  name="TargetArmoxindoDat" id="TargetArmoxindoDat">
+                                    <input class="data" type="hidden"  name="PersenArmoxindoDat" id="PersenArmoxindoDat">
+                                    <input class="data" type="hidden"  name="KomisiArmoxindoDat" id="KomisiArmoxindoDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Axion')"><i class="fa fa-eye"></i></button>
+                                Axion</td>
+                                <td class='data' width='25' id='SalesAxion'></td>
+                                <td class='data' width='25' id='TargetAxion'></td>
+                                <td class='data' width='25' id='PersenAxion'></td>
+                                <td class='data' width='25' id='KomisiAxion'></td>
+                                    <input class="data" type="hidden"  name="SalesAxionDat" id="SalesAxionDat">
+                                    <input class="data" type="hidden"  name="SalesAxionDiscDat" id="SalesAxionDiscDat">
+                                    <input class="data" type="hidden"  name="TargetAxionDat" id="TargetAxionDat">
+                                    <input class="data" type="hidden"  name="PersenAxionDat" id="PersenAxionDat">
+                                    <input class="data" type="hidden"  name="KomisiAxionDat" id="KomisiAxionDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Bintang KK')"><i class="fa fa-eye"></i></button>
+                                Bintang KK</td>
+                                <td class='data' width='25' id='SalesBintangKK'></td>
+                                <td class='data' width='25' id='TargetBintangKK'></td>
+                                <td class='data' width='25' id='PersenBintangKK'></td>
+                                <td class='data' width='25' id='KomisiBintangKK'></td>
+                                    <input class="data" type="hidden"  name="SalesBintangKKDat" id="SalesBintangKKDat">
+                                    <input class="data" type="hidden"  name="SalesBintangKKDiscDat" id="SalesBintangKKDiscDat">
+                                    <input class="data" type="hidden"  name="TargetBintangKKDat" id="TargetBintangKKDat">
+                                    <input class="data" type="hidden"  name="PersenBintangKKDat" id="PersenBintangKKDat">
+                                    <input class="data" type="hidden"  name="KomisiBintangKKDat" id="KomisiBintangKKDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Calumika')"><i class="fa fa-eye"></i></button>
+                                Calumika</td>
+                                <td class='data' width='25' id='SalesCalumika'></td>
+                                <td class='data' width='25' id='TargetCalumika'></td>
+                                <td class='data' width='25' id='PersenCalumika'></td>
+                                <td class='data' width='25' id='KomisiCalumika'></td>
+                                    <input class="data" type="hidden"  name="SalesCalumikaDat" id="SalesCalumikaDat">
+                                    <input class="data" type="hidden"  name="SalesCalumikaDiscDat" id="SalesCalumikaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetCalumikaDat" id="TargetCalumikaDat">
+                                    <input class="data" type="hidden"  name="PersenCalumikaDat" id="PersenCalumikaDat">
+                                    <input class="data" type="hidden"  name="KomisiCalumikaDat" id="KomisiCalumikaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Cendo')"><i class="fa fa-eye"></i></button>
+                                Cendo</td>
+                                <td class='data' width='25' id='SalesCendo'></td>
+                                <td class='data' width='25' id='TargetCendo'></td>
+                                <td class='data' width='25' id='PersenCendo'></td>
+                                <td class='data' width='25' id='KomisiCendo'></td>
+                                    <input class="data" type="hidden"  name="SalesCendoDat" id="SalesCendoDat">
+                                    <input class="data" type="hidden"  name="SalesCendoDiscDat" id="SalesCendoDiscDat">
+                                    <input class="data" type="hidden"  name="TargetCendoDat" id="TargetCendoDat">
+                                    <input class="data" type="hidden"  name="PersenCendoDat" id="PersenCendoDat">
+                                    <input class="data" type="hidden"  name="KomisiCendoDat" id="KomisiCendoDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Coronet')"><i class="fa fa-eye"></i></button>
+                                Coronet</td>
+                                <td class='data' width='25' id='SalesCoronet'></td>
+                                <td class='data' width='25' id='TargetCoronet'></td>
+                                <td class='data' width='25' id='PersenCoronet'></td>
+                                <td class='data' width='25' id='KomisiCoronet'></td>
+                                    <input class="data" type="hidden"  name="SalesCoronetDat" id="SalesCoronetDat">
+                                    <input class="data" type="hidden"  name="SalesCoronetDiscDat" id="SalesCoronetDiscDat">
+                                    <input class="data" type="hidden"  name="TargetCoronetDat" id="TargetCoronetDat">
+                                    <input class="data" type="hidden"  name="PersenCoronetDat" id="PersenCoronetDat">
+                                    <input class="data" type="hidden"  name="KomisiCoronetDat" id="KomisiCoronetDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Corsa')"><i class="fa fa-eye"></i></button>
+                                Corsa</td>
+                                <td class='data' width='25' id='SalesCorsa'></td>
+                                <td class='data' width='25' id='TargetCorsa'></td>
+                                <td class='data' width='25' id='PersenCorsa'></td>
+                                <td class='data' width='25' id='KomisiCorsa'></td>
+                                    <input class="data" type="hidden"  name="SalesCorsaDat" id="SalesCorsaDat">
+                                    <input class="data" type="hidden"  name="SalesCorsaDiscDat" id="SalesCorsaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetCorsaDat" id="TargetCorsaDat">
+                                    <input class="data" type="hidden"  name="PersenCorsaDat" id="PersenCorsaDat">
+                                    <input class="data" type="hidden"  name="KomisiCorsaDat" id="KomisiCorsaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Dipa')"><i class="fa fa-eye"></i></button>
+                                Dipa</td>
+                                <td class='data' width='25' id='SalesDipa'></td>
+                                <td class='data' width='25' id='TargetDipa'></td>
+                                <td class='data' width='25' id='PersenDipa'></td>
+                                <td class='data' width='25' id='KomisiDipa'></td>
+                                    <input class="data" type="hidden"  name="SalesDipaDat" id="SalesDipaDat">
+                                    <input class="data" type="hidden"  name="SalesDipaDiscDat" id="SalesDipaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetDipaDat" id="TargetDipaDat">
+                                    <input class="data" type="hidden"  name="PersenDipaDat" id="PersenDipaDat">
+                                    <input class="data" type="hidden"  name="KomisiDipaDat" id="KomisiDipaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Dipa.OTC')"><i class="fa fa-eye"></i></button>
+                                Dipa.OTC</td>
+                                <td class='data' width='25' id='SalesDipaOTC'></td>
+                                <td class='data' width='25' id='TargetDipaOTC'></td>
+                                <td class='data' width='25' id='PersenDipaOTC'></td>
+                                <td class='data' width='25' id='KomisiDipaOTC'></td>
+                                    <input class="data" type="hidden"  name="SalesDipaOTCDat" id="SalesDipaOTCDat">
+                                    <input class="data" type="hidden"  name="SalesDipaOTCDiscDat" id="SalesDipaOTCDiscDat">
+                                    <input class="data" type="hidden"  name="TargetDipaOTCDat" id="TargetDipaOTCDat">
+                                    <input class="data" type="hidden"  name="PersenDipaOTCDat" id="PersenDipaOTCDat">
+                                    <input class="data" type="hidden"  name="KomisiDipaOTCDat" id="KomisiDipaOTCDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','E-KAT')"><i class="fa fa-eye"></i></button>
+                                E-KAT</td>
+                                <td class='data' width='25' id='SalesEKAT'></td>
+                                <td class='data' width='25' id='TargetEKAT'></td>
+                                <td class='data' width='25' id='PersenEKAT'></td>
+                                <td class='data' width='25' id='KomisiEKAT'></td>
+                                    <input class="data" type="hidden"  name="SalesEKATDat" id="SalesEKATDat">
+                                    <input class="data" type="hidden"  name="SalesEKATDiscDat" id="SalesEKATDiscDat">
+                                    <input class="data" type="hidden"  name="TargetEKATDat" id="TargetEKATDat">
+                                    <input class="data" type="hidden"  name="PersenEKATDat" id="PersenEKATDat">
+                                    <input class="data" type="hidden"  name="KomisiEKATDat" id="KomisiEKATDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Erella')"><i class="fa fa-eye"></i></button>
+                                Erella</td>
+                                <td class='data' width='25' id='SalesErella'></td>
+                                <td class='data' width='25' id='TargetErella'></td>
+                                <td class='data' width='25' id='PersenErella'></td>
+                                <td class='data' width='25' id='KomisiErella'></td>
+                                    <input class="data" type="hidden"  name="SalesErellaDat" id="SalesErellaDat">
+                                    <input class="data" type="hidden"  name="SalesErellaDiscDat" id="SalesErellaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetErellaDat" id="TargetErellaDat">
+                                    <input class="data" type="hidden"  name="PersenErellaDat" id="PersenErellaDat">
+                                    <input class="data" type="hidden"  name="KomisiErellaDat" id="KomisiErellaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Erlimpex N.Reg')"><i class="fa fa-eye"></i></button>
+                                Erlimpex N.Reg</td>
+                                <td class='data' width='25' id='SalesErlimpexNReg'></td>
+                                <td class='data' width='25' id='TargetErlimpexNReg'></td>
+                                <td class='data' width='25' id='PersenErlimpexNReg'></td>
+                                <td class='data' width='25' id='KomisiErlimpexNReg'></td>
+                                    <input class="data" type="hidden"  name="SalesErlimpexNRegDat" id="SalesErlimpexNRegDat">
+                                    <input class="data" type="hidden"  name="SalesErlimpexNRegDiscDat" id="SalesErlimpexNRegDiscDat">
+                                    <input class="data" type="hidden"  name="TargetErlimpexNRegDat" id="TargetErlimpexNRegDat">
+                                    <input class="data" type="hidden"  name="PersenErlimpexNRegDat" id="PersenErlimpexNRegDat">
+                                    <input class="data" type="hidden"  name="KomisiErlimpexNRegDat" id="KomisiErlimpexNRegDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Erlimpex Reg')"><i class="fa fa-eye"></i></button>
+                                Erlimpex Reg</td>
+                                <td class='data' width='25' id='SalesErlimpexReg'></td>
+                                <td class='data' width='25' id='TargetErlimpexReg'></td>
+                                <td class='data' width='25' id='PersenErlimpexReg'></td>
+                                <td class='data' width='25' id='KomisiErlimpexReg'></td>
+                                    <input class="data" type="hidden"  name="SalesErlimpexRegDat" id="SalesErlimpexRegDat">
+                                    <input class="data" type="hidden"  name="SalesErlimpexRegDiscDat" id="SalesErlimpexRegDiscDat">
+                                    <input class="data" type="hidden"  name="TargetErlimpexRegDat" id="TargetErlimpexRegDat">
+                                    <input class="data" type="hidden"  name="PersenErlimpexRegDat" id="PersenErlimpexRegDat">
+                                    <input class="data" type="hidden"  name="KomisiErlimpexRegDat" id="KomisiErlimpexRegDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Escolab')"><i class="fa fa-eye"></i></button>
+                                Escolab</td>
+                                <td class='data' width='25' id='SalesEscolab'></td>
+                                <td class='data' width='25' id='TargetEscolab'></td>
+                                <td class='data' width='25' id='PersenEscolab'></td>
+                                <td class='data' width='25' id='KomisiEscolab'></td>
+                                    <input class="data" type="hidden"  name="SalesEscolabDat" id="SalesEscolabDat">
+                                    <input class="data" type="hidden"  name="SalesEscolabDiscDat" id="SalesEscolabDiscDat">
+                                    <input class="data" type="hidden"  name="TargetEscolabDat" id="TargetEscolabDat">
+                                    <input class="data" type="hidden"  name="PersenEscolabDat" id="PersenEscolabDat">
+                                    <input class="data" type="hidden"  name="KomisiEscolabDat" id="KomisiEscolabDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Fahrenheit.OTC')"><i class="fa fa-eye"></i></button>
+                                FhOTC</td>
+                                <td class='data' width='25' id='SalesFhOTC'></td>
+                                <td class='data' width='25' id='TargetFhOTC'></td>
+                                <td class='data' width='25' id='PersenFhOTC'></td>
+                                <td class='data' width='25' id='KomisiFhOTC'></td>
+                                    <input class="data" type="hidden"  name="SalesFhOTCDat" id="SalesFhOTCDat">
+                                    <input class="data" type="hidden"  name="SalesFhOTCDiscDat" id="SalesFhOTCDiscDat">
+                                    <input class="data" type="hidden"  name="TargetFhOTCDat" id="TargetFhOTCDat">
+                                    <input class="data" type="hidden"  name="PersenFhOTCDat" id="PersenFhOTCDat">
+                                    <input class="data" type="hidden"  name="KomisiFhOTCDat" id="KomisiFhOTCDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Firstmed')"><i class="fa fa-eye"></i></button>
+                                Firstmed</td>
+                                <td class='data' width='25' id='SalesFirstmed'></td>
+                                <td class='data' width='25' id='TargetFirstmed'></td>
+                                <td class='data' width='25' id='PersenFirstmed'></td>
+                                <td class='data' width='25' id='KomisiFirstmed'></td>
+                                    <input class="data" type="hidden"  id="SalesFirstmedDat">
+                                    <input class="data" type="hidden"  id="SalesFirstmedDiscDat">
+                                    <input class="data" type="hidden"  id="TargetFirstmedDat">
+                                    <input class="data" type="hidden"  id="PersenFirstmedDat">
+                                    <input class="data" type="hidden"  id="KomisiFirstmedDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Global')"><i class="fa fa-eye"></i></button>
+                                Gmp</td>
+                                <td class='data' width='25' id='SalesGmp'></td>
+                                <td class='data' width='25' id='TargetGmp'></td>
+                                <td class='data' width='25' id='PersenGmp'></td>
+                                <td class='data' width='25' id='KomisiGmp'></td>
+                                    <input class="data" type="hidden"  name="SalesGmpDat" id="SalesGmpDat">
+                                    <input class="data" type="hidden"  name="SalesGmpDiscDat" id="SalesGmpDiscDat">
+                                    <input class="data" type="hidden"  name="TargetGmpDat" id="TargetGmpDat">
+                                    <input class="data" type="hidden"  name="PersenGmpDat" id="PersenGmpDat">
+                                    <input class="data" type="hidden"  name="KomisiGmpDat" id="KomisiGmpDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Hermed')"><i class="fa fa-eye"></i></button>
+                                Hermed</td>
+                                <td class='data' width='25' id='SalesHermed'></td>
+                                <td class='data' width='25' id='TargetHermed'></td>
+                                <td class='data' width='25' id='PersenHermed'></td>
+                                <td class='data' width='25' id='KomisiHermed'></td>
+                                    <input class="data" type="hidden"  name="SalesHermedDat" id="SalesHermedDat">
+                                    <input class="data" type="hidden"  name="SalesHermedDiscDat" id="SalesHermedDiscDat">
+                                    <input class="data" type="hidden"  name="TargetHermedDat" id="TargetHermedDat">
+                                    <input class="data" type="hidden"  name="PersenHermedDat" id="PersenHermedDat">
+                                    <input class="data" type="hidden"  name="KomisiHermedDat" id="KomisiHermedDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Holi')"><i class="fa fa-eye"></i></button>
+                                Holi</td>
+                                <td class='data' width='25' id='SalesHoli'></td>
+                                <td class='data' width='25' id='TargetHoli'></td>
+                                <td class='data' width='25' id='PersenHoli'></td>
+                                <td class='data' width='25' id='KomisiHoli'></td>
+                                    <input class="data" type="hidden"  name="SalesHoliDat" id="SalesHoliDat">
+                                    <input class="data" type="hidden"  name="SalesHoliDat" id="SalesHoliDat">
+                                    <input class="data" type="hidden"  name="TargetHoliDat" id="TargetHoliDat">
+                                    <input class="data" type="hidden"  name="PersenHoliDat" id="PersenHoliDat">
+                                    <input class="data" type="hidden"  name="KomisiHoliDat" id="KomisiHoliDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Hufa')"><i class="fa fa-eye"></i></button>
+                                Hufa</td>
+                                <td class='data' width='25' id='SalesHufa'></td>
+                                <td class='data' width='25' id='TargetHufa'></td>
+                                <td class='data' width='25' id='PersenHufa'></td>
+                                <td class='data' width='25' id='KomisiHufa'></td>
+                                    <input class="data" type="hidden"  name="SalesHufaDat" id="SalesHufaDat">
+                                    <input class="data" type="hidden"  name="SalesHufaDiscDat" id="SalesHufaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetHufaDat" id="TargetHufaDat">
+                                    <input class="data" type="hidden"  name="PersenHufaDat" id="PersenHufaDat">
+                                    <input class="data" type="hidden"  name="KomisiHufaDat" id="KomisiHufaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Itrasal')"><i class="fa fa-eye"></i></button>
+                                Itra</td>
+                                <td class='data' width='25' id='SalesItra'></td>
+                                <td class='data' width='25' id='TargetItra'></td>
+                                <td class='data' width='25' id='PersenItra'></td>
+                                <td class='data' width='25' id='KomisiItra'></td>
+                                    <input class="data" type="hidden"  name="SalesItraDat" id="SalesItraDat">
+                                    <input class="data" type="hidden"  name="SalesItraDiscDat" id="SalesItraDiscDat">
+                                    <input class="data" type="hidden"  name="TargetItraDat" id="TargetItraDat">
+                                    <input class="data" type="hidden"  name="PersenItraDat" id="PersenItraDat">
+                                    <input class="data" type="hidden"  name="KomisiItraDat" id="KomisiItraDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Karindo')"><i class="fa fa-eye"></i></button>
+                                Karindo</td>
+                                <td class='data' width='25' id='SalesKarindo'></td>
+                                <td class='data' width='25' id='TargetKarindo'></td>
+                                <td class='data' width='25' id='PersenKarindo'></td>
+                                <td class='data' width='25' id='KomisiKarindo'></td>
+                                    <input class="data" type="hidden"  name="SalesKarindoDat" id="SalesKarindoDat">
+                                    <input class="data" type="hidden"  name="SalesKarindoDiscDat" id="SalesKarindoDiscDat">
+                                    <input class="data" type="hidden"  name="TargetKarindoDat" id="TargetKarindoDat">
+                                    <input class="data" type="hidden"  name="PersenKarindoDat" id="PersenKarindoDat">
+                                    <input class="data" type="hidden"  name="KomisiKarindoDat" id="KomisiKarindoDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Lain-lain')"><i class="fa fa-eye"></i></button>
+                                Lain-lain</td>
+                                <td class='data' width='25' id='SalesLainlain'></td>
+                                <td class='data' width='25' id='TargetLainlain'></td>
+                                <td class='data' width='25' id='PersenLainlain'></td>
+                                <td class='data' width='25' id='KomisiLainlain'></td>
+                                    <input class="data" type="hidden"  name="SalesLainlainDat" id="SalesLainlainDat">
+                                    <input class="data" type="hidden"  name="SalesLainlainDiscDat" id="SalesLainlainDiscDat">
+                                    <input class="data" type="hidden"  name="TargetLainlainDat" id="TargetLainlainDat">
+                                    <input class="data" type="hidden"  name="PersenLainlainDat" id="PersenLainlainDat">
+                                    <input class="data" type="hidden"  name="KomisiLainlainDat" id="KomisiLainlainDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Laserin')"><i class="fa fa-eye"></i></button>
+                                Las</td>
+                                <td class='data' width='25' id='SalesLas'></td>
+                                <td class='data' width='25' id='TargetLas'></td>
+                                <td class='data' width='25' id='PersenLas'></td>
+                                <td class='data' width='25' id='KomisiLas'></td>
+                                    <input class="data" type="hidden"  name="SalesLasDat" id="SalesLasDat">
+                                    <input class="data" type="hidden"  name="SalesLasDiscDat" id="SalesLasDiscDat">
+                                    <input class="data" type="hidden"  name="TargetLasDat" id="TargetLasDat">
+                                    <input class="data" type="hidden"  name="PersenLasDat" id="PersenLasDat">
+                                    <input class="data" type="hidden"  name="KomisiLasDat" id="KomisiLasDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Mecosin N.Reg')"><i class="fa fa-eye"></i></button>
+                                MecNR</td>
+                                <td class='data' width='25' id='SalesMecNR'></td>
+                                <td class='data' width='25' id='TargetMecNR'></td>
+                                <td class='data' width='25' id='PersenMecNR'></td>
+                                <td class='data' width='25' id='KomisiMecNR'></td>
+                                    <input class="data" type="hidden"  id="SalesMecNRDat">
+                                    <input class="data" type="hidden"  id="SalesMecNRDiscDat">
+                                    <input class="data" type="hidden"  id="TargetMecNRDat">
+                                    <input class="data" type="hidden"  id="PersenMecNRDat">
+                                    <input class="data" type="hidden"  id="KomisiMecNRDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Mecosin OTC')"><i class="fa fa-eye"></i></button>
+                                MecOTC</td>
+                                <td class='data' width='25' id='SalesMecOTC'></td>
+                                <td class='data' width='25' id='TargetMecOTC'></td>
+                                <td class='data' width='25' id='PersenMecOTC'></td>
+                                <td class='data' width='25' id='KomisiMecOTC'></td>
+                                    <input class="data" type="hidden"  name="SalesMecOTCDat" id="SalesMecOTCDat">
+                                    <input class="data" type="hidden"  name="SalesMecOTCDiscDat" id="SalesMecOTCDiscDat">
+                                    <input class="data" type="hidden"  name="TargetMecOTCDat" id="TargetMecOTCDat">
+                                    <input class="data" type="hidden"  name="PersenMecOTCDat" id="PersenMecOTCDat">
+                                    <input class="data" type="hidden"  name="KomisiMecOTCDat" id="KomisiMecOTCDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Mecosin Reg.')"><i class="fa fa-eye"></i></button>
+                                MecReg</td>
+                                <td class='data' width='25' id='SalesMecReg'></td>
+                                <td class='data' width='25' id='TargetMecReg'></td>
+                                <td class='data' width='25' id='PersenMecReg'></td>
+                                <td class='data' width='25' id='KomisiMecReg'></td>
+                                    <input class="data" type="hidden"  name="SalesMecRegDat" id="SalesMecRegDat">
+                                    <input class="data" type="hidden"  name="SalesMecRegDiscDat" id="SalesMecRegDiscDat">
+                                    <input class="data" type="hidden"  name="TargetMecRegDat" id="TargetMecRegDat">
+                                    <input class="data" type="hidden"  name="PersenMecRegDat" id="PersenMecRegDat">
+                                    <input class="data" type="hidden"  name="KomisiMecRegDat" id="KomisiMecRegDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Mersi')"><i class="fa fa-eye"></i></button>
+                                Mersi</td>
+                                <td class='data' width='25' id='SalesMersi'></td>
+                                <td class='data' width='25' id='TargetMersi'></td>
+                                <td class='data' width='25' id='PersenMersi'></td>
+                                <td class='data' width='25' id='KomisiMersi'></td>
+                                    <input class="data" type="hidden"  name="SalesMersiDat" id="SalesMersiDat">
+                                    <input class="data" type="hidden"  name="SalesMersiDiscDat" id="SalesMersiDiscDat">
+                                    <input class="data" type="hidden"  name="TargetMersiDat" id="TargetMersiDat">
+                                    <input class="data" type="hidden"  name="PersenMersiDat" id="PersenMersiDat">
+                                    <input class="data" type="hidden"  name="KomisiMersiDat" id="KomisiMersiDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Nova')"><i class="fa fa-eye"></i></button>
+                                Nova</td>
+                                <td class='data' width='25' id='SalesNova'></td>
+                                <td class='data' width='25' id='TargetNova'></td>
+                                <td class='data' width='25' id='PersenNova'></td>
+                                <td class='data' width='25' id='KomisiNova'></td>
+                                    <input class="data" type="hidden"  name="SalesNovaDat" id="SalesNovaDat">
+                                    <input class="data" type="hidden"  name="SalesNovaDiscDat" id="SalesNovaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetNovaDat" id="TargetNovaDat">
+                                    <input class="data" type="hidden"  name="PersenNovaDat" id="PersenNovaDat">
+                                    <input class="data" type="hidden"  name="KomisiNovaDat" id="KomisiNovaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Nutrindo')"><i class="fa fa-eye"></i></button>
+                                Nutrindo</td>
+                                <td class='data' width='25' id='SalesNutrindo'></td>
+                                <td class='data' width='25' id='TargetNutrindo'></td>
+                                <td class='data' width='25' id='PersenNutrindo'></td>
+                                <td class='data' width='25' id='KomisiNutrindo'></td>
+                                    <input class="data" type="hidden"  name="SalesNutrindoDat" id="SalesNutrindoDat">
+                                    <input class="data" type="hidden"  name="SalesNutrindoDiscDat" id="SalesNutrindoDiscDat">
+                                    <input class="data" type="hidden"  name="TargetNutrindoDat" id="TargetNutrindoDat">
+                                    <input class="data" type="hidden"  name="PersenNutrindoDat" id="PersenNutrindoDat">
+                                    <input class="data" type="hidden"  name="KomisiNutrindoDat" id="KomisiNutrindoDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Pyridam')"><i class="fa fa-eye"></i></button>
+                                Pyridam</td>
+                                <td class='data' width='25' id='SalesPyridam'></td>
+                                <td class='data' width='25' id='TargetPyridam'></td>
+                                <td class='data' width='25' id='PersenPyridam'></td>
+                                <td class='data' width='25' id='KomisiPyridam'></td>
+                                    <input class="data" type="hidden"  name="SalesPyridamDat" id="SalesPyridamDat">
+                                    <input class="data" type="hidden"  name="SalesPyridamDiscDat" id="SalesPyridamDiscDat">
+                                    <input class="data" type="hidden"  name="TargetPyridamDat" id="TargetPyridamDat">
+                                    <input class="data" type="hidden"  name="PersenPyridamDat" id="PersenPyridamDat">
+                                    <input class="data" type="hidden"  name="KomisiPyridamDat" id="KomisiPyridamDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','SDM ETHICAL')"><i class="fa fa-eye"></i></button>
+                                SdmEth</td>
+                                <td class='data' width='25' id='SalesSdmEth'></td>
+                                <td class='data' width='25' id='TargetSdmEth'></td>
+                                <td class='data' width='25' id='PersenSdmEth'></td>
+                                <td class='data' width='25' id='KomisiSdmEth'></td>
+                                    <input class="data" type="hidden"  name="SalesSdmEthDat" id="SalesSdmEthDat">
+                                    <input class="data" type="hidden"  name="SalesSdmEthDat" id="SalesSdmEthDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSdmEth" id="TargetSdmEth">
+                                    <input class="data" type="hidden" name="PersenSdmEthDat" id="PersenSdmEthDat">
+                                    <input class="data" type="hidden"  name="KomisiSdmEthDat" id="KomisiSdmEthDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','SDM OTC')"><i class="fa fa-eye"></i></button>
+                                SdmOTC</td>
+                                <td class='data' width='25' id='SalesSdmOTC'></td>
+                                <td class='data' width='25' id='TargetSdmOTC'></td>
+                                <td class='data' width='25' id='PersenSdmOTC'></td>
+                                <td class='data' width='25' id='KomisiSdmOTC'></td>
+                                    <input class="data" type="hidden"  name="SalesSdmOTCDat" id="SalesSdmOTCDat">
+                                    <input class="data" type="hidden"  name="SalesSdmOTCDat" id="SalesSdmOTCDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSdmOTCDat" id="TargetSdmOTCDat">
+                                    <input class="data" type="hidden"  name="PersenSdmOTCDat" id="PersenSdmOTCDat">
+                                    <input class="data" type="hidden"  name="KomisiSdmOTCDat" id="KomisiSdmOTCDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','SDM OTHERS')"><i class="fa fa-eye"></i></button>
+                                SdmOth</td>
+                                <td class='data' width='25' id='SalesSdmOth'></td>
+                                <td class='data' width='25' id='TargetSdmOth'></td>
+                                <td class='data' width='25' id='PersenSdmOth'></td>
+                                <td class='data' width='25' id='KomisiSdmOth'></td>
+                                    <input class="data" type="hidden"  name="SalesSdmOthDat" id="SalesSdmOthDat">
+                                    <input class="data" type="hidden"  name="SalesSdmOthDat" id="SalesSdmOthDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSdmOthDat" id="TargetSdmOthDat">
+                                    <input class="data" type="hidden"  name="PersenSdmOthDat" id="PersenSdmOthDat">
+                                    <input class="data" type="hidden"  name="KomisiSdmOthDat" id="KomisiSdmOthDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','SDM PEACOCK')"><i class="fa fa-eye"></i></button>
+                                SdmPck</td>
+                                <td class='data' width='25' id='SalesSdmPck'></td>
+                                <td class='data' width='25' id='TargetSdmPck'></td>
+                                <td class='data' width='25' id='PersenSdmPck'></td>
+                                <td class='data' width='25' id='KomisiSdmPck'></td>
+                                    <input class="data" type="hidden"  name="SalesSdmPckDat" id="SalesSdmPckDat">
+                                    <input class="data" type="hidden"  name="SalesSdmPckDat" id="SalesSdmPckDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSdmPckDat" id="TargetSdmPckDat">
+                                    <input class="data" type="hidden"  name="PersenSdmPckDat" id="PersenSdmPckDat">
+                                    <input class="data" type="hidden"  name="KomisiSdmPckDat" id="KomisiSdmPckDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Seles')"><i class="fa fa-eye"></i></button>
+                                Seles</td>
+                                <td class='data' width='25' id='SalesSeles'></td>
+                                <td class='data' width='25' id='TargetSeles'></td>
+                                <td class='data' width='25' id='PersenSeles'></td>
+                                <td class='data' width='25' id='KomisiSeles'></td>
+                                    <input class="data" type="hidden"  name="SalesSelesDat" id="SalesSelesDat">
+                                    <input class="data" type="hidden"  name="SalesSelesDat" id="SalesSelesDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSelesDat" id="TargetSelesDat">
+                                    <input class="data" type="hidden"  name="PersenSelesDat" id="PersenSelesDat">
+                                    <input class="data" type="hidden"  name="KomisiSelesDat" id="KomisiSelesDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Solas Reg')"><i class="fa fa-eye"></i></button>
+                                Solas Reg</td>
+                                <td class='data' width='25' id='SalesSolasReg'></td>
+                                <td class='data' width='25' id='TargetSolasReg'></td>
+                                <td class='data' width='25' id='PersenSolasReg'></td>
+                                <td class='data' width='25' id='KomisiSolasReg'></td>
+                                    <input class="data" type="hidden"  name="SalesSolasRegDat" id="SalesSolasRegDat">
+                                    <input class="data" type="hidden"  name="SalesSolasRegDat" id="SalesSolasRegDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSolasRegDat" id="TargetSolasRegDat">
+                                    <input class="data" type="hidden"  name="PersenSolasRegDat" id="PersenSolasRegDat">
+                                    <input class="data" type="hidden"  name="KomisiSolasRegDat" id="KomisiSolasRegDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Solas N.Reg')"><i class="fa fa-eye"></i></button>
+                                SolasNR</td>
+                                <td class='data' width='25' id='SalesSolasNR'></td>
+                                <td class='data' width='25' id='TargetSolasNR'></td>
+                                <td class='data' width='25' id='PersenSolasNR'></td>
+                                <td class='data' width='25' id='KomisiSolasNR'></td>
+                                    <input class="data" type="hidden"  name="SalesSolasNRDat" id="SalesSolasNRDat">
+                                    <input class="data" type="hidden"  name="SalesSolasNRDat" id="SalesSolasNRDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSolasNRDat" id="TargetSolasNRDat">
+                                    <input class="data" type="hidden"  name="PersenSolasNRDat" id="PersenSolasNRDat">
+                                    <input class="data" type="hidden"  name="KomisiSolasNRDat" id="KomisiSolasNRDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Sparta-X')"><i class="fa fa-eye"></i></button>
+                                Sparta-X</td>
+                                <td class='data' width='25' id='SalesSpartaX'></td>
+                                <td class='data' width='25' id='TargetSpartaX'></td>
+                                <td class='data' width='25' id='PersenSpartaX'></td>
+                                <td class='data' width='25' id='KomisiSpartaX'></td>
+                                    <input class="data" type="hidden"  name="SalesSpartaXDat" id="SalesSpartaXDat">
+                                    <input class="data" type="hidden"  name="SalesSpartaXDat" id="SalesSpartaXDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSpartaXDat" id="TargetSpartaXDat">
+                                    <input class="data" type="hidden"  name="PersenSpartaXDat" id="PersenSpartaXDat">
+                                    <input class="data" type="hidden"  name="KomisiSpartaXDat" id="KomisiSpartaXDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Sunthi')"><i class="fa fa-eye"></i></button>
+                                Sunthi</td>
+                                <td class='data' width='25' id='SalesSunthi'></td>
+                                <td class='data' width='25' id='TargetSunthi'></td>
+                                <td class='data' width='25' id='PersenSunthi'></td>
+                                <td class='data' width='25' id='KomisiSunthi'></td>
+                                    <input class="data" type="hidden"  name="SalesSunthiDat" id="SalesSunthiDat">
+                                    <input class="data" type="hidden"  name="SalesSunthiDat" id="SalesSunthiDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSunthiDat" id="TargetSunthiDat">
+                                    <input class="data" type="hidden"  name="PersenSunthiDat" id="PersenSunthiDat">
+                                    <input class="data" type="hidden"  name="KomisiSunthiDat" id="KomisiSunthiDat">
+                            </tr>                            
+                           <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Sutra Fiesta')"><i class="fa fa-eye"></i></button>
+                                Sutra Fiesta</td>
+                                <td class='data' width='25' id='SalesSutraFiesta'></td>
+                                <td class='data' width='25' id='TargetSutraFiesta'></td>
+                                <td class='data' width='25' id='PersenSutraFiesta'></td>
+                                <td class='data' width='25' id='KomisiSutraFiesta'></td>
+                                    <input class="data" type="hidden"  name="SalesSutraFiestaDat" id="SalesSutraFiestaDat">
+                                    <input class="data" type="hidden"  name="SalesSutraFiestaDat" id="SalesSutraFiestaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetSutraFiestaDat" id="TargetSutraFiestaDat">
+                                    <input class="data" type="hidden"  name="PersenSutraFiestaDat" id="PersenSutraFiestaDat">
+                                    <input class="data" type="hidden"  name="KomisiSutraFiestaDat" id="KomisiSutraFiestaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Tp.Reg')"><i class="fa fa-eye"></i></button>
+                                Tp.Reg</td>
+                                <td class='data' width='25' id='SalesTpReg'></td>
+                                <td class='data' width='25' id='TargetTpReg'></td>
+                                <td class='data' width='25' id='PersenTpReg'></td>
+                                <td class='data' width='25' id='KomisiTpReg'></td>
+                                    <input class="data" type="hidden"  name="SalesTpRegDat" id="SalesTpRegDat">
+                                    <input class="data" type="hidden"  name="SalesTpRegDat" id="SalesTpRegDiscDat">
+                                    <input class="data" type="hidden"  name="TargetTpRegDat" id="TargetTpRegDat">
+                                    <input class="data" type="hidden"  name="PersenTpRegDat" id="PersenTpRegDat">
+                                    <input class="data" type="hidden"  name="KomisiTpRegDat" id="KomisiTpRegDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Tp.NREG')"><i class="fa fa-eye"></i></button>
+                                TpNREG</td>
+                                <td class='data' width='25' id='SalesTpNREG'></td>
+                                <td class='data' width='25' id='TargetTpNREG'></td>
+                                <td class='data' width='25' id='PersenTpNREG'></td>
+                                <td class='data' width='25' id='KomisiTpNREG'></td>
+                                    <input class="data" type="hidden"  name="SalesTpNREGDat" id="SalesTpNREGDat">
+                                    <input class="data" type="hidden"  name="SalesTpNREGDat" id="SalesTpNREGDiscDat">
+                                    <input class="data" type="hidden"  name="TargetTpNREGDat" id="TargetTpNREGDat">
+                                    <input class="data" type="hidden"  name="PersenTpNREGDat" id="PersenTpNREGDat">
+                                    <input class="data" type="hidden"  name="KomisiTpNREGDat" id="KomisiTpNREGDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Tp.OBH')"><i class="fa fa-eye"></i></button>
+                                TpOBH</td>
+                                <td class='data' width='25' id='SalesTpOBH'></td>
+                                <td class='data' width='25' id='TargetTpOBH'></td>
+                                <td class='data' width='25' id='PersenTpOBH'></td>
+                                <td class='data' width='25' id='KomisiTpOBH'></td>
+                                    <input class="data" type="hidden"  name="SalesTpOBHDat" id="SalesTpOBHDat">
+                                    <input class="data" type="hidden"  name="SalesTpOBHDat" id="SalesTpOBHDiscDat">
+                                    <input class="data" type="hidden"  name="TargetTpOBHDat" id="TargetTpOBHDat">
+                                    <input class="data" type="hidden"  name="PersenTpOBHDat" id="PersenTpOBHDat">
+                                    <input class="data" type="hidden"  name="KomisiTpOBHDat" id="KomisiTpOBHDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Trifa')"><i class="fa fa-eye"></i></button>
+                                Trifa</td>
+                                <td class='data' width='25' id='SalesTrifa'></td>
+                                <td class='data' width='25' id='TargetTrifa'></td>
+                                <td class='data' width='25' id='PersenTrifa'></td>
+                                <td class='data' width='25' id='KomisiTrifa'></td>
+                                    <input class="data" type="hidden"  name="SalesTrifaDat" id="SalesTrifaDat">
+                                    <input class="data" type="hidden"  name="SalesTrifaDat" id="SalesTrifaDiscDat">
+                                    <input class="data" type="hidden"  name="TargetTrifaDat" id="TargetTrifaDat">
+                                    <input class="data" type="hidden"  name="PersenTrifaDat" id="PersenTrifaDat">
+                                    <input class="data" type="hidden"  name="KomisiTrifaDat" id="KomisiTrifaDat">
+                            </tr>                            
+                            <tr>
+                                <td width='25%' valign='middle' style='font-weight: bold;'>
+                                    <button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" title="Detail" onclick="view('salesP','Zenith')"><i class="fa fa-eye"></i></button>
+                                Zenith</td>
+                                <td class='data' width='25' id='SalesZenith'></td>
+                                <td class='data' width='25' id='TargetZenith'></td>
+                                <td class='data' width='25' id='PersenZenith'></td>
+                                <td class='data' width='25' id='KomisiZenith'></td>
+                                    <input class="data" type="hidden"  name="SalesZenithDat" id="SalesZenithDat">
+                                    <input class="data" type="hidden"  name="SalesZenithDat" id="SalesZenithDiscDat">
+                                    <input class="data" type="hidden"  name="TargetZenithDat" id="TargetZenithDat">
+                                    <input class="data" type="hidden"  name="PersenZenithDat" id="PersenZenithDat">
+                                    <input class="data" type="hidden"  name="KomisiZenithDat" id="KomisiZenithDat">
+                            </tr>                            
+                            </table>
+                        </div>
+                    </div>
+                </form>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+
+<!-- Bootstrap modal -->
+<div class="modal fade" id="modal_form" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Detail Insentif</h3>
+                <div id="subtitle"></div>
+            </div>
+            <div class="modal-body form" style="overflow-x: auto" id="modalBody">
+                <table width="100%" class="table table-striped table-bordered table-hover" id="detail-tabel">
+                    <thead id="headOrder">
+                        <div>{{time}}</div>
+                        <div><button type="button" class="btn btn-sm btn-default" href="javascript:void(0)" id="buttonModal" name="buttonModal" onclick="dataSalesmanCabangPdf()"><i class="fa fa-check"></i>SAVE as PDF</button></div>
+                    </thead>
+                    <tbody id="detailOrder"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer"><!-- 
+                <button type="button" id="btnSave" onclick="saveData()" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button> -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- End Bootstrap modal -->
+
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+    $('.data').empty();
+
+    $("#buttonModal").hide = true; 
+
+    $( "#tgl" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        showButtonPanel: true,
+        dateFormat: 'yy-mm-dd',
+        onClose: function(dateText, inst) { 
+            $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, 1));
+        }
+    });
+
+    function getSalesman() {
+        var cabang = document.getElementById('cabang').value;
+        $('#salesman').empty();
+        $.ajax({
+            url : "{{ base_url }}getSalesman",
+            type: "POST",
+            data: {cabang:cabang},
+            dataType: "JSON",
+            success: function(data)
+            {
+                for (var i in data) {
+                    $('#salesman').append('<option value="'+data[i].KodeSalesman+'">'+data[i].NamaSalesman+' - '+data[i].KodeSalesman+' - '+data[i].TipeSalesman+' - '+data[i].Jabatan+'</option>')
+                }
+
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Error get data Salesman from ajax');
+            }
+        });   
+    }
+    
+
+    function getData()
+    {
+
+        var url2 = "{{ base_url }}cekDataLapIns";
+        var tgl2 = document.getElementById('tgl').value;        
+        var cabx = document.getElementById('cabx').value;
+
+
+        if (tgl2 == "") {
+            alert("PERHATIAN! Tanggal masih kosong");
+        }else
+        {
+            $.ajax({
+                url : url2,
+                type: "POST",
+                data: {tgl:tgl2},
+                dataType: "JSON",
+                success: function(cekdata)
+                {   
+                    
+                    $('.data').empty();
+                    var url = "{{ base_url }}dataLaporanInsentifSalesman";
+                    document.getElementById("salesman").disabled = true; 
+                    document.getElementById("tgl").disabled = true; 
+                    document.getElementById("cabang").disabled = true;
+
+                    var salesman = document.getElementById('salesman').value;
+                    var tgl = document.getElementById('tgl').value;
+                    var cabang = document.getElementById('cabang').value;
+
+                    // cek ststus tanggl boleh insentif
+
+                        if(cekdata =="xxx" && cabx !== "Pusat")
+                        {
+                            $('#progressGIF').hide();
+                            document.getElementById("salesman").disabled = false; 
+                            document.getElementById("tgl").disabled = false; 
+                            {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                document.getElementById("cabang").disabled = false; 
+                            {% endif %}
+                            alert("Maaf, Data Insentif sedang di cek atau proses upload");
+
+                        }else
+                        {
+                            // start hitung insentif
+                            if (tgl == "" || salesman == "") {
+                                alert("PERHATIAN! Tanggal/Salesman masih kosong");
+                                document.getElementById("salesman").disabled = false; 
+                                document.getElementById("tgl").disabled = false; 
+
+                                {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                    document.getElementById("cabang").disabled = false; 
+                                {% endif %}
+                                $('#progressGIF').hide();
+                            }
+                            else{            
+                                $('#progressGIF').show();
+                                $.ajax({
+                                    url : url,
+                                    type: "POST",
+                                    data: {kode:salesman,tgl:tgl,cabang:cabang},
+                                    dataType: "JSON",
+                                    success: function(data)
+                                    {   
+                                        var persen = (data.sales/data.target)*100;
+                                        var total = 0;
+                                        var val1 = val2 = val3 = val4  = val5 = val6 = val7 = val8 = tgh30 = tgh45 = tgh60 = tgh60x = 0;
+                                        var ecpersen = ectot = ectarget= echari = ecinsentif = 0;
+
+                                        ecpersen = data.ecpersen;
+                                        ectot = data.ectot;
+                                        ectarget = data.ectarget;
+                                        echari = data.echari;
+
+                                        tgh30 = parseInt(data.tagihanA) + parseInt(data.tagihanA1);
+                                        tgh45 = parseInt(data.tagihanB) + parseInt(data.tagihanB1) ;
+                                        tgh60 = parseInt(data.tagihanC) + parseInt(data.tagihanC1) ;
+                                        // tgh60x = parseInt(data.tagihanD) + parseInt(data.tagihanD1) + parseInt(data.tagihanDa);
+                                        tgh60x = parseInt(data.tagihanD);
+
+
+                                        val1 = data.valKS;
+                                        val2 = data.ecinsentif;
+                                        //val4 = data.noo * 20000;
+                                        //array('Reg','Alkes','Institusi','OTC','RS','Ekat','Apotik','Mix', 'PBF', 'COMBO', 'Combo', 'ALK', 'Alkes');
+
+                                        if(data.tipesalesmanD == 'Reg' || data.tipesalesmanD == 'Alkes' || data.tipesalesmanD == 'Institusi' || data.tipesalesmanD == 'OTC' || data.tipesalesmanD == 'RS' || data.tipesalesmanD == 'Ekat' || data.tipesalesmanD == 'Apotik' || data.tipesalesmanD == 'Mix' || data.tipesalesmanD == 'PBF'  || data.tipesalesmanD ==  'COMBO' || data.tipesalesmanD ==  'Combo' || data.tipesalesmanD ==  'ALK' || data.tipesalesmanD ==  'Alkes'|| data.tipesalesmanD ==  'MIX')
+                                        {
+                                            val5 = ((0.5/100)*parseInt(data.tagihanA)) + ((0.4/100)*parseInt(data.tagihanA1));
+                                            val6 = ((0.35/100)*parseInt(data.tagihanB)) + ((0.25/100)*parseInt(data.tagihanB1));
+                                        }else
+                                        {
+                                            val5 = ((1.1/100)*parseInt(data.tagihanA)) + ((1.0/100)*parseInt(data.tagihanA1));
+                                            val6 = ((0.5/100)*parseInt(data.tagihanB)) + ((0.4/100)*parseInt(data.tagihanB1));
+                                        }
+
+                                        val7 = 0;
+                                        val8 = (-0.15/100)*Math.abs(parseInt((tgh60x)));
+
+
+
+
+                                        total = parseInt(val1) + parseInt(val2) + parseInt(val3) + parseInt(val4) + parseInt(val5) + parseInt(val6) + parseInt(val7) + parseInt(val8) + parseInt(data.iptKom) + parseInt(data.rotKom) + parseInt(data.komPriSalestot);
+
+
+                                        if(total > 4000000) total = 4000000;
+
+
+                                        //Detail Salesman
+                                        $("#dataSalesmanDetail").append(data.detSalesman)
+                                        $("#dataTipeSalesmanDetail").val(data.tipesalesmanD)
+
+                                        //Komisi IPT
+                                        $("#kIPT").append('Detail: '+ numberWithCommas(data.iptDet));
+                                        $("#targetIPT").append('Header: '+ numberWithCommas(data.iptHed));
+                                        $("#kerjaIPT").append(data.iptVal +'%');
+                                        $("#valIPT").append(numberWithCommas(data.iptKom));
+
+                                            $("#kIPTDat").val((data.iptDet));
+                                            $("#targetIPTDat").val((data.iptHed));
+                                            $("#kerjaIPTDat").val(data.iptVal);
+                                            $("#valIPTDat").val((data.iptKom));
+
+                                        //Komisi ROT
+                                        $("#kOT").append('OT: '+ numberWithCommas(data.rotJPel));
+                                        // $("#targetOT").append('Target: '+ numberWithCommas(data.rotTrgt));
+                                        $("#targetOT").append('Target/MCL: '+ numberWithCommas(data.rotMCL));
+                                        $("#kerjaOT").append(data.rotPci +'%');
+                                        $("#valOT").append(numberWithCommas(data.rotKom));
+
+                                            $("#kOTDat").val((data.rotJPel));
+                                            $("#targetOTDat").val(data.rotMCL);
+                                            $("#kerjaOTDat").val(data.rotPci);
+                                            $("#valOTDat").val(data.rotKom);
+
+                                        // Komisi SaleS Total
+                                        $("#sales1").append('Sales: '+ numberWithCommas(data.sales));
+                                        $("#target1").append('Target: '+ numberWithCommas(data.target));
+                                        $("#persen1").append(data.persenKS +'%');
+                                        $("#val1").append(numberWithCommas(data.valKS));
+
+                                            $("#sales1Dat").val(data.sales);
+                                            $("#target1Dat").val(data.target);
+                                            $("#persen1Dat").val(data.persenKS);
+                                            $("#val1Dat").val(data.valKS);
+
+
+                                        // Target Komisi Sales Prinsipal
+                                        $('#TargetPrinsipalALL').append('Target: '+ numberWithCommas(data.valtrgtprisipal));
+                                        $('#TargetPrinsipalALL').append('<br>Total Sales Prinsipal: '+ numberWithCommas(data.sales));
+                                        $('#TargetPrinsipalALL').append('<br>Total Sales Prinsipal Diskon: '+ numberWithCommas(data.komPriSalestot));
+                                        $('#TargetAdi').append('Target: '+ numberWithCommas(data.targetAdi));
+                                        $('#TargetAlkes').append('Target: '+ numberWithCommas(data.targetAlkes));
+                                        $('#TargetAltamed').append('Target: '+ numberWithCommas(data.targetAlta));
+                                        $('#TargetAndalan').append('Target: '+ numberWithCommas(data.targetAndalan));
+                                        $('#TargetArmoxindo').append('Target: '+ numberWithCommas(data.targetArmoxindo));
+                                        $('#TargetAxion').append('Target: '+ numberWithCommas(data.targetAxion));
+                                        $('#TargetBintangKK').append('Target: '+ numberWithCommas(data.targetBintangKK));
+                                        $('#TargetCalumika').append('Target: '+ numberWithCommas(data.targetCalumika));
+                                        $('#TargetCendo').append('Target: '+ numberWithCommas(data.targetCendo));
+                                        $('#TargetCoronet').append('Target: '+ numberWithCommas(data.targetCoronet));
+                                        $('#TargetCorsa').append('Target: '+ numberWithCommas(data.targetCorsa));
+                                        $('#TargetDipa').append('Target: '+ numberWithCommas(data.targetDipa));
+                                        $('#TargetDipaOTC').append('Target: '+ numberWithCommas(data.targetDipaOTC));
+                                        $('#TargetEKAT').append('Target: '+ numberWithCommas(data.targetEKAT));
+                                        $('#TargetErella').append('Target: '+ numberWithCommas(data.targetErella));
+                                        $('#TargetErlimpexNReg').append('Target: '+ numberWithCommas(data.targetErlimpexNReg));
+                                        $('#TargetErlimpexReg').append('Target: '+ numberWithCommas(data.targetErlimpexReg));
+                                        $('#TargetEscolab').append('Target: '+ numberWithCommas(data.targetEscolab));
+                                        $('#TargetFhOTC').append('Target: '+ numberWithCommas(data.targetFhOTC));
+                                        $('#TargetFirstmed').append('Target: '+ numberWithCommas(data.targetFirstmed));
+                                        $('#TargetGmp').append('Target: '+ numberWithCommas(data.targetGmp));
+                                        $('#TargetHermed').append('Target: '+ numberWithCommas(data.targetHermed));
+                                        $('#TargetHoli').append('Target: '+ numberWithCommas(data.targetHoli));
+                                        $('#TargetHufa').append('Target: '+ numberWithCommas(data.targetHufa));
+                                        $('#TargetItra').append('Target: '+ numberWithCommas(data.targetItra));
+                                        $('#TargetKarindo').append('Target: '+ numberWithCommas(data.targetKarindo));
+                                        $('#TargetLainlain').append('Target: '+ numberWithCommas(data.targetLainlain));
+                                        $('#TargetLas').append('Target: '+ numberWithCommas(data.targetLas));
+                                        $('#TargetMecNR').append('Target: '+ numberWithCommas(data.targetMecNR));
+                                        $('#TargetMecOTC').append('Target: '+ numberWithCommas(data.targetMecOTC));
+                                        $('#TargetMecReg').append('Target: '+ numberWithCommas(data.targetMecReg));
+                                        $('#TargetMersi').append('Target: '+ numberWithCommas(data.targetMersi));
+                                        $('#TargetNova').append('Target: '+ numberWithCommas(data.targetNova));
+                                        $('#TargetNutrindo').append('Target: '+ numberWithCommas(data.targetNutrindo));
+                                        $('#TargetPyridam').append('Target: '+ numberWithCommas(data.targetPyridam));
+                                        $('#Targetsdm_').append('Target: '+ numberWithCommas(data.targetsdm_));
+                                        $('#TargetSdmEth').append('Target: '+ numberWithCommas(data.targetSdmEth));
+                                        $('#TargetSdmOTC').append('Target: '+ numberWithCommas(data.targetSdmOTC));
+                                        $('#TargetSdmOth').append('Target: '+ numberWithCommas(data.targetSdmOth));
+                                        $('#TargetSdmPck').append('Target: '+ numberWithCommas(data.targetSdmPck));
+                                        $('#TargetSeles').append('Target: '+ numberWithCommas(data.targetSeles));
+                                        $('#TargetSolasNR').append('Target: '+ numberWithCommas(data.targetSolasNR));
+                                        $('#TargetSolasReg').append('Target: '+ numberWithCommas(data.targetSolasReg));
+                                        $('#TargetSpartaX').append('Target: '+ numberWithCommas(data.targetSpartaX));
+                                        $('#TargetSunthi').append('Target: '+ numberWithCommas(data.targetSunthi));
+                                        $('#TargetSutraFiesta').append('Target: '+ numberWithCommas(data.targetSutraFiesta));
+                                        $('#TargetTpNREG').append('Target: '+ numberWithCommas(data.targetTpNREG));
+                                        $('#TargetTpOBH').append('Target: '+ numberWithCommas(data.targetTpOBH));
+                                        $('#TargetTpReg').append('Target: '+ numberWithCommas(data.targetTpReg));
+                                        $('#TargetTrifa').append('Target: '+ numberWithCommas(data.targetTrifa));
+                                        $('#TargetZenith').append('Target: '+ numberWithCommas(data.targetZenith));
+
+
+                                        // $('#TargetAdi').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesAdi));
+                                        // $('#TargetAlkes').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesAlkes));
+                                        // $('#TargetAltamed').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesAlta));
+                                        // $('#TargetAndalan').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesAndalan));
+                                        // $('#TargetArmoxindo').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesArmoxindo));
+                                        // $('#TargetAxion').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesAxion));
+                                        // $('#TargetBintangKK').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesBintangKK));
+                                        // $('#TargetCalumika').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesCalumika));
+                                        // $('#TargetCendo').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesCendo));
+                                        // $('#TargetCoronet').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesCoronet));
+                                        // $('#TargetCorsa').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesCorsa));
+                                        // $('#TargetDipa').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesDipa));
+                                        // $('#TargetDipaOTC').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesDipaOTC));
+                                        // $('#TargetEKAT').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesEKAT));
+                                        // $('#TargetErella').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesErella));
+                                        // $('#TargetErlimpexNReg').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesErlimpexNReg));
+                                        // $('#TargetErlimpexReg').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesErlimpexReg));
+                                        // $('#TargetEscolab').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesEscolab));
+                                        // $('#TargetFhOTC').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesFhOTC));
+                                        // $('#TargetFirstmed').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesFirstmed));
+                                        // $('#TargetGmp').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesGmp));
+                                        // $('#TargetHermed').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesHermed));
+                                        // $('#TargetHoli').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesHoli));
+                                        // $('#TargetHufa').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesHufa));
+                                        // $('#TargetItra').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesItra));
+                                        // $('#TargetKarindo').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesKarindo));
+                                        // $('#TargetLainlain').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesLainlain));
+                                        // $('#TargetLas').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesLas));
+                                        // $('#TargetMecNR').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesMecNR));
+                                        // $('#TargetMecOTC').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesMecOTC));
+                                        // $('#TargetMecReg').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesMecReg));
+                                        // $('#TargetMersi').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesMersi));
+                                        // $('#TargetNova').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesNova));
+                                        // $('#TargetNutrindo').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesNutrindo));
+                                        // $('#TargetPyridam').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesPyridam));
+                                        // $('#Targetsdm_').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalessdm_));
+                                        // $('#TargetSdmEth').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSdmEth));
+                                        // $('#TargetSdmOTC').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSdmOTC));
+                                        // $('#TargetSdmOth').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSdmOth));
+                                        // $('#TargetSdmPck').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSdmPck));
+                                        // $('#TargetSeles').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSeles));
+                                        // $('#TargetSolasNR').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSolasNR));
+                                        // $('#TargetSolasReg').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSolasReg));
+                                        // $('#TargetSpartaX').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSpartaX));
+                                        // $('#TargetSunthi').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSunthi));
+                                        // $('#TargetSutraFiesta').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesSutraFiesta));
+                                        // $('#TargetTpNREG').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesTpNREG));
+                                        // $('#TargetTpOBH').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesTpOBH));
+                                        // $('#TargetTpReg').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesTpReg));
+                                        // $('#TargetTrifa').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesTrifa));
+                                        // $('#TargetZenith').append('<br>Target Diskon: '+ numberWithCommas(data.tdSalesZenith));
+
+
+                                        $('#SalesAdi').append('Sales: '+ numberWithCommas(data.SalesAdi));
+                                        $('#SalesAlkes').append('Sales: '+ numberWithCommas(data.SalesAlkes));
+                                        $('#SalesAltamed').append('Sales: '+ numberWithCommas(data.SalesAlta));
+                                        $('#SalesAndalan').append('Sales: '+ numberWithCommas(data.SalesAndalan));
+                                        $('#SalesArmoxindo').append('Sales: '+ numberWithCommas(data.SalesArmoxindo));
+                                        $('#SalesAxion').append('Sales: '+ numberWithCommas(data.SalesAxion));
+                                        $('#SalesBintangKK').append('Sales: '+ numberWithCommas(data.SalesBintangKK));
+                                        $('#SalesCalumika').append('Sales: '+ numberWithCommas(data.SalesCalumika));
+                                        $('#SalesCendo').append('Sales: '+ numberWithCommas(data.SalesCendo));
+                                        $('#SalesCoronet').append('Sales: '+ numberWithCommas(data.SalesCoronet));
+                                        $('#SalesCorsa').append('Sales: '+ numberWithCommas(data.SalesCorsa));
+                                        $('#SalesDipa').append('Sales: '+ numberWithCommas(data.SalesDipa));
+                                        $('#SalesDipaOTC').append('Sales: '+ numberWithCommas(data.SalesDipaOTC));
+                                        $('#SalesEKAT').append('Sales: '+ numberWithCommas(data.SalesEKAT));
+                                        $('#SalesErella').append('Sales: '+ numberWithCommas(data.SalesErella));
+                                        $('#SalesErlimpexNReg').append('Sales: '+ numberWithCommas(data.SalesErlimpexNReg));
+                                        $('#SalesErlimpexReg').append('Sales: '+ numberWithCommas(data.SalesErlimpexReg));
+                                        $('#SalesEscolab').append('Sales: '+ numberWithCommas(data.SalesEscolab));
+                                        $('#SalesFhOTC').append('Sales: '+ numberWithCommas(data.SalesFhOTC));
+                                        $('#SalesFirstmed').append('Sales: '+ numberWithCommas(data.SalesFirstmed));
+                                        $('#SalesGmp').append('Sales: '+ numberWithCommas(data.SalesGmp));
+                                        $('#SalesHermed').append('Sales: '+ numberWithCommas(data.SalesHermed));
+                                        $('#SalesHoli').append('Sales: '+ numberWithCommas(data.SalesHoli));
+                                        $('#SalesHufa').append('Sales: '+ numberWithCommas(data.SalesHufa));
+                                        $('#SalesItra').append('Sales: '+ numberWithCommas(data.SalesItra));
+                                        $('#SalesKarindo').append('Sales: '+ numberWithCommas(data.SalesKarindo));
+                                        $('#SalesLainlain').append('Sales: '+ numberWithCommas(data.SalesLainlain));
+                                        $('#SalesLas').append('Sales: '+ numberWithCommas(data.SalesLas));
+                                        $('#SalesMecNR').append('Sales: '+ numberWithCommas(data.SalesMecNR));
+                                        $('#SalesMecOTC').append('Sales: '+ numberWithCommas(data.SalesMecOTC));
+                                        $('#SalesMecReg').append('Sales: '+ numberWithCommas(data.SalesMecReg));
+                                        $('#SalesMersi').append('Sales: '+ numberWithCommas(data.SalesMersi));
+                                        $('#SalesNova').append('Sales: '+ numberWithCommas(data.SalesNova));
+                                        $('#SalesNutrindo').append('Sales: '+ numberWithCommas(data.SalesNutrindo));
+                                        $('#SalesPyridam').append('Sales: '+ numberWithCommas(data.SalesPyridam));
+                                        $('#Salessdm_').append('Sales: '+ numberWithCommas(data.Salessdm_));
+                                        $('#SalesSdmEth').append('Sales: '+ numberWithCommas(data.SalesSdmEth));
+                                        $('#SalesSdmOTC').append('Sales: '+ numberWithCommas(data.SalesSdmOTC));
+                                        $('#SalesSdmOth').append('Sales: '+ numberWithCommas(data.SalesSdmOth));
+                                        $('#SalesSdmPck').append('Sales: '+ numberWithCommas(data.SalesSdmPck));
+                                        $('#SalesSeles').append('Sales: '+ numberWithCommas(data.SalesSeles));
+                                        $('#SalesSolasNR').append('Sales: '+ numberWithCommas(data.SalesSolasNR));
+                                        $('#SalesSolasReg').append('Sales: '+ numberWithCommas(data.SalesSolasReg));
+                                        $('#SalesSpartaX').append('Sales: '+ numberWithCommas(data.SalesSpartaX));
+                                        $('#SalesSunthi').append('Sales: '+ numberWithCommas(data.SalesSunthi));
+                                        $('#SalesSutraFiesta').append('Sales: '+ numberWithCommas(data.SalesSutraFiesta));
+                                        $('#SalesTpNREG').append('Sales: '+ numberWithCommas(data.SalesTpNREG));
+                                        $('#SalesTpOBH').append('Sales: '+ numberWithCommas(data.SalesTpOBH));
+                                        $('#SalesTpReg').append('Sales: '+ numberWithCommas(data.SalesTpReg));
+                                        $('#SalesTrifa').append('Sales: '+ numberWithCommas(data.SalesTrifa));
+                                        $('#SalesZenith').append('Sales: '+ numberWithCommas(data.SalesZenith));
+
+                                        $('#SalesAdi').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAdi));
+                                        $('#SalesAlkes').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAlkes));
+                                        $('#SalesAltamed').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAlta));
+                                        $('#SalesAndalan').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAndalan));
+                                        $('#SalesArmoxindo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesArmoxindo));
+                                        $('#SalesAxion').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesAxion));
+                                        $('#SalesBintangKK').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesBintangKK));
+                                        $('#SalesCalumika').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCalumika));
+                                        $('#SalesCendo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCendo));
+                                        $('#SalesCoronet').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCoronet));
+                                        $('#SalesCorsa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesCorsa));
+                                        $('#SalesDipa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesDipa));
+                                        $('#SalesDipaOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesDipaOTC));
+                                        $('#SalesEKAT').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesEKAT));
+                                        $('#SalesErella').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesErella));
+                                        $('#SalesErlimpexNReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesErlimpexNReg));
+                                        $('#SalesErlimpexReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesErlimpexReg));
+                                        $('#SalesEscolab').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesEscolab));
+                                        $('#SalesFhOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesFhOTC));
+                                        $('#SalesFirstmed').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesFirstmed));
+                                        $('#SalesGmp').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesGmp));
+                                        $('#SalesHermed').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesHermed));
+                                        $('#SalesHoli').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesHoli));
+                                        $('#SalesHufa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesHufa));
+                                        $('#SalesItra').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesItra));
+                                        $('#SalesKarindo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesKarindo));
+                                        $('#SalesLainlain').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesLainlain));
+                                        $('#SalesLas').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesLas));
+                                        $('#SalesMecNR').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMecNR));
+                                        $('#SalesMecOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMecOTC));
+                                        $('#SalesMecReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMecReg));
+                                        $('#SalesMersi').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesMersi));
+                                        $('#SalesNova').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesNova));
+                                        $('#SalesNutrindo').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesNutrindo));
+                                        $('#SalesPyridam').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesPyridam));
+                                        $('#Salessdm_').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalessdm_));
+                                        $('#SalesSdmEth').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmEth));
+                                        $('#SalesSdmOTC').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmOTC));
+                                        $('#SalesSdmOth').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmOth));
+                                        $('#SalesSdmPck').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSdmPck));
+                                        $('#SalesSeles').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSeles));
+                                        $('#SalesSolasNR').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSolasNR));
+                                        $('#SalesSolasReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSolasReg));
+                                        $('#SalesSpartaX').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSpartaX));
+                                        $('#SalesSunthi').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSunthi));
+                                        $('#SalesSutraFiesta').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesSutraFiesta));
+                                        $('#SalesTpNREG').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTpNREG));
+                                        $('#SalesTpOBH').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTpOBH));
+                                        $('#SalesTpReg').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTpReg));
+                                        $('#SalesTrifa').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesTrifa));
+                                        $('#SalesZenith').append('<br>SalesDiskon: '+ numberWithCommas(data.dSalesZenith));
+
+                                        $('#KomisiAdi').append(numberWithCommas(data.komSalesAdi));
+                                        $('#KomisiAlkes').append(numberWithCommas(data.komSalesAlkes));
+                                        $('#KomisiAltamed').append(numberWithCommas(data.komSalesAlta));
+                                        $('#KomisiAndalan').append(numberWithCommas(data.komSalesAndalan));
+                                        $('#KomisiArmoxindo').append(numberWithCommas(data.komSalesArmoxindo));
+                                        $('#KomisiAxion').append(numberWithCommas(data.komSalesAxion));
+                                        $('#KomisiBintangKK').append(numberWithCommas(data.komSalesBintangKK));
+                                        $('#KomisiCalumika').append(numberWithCommas(data.komSalesCalumika));
+                                        $('#KomisiCendo').append(numberWithCommas(data.komSalesCendo));
+                                        $('#KomisiCoronet').append(numberWithCommas(data.komSalesCoronet));
+                                        $('#KomisiCorsa').append(numberWithCommas(data.komSalesCorsa));
+                                        $('#KomisiDipa').append(numberWithCommas(data.komSalesDipa));
+                                        $('#KomisiDipaOTC').append(numberWithCommas(data.komSalesDipaOTC));
+                                        $('#KomisiEKAT').append(numberWithCommas(data.komSalesEKAT));
+                                        $('#KomisiErella').append(numberWithCommas(data.komSalesErella));
+                                        $('#KomisiErlimpexNReg').append(numberWithCommas(data.komSalesErlimpexNReg));
+                                        $('#KomisiErlimpexReg').append(numberWithCommas(data.komSalesErlimpexReg));
+                                        $('#KomisiEscolab').append(numberWithCommas(data.komSalesEscolab));
+                                        $('#KomisiFhOTC').append(numberWithCommas(data.komSalesFhOTC));
+                                        $('#KomisiFirstmed').append(numberWithCommas(data.komSalesFirstmed));
+                                        $('#KomisiGmp').append(numberWithCommas(data.komSalesGmp));
+                                        $('#KomisiHermed').append(numberWithCommas(data.komSalesHermed));
+                                        $('#KomisiHoli').append(numberWithCommas(data.komSalesHoli));
+                                        $('#KomisiHufa').append(numberWithCommas(data.komSalesHufa));
+                                        $('#KomisiItra').append(numberWithCommas(data.komSalesItra));
+                                        $('#KomisiKarindo').append(numberWithCommas(data.komSalesKarindo));
+                                        $('#KomisiLainlain').append(numberWithCommas(data.komSalesLainlain));
+                                        $('#KomisiLas').append(numberWithCommas(data.komSalesLas));
+                                        $('#KomisiMecNR').append(numberWithCommas(data.komSalesMecNR));
+                                        $('#KomisiMecOTC').append(numberWithCommas(data.komSalesMecOTC));
+                                        $('#KomisiMecReg').append(numberWithCommas(data.komSalesMecReg));
+                                        $('#KomisiMersi').append(numberWithCommas(data.komSalesMersi));
+                                        $('#KomisiNova').append(numberWithCommas(data.komSalesNova));
+                                        $('#KomisiNutrindo').append(numberWithCommas(data.komSalesNutrindo));
+                                        $('#KomisiPyridam').append(numberWithCommas(data.komSalesPyridam));
+                                        $('#Komisisdm_').append(numberWithCommas(data.komSalessdm_));
+                                        $('#KomisiSdmEth').append(numberWithCommas(data.komSalesSdmEth));
+                                        $('#KomisiSdmOTC').append(numberWithCommas(data.komSalesSdmOTC));
+                                        $('#KomisiSdmOth').append(numberWithCommas(data.komSalesSdmOth));
+                                        $('#KomisiSdmPck').append(numberWithCommas(data.komSalesSdmPck));
+                                        $('#KomisiSeles').append(numberWithCommas(data.komSalesSeles));
+                                        $('#KomisiSolasNR').append(numberWithCommas(data.komSalesSolasNR));
+                                        $('#KomisiSolasReg').append(numberWithCommas(data.komSalesSolasReg));
+                                        $('#KomisiSpartaX').append(numberWithCommas(data.komSalesSpartaX));
+                                        $('#KomisiSunthi').append(numberWithCommas(data.komSalesSunthi));
+                                        $('#KomisiSutraFiesta').append(numberWithCommas(data.komSalesSutraFiesta));
+                                        $('#KomisiTpNREG').append(numberWithCommas(data.komSalesTpNREG));
+                                        $('#KomisiTpOBH').append(numberWithCommas(data.komSalesTpOBH));
+                                        $('#KomisiTpReg').append(numberWithCommas(data.komSalesTpReg));
+                                        $('#KomisiTrifa').append(numberWithCommas(data.komSalesTrifa));
+                                        $('#KomisiZenith').append(numberWithCommas(data.komSalesZenith));
+                                        
+                                        $('#PersenAdi').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAdi)) + ' %');
+                                        $('#PersenAlkes').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAlkes)) + ' %');
+                                        $('#PersenAltamed').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAlta)) + ' %');
+                                        $('#PersenAndalan').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAndalan)) + ' %');
+                                        $('#PersenArmoxindo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomArmoxindo)) + ' %');
+                                        $('#PersenAxion').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomAxion) + ' %'));
+                                        $('#PersenBintangKK').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomBintangKK) + ' %'));
+                                        $('#PersenCalumika').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCalumika) + ' %'));
+                                        $('#PersenCendo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCendo) + ' %'));
+                                        $('#PersenCoronet').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCoronet) + ' %'));
+                                        $('#PersenCorsa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomCorsa) + ' %'));
+                                        $('#PersenDipa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomDipa) + ' %'));
+                                        $('#PersenDipaOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomDipaOTC) + ' %'));
+                                        $('#PersenEKAT').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomEKAT) + ' %'));
+                                        $('#PersenErella').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomErella) + ' %'));
+                                        $('#PersenErlimpexNReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomErlimpexNReg) + ' %'));
+                                        $('#PersenErlimpexReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomErlimpexReg) + ' %'));
+                                        $('#PersenEscolab').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomEscolab) + ' %'));
+                                        $('#PersenFhOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomFhOTC) + ' %'));
+                                        $('#PersenFirstmed').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomFirstmed) + ' %'));
+                                        $('#PersenGmp').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomGmp) + ' %'));
+                                        $('#PersenHermed').append(' Persentase:'+ numberWithCommas(Math.floor(data.perkomHermed) + ' %'));
+                                        $('#PersenHoli').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomHoli) + ' %'));
+                                        $('#PersenHufa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomHufa) + ' %'));
+                                        $('#PersenItra').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomItra) + ' %'));
+                                        $('#PersenKarindo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomKarindo) + ' %'));
+                                        $('#PersenLainlain').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomLainlain) + ' %'));
+                                        $('#PersenLas').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomLas) + ' %'));
+                                        $('#PersenMecNR').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMecNR) + ' %'));
+                                        $('#PersenMecOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMecOTC) + ' %'));
+                                        $('#PersenMecReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMecReg) + ' %'));
+                                        $('#PersenMersi').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomMersi) + ' %'));
+                                        $('#PersenNova').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomNova) + ' %'));
+                                        $('#PersenNutrindo').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomNutrindo) + ' %'));
+                                        $('#PersenPyridam').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomPyridam) + ' %'));
+                                        $('#Persensdm_').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomsdm_) + ' %'));
+                                        $('#PersenSdmEth').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmEth) + ' %'));
+                                        $('#PersenSdmOTC').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmOTC) + ' %'));
+                                        $('#PersenSdmOth').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmOth) + ' %'));
+                                        $('#PersenSdmPck').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSdmPck) + ' %'));
+                                        $('#PersenSeles').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSeles) + ' %'));
+                                        $('#PersenSolasNR').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSolasNR) + ' %'));
+                                        $('#PersenSolasReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSolasReg) + ' %'));
+                                        $('#PersenSpartaX').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSpartaX) + ' %'));
+                                        $('#PersenSunthi').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSunthi) + ' %'));
+                                        $('#PersenSutraFiesta').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomSutraFiesta) + ' %'));
+                                        $('#PersenTpNREG').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTpNREG) + ' %'));
+                                        $('#PersenTpOBH').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTpOBH) + ' %'));
+                                        $('#PersenTpReg').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTpReg) + ' %'));
+                                        $('#PersenTrifa').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomTrifa) + ' %'));
+                                        $('#PersenZenith').append('Persentase: '+ numberWithCommas(Math.floor(data.perkomZenith) + ' %'));
+                                        
+
+                                            $('#TargetPrinsipalALLDat1').val((data.valtrgtprisipal));
+                                            $('#TargetPrinsipalALLDat2').val((data.sales));
+                                            $('#TargetPrinsipalALLDat3').val((data.komPriSalestot));
+                                            $('#TargetAdiDat').val((data.targetAdi));
+                                            $('#TargetAlkesDat').val((data.targetAlkes));
+                                            $('#TargetAltamedDat').val((data.targetAlta));
+                                            $('#TargetAndalanDat').val((data.targetAndalan));
+                                            $('#TargetArmoxindoDat').val((data.targetArmoxindo));
+                                            $('#TargetAxionDat').val((data.targetAxion));
+                                            $('#TargetBintangKKDat').val((data.targetBintangKK));
+                                            $('#TargetCalumikaDat').val((data.targetCalumika));
+                                            $('#TargetCendoDat').val((data.targetCendo));
+                                            $('#TargetCoronetDat').val((data.targetCoronet));
+                                            $('#TargetCorsaDat').val((data.targetCorsa));
+                                            $('#TargetDipaDat').val((data.targetDipa));
+                                            $('#TargetDipaOTCDat').val((data.targetDipaOTC));
+                                            $('#TargetEKATDat').val((data.targetEKAT));
+                                            $('#TargetErellaDat').val((data.targetErella));
+                                            $('#TargetErlimpexNRegDat').val((data.targetErlimpexNReg));
+                                            $('#TargetErlimpexRegDat').val((data.targetErlimpexReg));
+                                            $('#TargetEscolabDat').val((data.targetEscolab));
+                                            $('#TargetFhOTCDat').val((data.targetFhOTC));
+                                            $('#TargetFirstmedDat').val((data.targetFirstmed));
+                                            $('#TargetGmpDat').val((data.targetGmp));
+                                            $('#TargetHermedDat').val((data.targetHermed));
+                                            $('#TargetHoliDat').val((data.targetHoli));
+                                            $('#TargetHufaDat').val((data.targetHufa));
+                                            $('#TargetItraDat').val((data.targetItra));
+                                            $('#TargetKarindoDat').val((data.targetKarindo));
+                                            $('#TargetLainlainDat').val((data.targetLainlain));
+                                            $('#TargetLasDat').val((data.targetLas));
+                                            $('#TargetMecNRDat').val((data.targetMecNR));
+                                            $('#TargetMecOTCDat').val((data.targetMecOTC));
+                                            $('#TargetMecRegDat').val((data.targetMecReg));
+                                            $('#TargetMersiDat').val((data.targetMersi));
+                                            $('#TargetNovaDat').val((data.targetNova));
+                                            $('#TargetNutrindoDat').val((data.targetNutrindo));
+                                            $('#TargetPyridamDat').val((data.targetPyridam));
+                                            $('#Targetsdm_Dat').val((data.targetsdm_));
+                                            $('#TargetSdmEthDat').val((data.targetSdmEth));
+                                            $('#TargetSdmOTCDat').val((data.targetSdmOTC));
+                                            $('#TargetSdmOthDat').val((data.targetSdmOth));
+                                            $('#TargetSdmPckDat').val((data.targetSdmPck));
+                                            $('#TargetSelesDat').val((data.targetSeles));
+                                            $('#TargetSolasNRDat').val((data.targetSolasNR));
+                                            $('#TargetSolasRegDat').val((data.targetSolasReg));
+                                            $('#TargetSpartaXDat').val((data.targetSpartaX));
+                                            $('#TargetSunthiDat').val((data.targetSunthi));
+                                            $('#TargetSutraFiestaDat').val((data.targetSutraFiesta));
+                                            $('#TargetTpNREGDat').val((data.targetTpNREG));
+                                            $('#TargetTpOBHDat').val((data.targetTpOBH));
+                                            $('#TargetTpRegDat').val((data.targetTpReg));
+                                            $('#TargetTrifaDat').val((data.targetTrifa));
+                                            $('#TargetZenithDat').val((data.targetZenith));
+
+                                            $('#SalesAdiDat').val((data.SalesAdi));
+                                            $('#SalesAlkesDat').val((data.SalesAlkes));
+                                            $('#SalesAltamedDat').val((data.SalesAlta));
+                                            $('#SalesAndalanDat').val((data.SalesAndalan));
+                                            $('#SalesArmoxindoDat').val((data.SalesArmoxindo));
+                                            $('#SalesAxionDat').val((data.SalesAxion));
+                                            $('#SalesBintangKKDat').val((data.SalesBintangKK));
+                                            $('#SalesCalumikaDat').val((data.SalesCalumika));
+                                            $('#SalesCendoDat').val((data.SalesCendo));
+                                            $('#SalesCoronetDat').val((data.SalesCoronet));
+                                            $('#SalesCorsaDat').val((data.SalesCorsa));
+                                            $('#SalesDipaDat').val((data.SalesDipa));
+                                            $('#SalesDipaOTCDat').val((data.SalesDipaOTC));
+                                            $('#SalesEKATDat').val((data.SalesEKAT));
+                                            $('#SalesErellaDat').val((data.SalesErella));
+                                            $('#SalesErlimpexNRegDat').val((data.SalesErlimpexNReg));
+                                            $('#SalesErlimpexRegDat').val((data.SalesErlimpexReg));
+                                            $('#SalesEscolabDat').val((data.SalesEscolab));
+                                            $('#SalesFhOTCDat').val((data.SalesFhOTC));
+                                            $('#SalesFirstmedDat').val((data.SalesFirstmed));
+                                            $('#SalesGmpDat').val((data.SalesGmp));
+                                            $('#SalesHermedDat').val((data.SalesHermed));
+                                            $('#SalesHoliDat').val((data.SalesHoli));
+                                            $('#SalesHufaDat').val((data.SalesHufa));
+                                            $('#SalesItraDat').val((data.SalesItra));
+                                            $('#SalesKarindoDat').val((data.SalesKarindo));
+                                            $('#SalesLainlainDat').val((data.SalesLainlain));
+                                            $('#SalesLasDat').val((data.SalesLas));
+                                            $('#SalesMecNRDat').val((data.SalesMecNR));
+                                            $('#SalesMecOTCDat').val((data.SalesMecOTC));
+                                            $('#SalesMecRegDat').val((data.SalesMecReg));
+                                            $('#SalesMersiDat').val((data.SalesMersi));
+                                            $('#SalesNovaDat').val((data.SalesNova));
+                                            $('#SalesNutrindoDat').val((data.SalesNutrindo));
+                                            $('#SalesPyridamDat').val((data.SalesPyridam));
+                                            $('#Salessdm_Dat').val((data.Salessdm_));
+                                            $('#SalesSdmEthDat').val((data.SalesSdmEth));
+                                            $('#SalesSdmOTCDat').val((data.SalesSdmOTC));
+                                            $('#SalesSdmOthDat').val((data.SalesSdmOth));
+                                            $('#SalesSdmPckDat').val((data.SalesSdmPck));
+                                            $('#SalesSelesDat').val((data.SalesSeles));
+                                            $('#SalesSolasNRDat').val((data.SalesSolasNR));
+                                            $('#SalesSolasRegDat').val((data.SalesSolasReg));
+                                            $('#SalesSpartaXDat').val((data.SalesSpartaX));
+                                            $('#SalesSunthiDat').val((data.SalesSunthi));
+                                            $('#SalesSutraFiestaDat').val((data.SalesSutraFiesta));
+                                            $('#SalesTpNREGDat').val((data.SalesTpNREG));
+                                            $('#SalesTpOBHDat').val((data.SalesTpOBH));
+                                            $('#SalesTpRegDat').val((data.SalesTpReg));
+                                            $('#SalesTrifaDat').val((data.SalesTrifa));
+                                            $('#SalesZenithDat').val((data.SalesZenith));
+
+                                            $('#SalesAdiDiscDat').val((data.dSalesAdi));
+                                            $('#SalesAlkesDiscDat').val((data.dSalesAlkes));
+                                            $('#SalesAltamedDiscDat').val((data.dSalesAlta));
+                                            $('#SalesAndalanDiscDat').val((data.dSalesAndalan));
+                                            $('#SalesArmoxindoDiscDat').val((data.dSalesArmoxindo));
+                                            $('#SalesAxionDiscDat').val((data.dSalesAxion));
+                                            $('#SalesBintangKKDiscDat').val((data.dSalesBintangKK));
+                                            $('#SalesCalumikaDiscDat').val((data.dSalesCalumika));
+                                            $('#SalesCendoDiscDat').val((data.dSalesCendo));
+                                            $('#SalesCoronetDiscDat').val((data.dSalesCoronet));
+                                            $('#SalesCorsaDiscDat').val((data.dSalesCorsa));
+                                            $('#SalesDipaDiscDat').val((data.dSalesDipa));
+                                            $('#SalesDipaOTCDiscDat').val((data.dSalesDipaOTC));
+                                            $('#SalesEKATDiscDat').val((data.dSalesEKAT));
+                                            $('#SalesErellaDiscDat').val((data.dSalesErella));
+                                            $('#SalesErlimpexNRegDiscDat').val((data.dSalesErlimpexNReg));
+                                            $('#SalesErlimpexRegDiscDat').val((data.dSalesErlimpexReg));
+                                            $('#SalesEscolabDiscDat').val((data.dSalesEscolab));
+                                            $('#SalesFhOTCDiscDat').val((data.dSalesFhOTC));
+                                            $('#SalesFirstmedDiscDat').val((data.dSalesFirstmed));
+                                            $('#SalesGmpDiscDat').val((data.dSalesGmp));
+                                            $('#SalesHermedDiscDat').val((data.dSalesHermed));
+                                            $('#SalesHoliDiscDat').val((data.dSalesHoli));
+                                            $('#SalesHufaDiscDat').val((data.dSalesHufa));
+                                            $('#SalesItraDiscDat').val((data.dSalesItra));
+                                            $('#SalesKarindoDiscDat').val((data.dSalesKarindo));
+                                            $('#SalesLainlainDiscDat').val((data.dSalesLainlain));
+                                            $('#SalesLasDiscDat').val((data.dSalesLas));
+                                            $('#SalesMecNRDiscDat').val((data.dSalesMecNR));
+                                            $('#SalesMecOTCDiscDat').val((data.dSalesMecOTC));
+                                            $('#SalesMecRegDiscDat').val((data.dSalesMecReg));
+                                            $('#SalesMersiDiscDat').val((data.dSalesMersi));
+                                            $('#SalesNovaDiscDat').val((data.dSalesNova));
+                                            $('#SalesNutrindoDiscDat').val((data.dSalesNutrindo));
+                                            $('#SalesPyridamDiscDat').val((data.dSalesPyridam));
+                                            $('#Salessdm_DiscDat').val((data.dSalessdm_));
+                                            $('#SalesSdmEthDiscDat').val((data.dSalesSdmEth));
+                                            $('#SalesSdmOTCDiscDat').val((data.dSalesSdmOTC));
+                                            $('#SalesSdmOthDiscDat').val((data.dSalesSdmOth));
+                                            $('#SalesSdmPckDiscDat').val((data.dSalesSdmPck));
+                                            $('#SalesSelesDiscDat').val((data.dSalesSeles));
+                                            $('#SalesSolasNRDiscDat').val((data.dSalesSolasNR));
+                                            $('#SalesSolasRegDiscDat').val((data.dSalesSolasReg));
+                                            $('#SalesSpartaXDiscDat').val((data.dSalesSpartaX));
+                                            $('#SalesSunthiDiscDat').val((data.dSalesSunthi));
+                                            $('#SalesSutraFiestaDiscDat').val((data.dSalesSutraFiesta));
+                                            $('#SalesTpNREGDiscDat').val((data.dSalesTpNREG));
+                                            $('#SalesTpOBHDiscDat').val((data.dSalesTpOBH));
+                                            $('#SalesTpRegDiscDat').val((data.dSalesTpReg));
+                                            $('#SalesTrifaDiscDat').val((data.dSalesTrifa));
+                                            $('#SalesZenithDiscDat').val((data.dSalesZenith));
+
+                                            $('#KomisiAdiDat').val((data.komSalesAdi));
+                                            $('#KomisiAlkesDat').val((data.komSalesAlkes));
+                                            $('#KomisiAltamedDat').val((data.komSalesAlta));
+                                            $('#KomisiAndalanDat').val((data.komSalesAndalan));
+                                            $('#KomisiArmoxindoDat').val((data.komSalesArmoxindo));
+                                            $('#KomisiAxionDat').val((data.komSalesAxion));
+                                            $('#KomisiBintangKKDat').val((data.komSalesBintangKK));
+                                            $('#KomisiCalumikaDat').val((data.komSalesCalumika));
+                                            $('#KomisiCendoDat').val((data.komSalesCendo));
+                                            $('#KomisiCoronetDat').val((data.komSalesCoronet));
+                                            $('#KomisiCorsaDat').val((data.komSalesCorsa));
+                                            $('#KomisiDipaDat').val((data.komSalesDipa));
+                                            $('#KomisiDipaOTCDat').val((data.komSalesDipaOTC));
+                                            $('#KomisiEKATDat').val((data.komSalesEKAT));
+                                            $('#KomisiErellaDat').val((data.komSalesErella));
+                                            $('#KomisiErlimpexNRegDat').val((data.komSalesErlimpexNReg));
+                                            $('#KomisiErlimpexRegDat').val((data.komSalesErlimpexReg));
+                                            $('#KomisiEscolabDat').val((data.komSalesEscolab));
+                                            $('#KomisiFhOTCDat').val((data.komSalesFhOTC));
+                                            $('#KomisiFirstmedDat').val((data.komSalesFirstmed));
+                                            $('#KomisiGmpDat').val((data.komSalesGmp));
+                                            $('#KomisiHermedDat').val((data.komSalesHermed));
+                                            $('#KomisiHoliDat').val((data.komSalesHoli));
+                                            $('#KomisiHufaDat').val((data.komSalesHufa));
+                                            $('#KomisiItraDat').val((data.komSalesItra));
+                                            $('#KomisiKarindoDat').val((data.komSalesKarindo));
+                                            $('#KomisiLainlainDat').val((data.komSalesLainlain));
+                                            $('#KomisiLasDat').val((data.komSalesLas));
+                                            $('#KomisiMecNRDat').val((data.komSalesMecNR));
+                                            $('#KomisiMecOTCDat').val((data.komSalesMecOTC));
+                                            $('#KomisiMecRegDat').val((data.komSalesMecReg));
+                                            $('#KomisiMersiDat').val((data.komSalesMersi));
+                                            $('#KomisiNovaDat').val((data.komSalesNova));
+                                            $('#KomisiNutrindoDat').val((data.komSalesNutrindo));
+                                            $('#KomisiPyridamDat').val((data.komSalesPyridam));
+                                            $('#Komisisdm_Dat').val((data.komSalessdm_));
+                                            $('#KomisiSdmEthDat').val((data.komSalesSdmEth));
+                                            $('#KomisiSdmOTCDat').val((data.komSalesSdmOTC));
+                                            $('#KomisiSdmOthDat').val((data.komSalesSdmOth));
+                                            $('#KomisiSdmPckDat').val((data.komSalesSdmPck));
+                                            $('#KomisiSelesDat').val((data.komSalesSeles));
+                                            $('#KomisiSolasNRDat').val((data.komSalesSolasNR));
+                                            $('#KomisiSolasRegDat').val((data.komSalesSolasReg));
+                                            $('#KomisiSpartaXDat').val((data.komSalesSpartaX));
+                                            $('#KomisiSunthiDat').val((data.komSalesSunthi));
+                                            $('#KomisiSutraFiestaDat').val((data.komSalesSutraFiesta));
+                                            $('#KomisiTpNREGDat').val((data.komSalesTpNREG));
+                                            $('#KomisiTpOBHDat').val((data.komSalesTpOBH));
+                                            $('#KomisiTpRegDat').val((data.komSalesTpReg));
+                                            $('#KomisiTrifaDat').val((data.komSalesTrifa));
+                                            $('#KomisiZenithDat').val((data.komSalesZenith));
+                                            
+                                            $('#PersenAdiDat').val((Math.floor(data.perkomAdi)));
+                                            $('#PersenAlkesDat').val((Math.floor(data.perkomAlkes)));
+                                            $('#PersenAltamedDat').val((Math.floor(data.perkomAlta)));
+                                            $('#PersenAndalanDat').val((Math.floor(data.perkomAndalan)));
+                                            $('#PersenArmoxindoDat').val((Math.floor(data.perkomArmoxindo)));
+                                            $('#PersenAxionDat').val((Math.floor(data.perkomAxion)));
+                                            $('#PersenBintangKKDat').val((Math.floor(data.perkomBintangKK)));
+                                            $('#PersenCalumikaDat').val((Math.floor(data.perkomCalumika)));
+                                            $('#PersenCendoDat').val((Math.floor(data.perkomCendo)));
+                                            $('#PersenCoronetDat').val((Math.floor(data.perkomCoronet)));
+                                            $('#PersenCorsaDat').val((Math.floor(data.perkomCorsa)));
+                                            $('#PersenDipaDat').val((Math.floor(data.perkomDipa)));
+                                            $('#PersenDipaOTCDat').val((Math.floor(data.perkomDipaOTC)));
+                                            $('#PersenEKATDat').val((Math.floor(data.perkomEKAT)));
+                                            $('#PersenErellaDat').val((Math.floor(data.perkomErella)));
+                                            $('#PersenErlimpexNRegDat').val((Math.floor(data.perkomErlimpexNReg)));
+                                            $('#PersenErlimpexRegDat').val((Math.floor(data.perkomErlimpexReg)));
+                                            $('#PersenEscolabDat').val((Math.floor(data.perkomEscolab)));
+                                            $('#PersenFhOTCDat').val((Math.floor(data.perkomFhOTC)));
+                                            $('#PersenFirstmedDat').val((Math.floor(data.perkomFirstmed)));
+                                            $('#PersenGmpDat').val((Math.floor(data.perkomGmp)));
+                                            $('#PersenHermedDat').val((Math.floor(data.perkomHermed)));
+                                            $('#PersenHoliDat').val((Math.floor(data.perkomHoli)));
+                                            $('#PersenHufaDat').val((Math.floor(data.perkomHufa)));
+                                            $('#PersenItraDat').val((Math.floor(data.perkomItra)));
+                                            $('#PersenKarindoDat').val((Math.floor(data.perkomKarindo)));
+                                            $('#PersenLainlainDat').val((Math.floor(data.perkomLainlain)));
+                                            $('#PersenLasDat').val((Math.floor(data.perkomLas)));
+                                            $('#PersenMecNRDat').val((Math.floor(data.perkomMecNR)));
+                                            $('#PersenMecOTCDat').val((Math.floor(data.perkomMecOTC)));
+                                            $('#PersenMecRegDat').val((Math.floor(data.perkomMecReg)));
+                                            $('#PersenMersiDat').val((Math.floor(data.perkomMersi)));
+                                            $('#PersenNovaDat').val((Math.floor(data.perkomNova)));
+                                            $('#PersenNutrindoDat').val((Math.floor(data.perkomNutrindo)));
+                                            $('#PersenPyridamDat').val((Math.floor(data.perkomPyridam)));
+                                            $('#Persensdm_Dat').val((Math.floor(data.perkomsdm_)));
+                                            $('#PersenSdmEthDat').val((Math.floor(data.perkomSdmEth)));
+                                            $('#PersenSdmOTCDat').val((Math.floor(data.perkomSdmOTC)));
+                                            $('#PersenSdmOthDat').val((Math.floor(data.perkomSdmOth)));
+                                            $('#PersenSdmPckDat').val((Math.floor(data.perkomSdmPck)));
+                                            $('#PersenSelesDat').val((Math.floor(data.perkomSeles)));
+                                            $('#PersenSolasNRDat').val((Math.floor(data.perkomSolasNR)));
+                                            $('#PersenSolasRegDat').val((Math.floor(data.perkomSolasReg)));
+                                            $('#PersenSpartaXDat').val((Math.floor(data.perkomSpartaX)));
+                                            $('#PersenSunthiDat').val((Math.floor(data.perkomSunthi)));
+                                            $('#PersenSutraFiestaDat').val((Math.floor(data.perkomSutraFiesta)));
+                                            $('#PersenTpNREGDat').val((Math.floor(data.perkomTpNREG)));
+                                            $('#PersenTpOBHDat').val((Math.floor(data.perkomTpOBH)));
+                                            $('#PersenTpRegDat').val((Math.floor(data.perkomTpReg)));
+                                            $('#PersenTrifaDat').val((Math.floor(data.perkomTrifa)));
+                                            $('#PersenZenithDat').val((Math.floor(data.perkomZenith)));
+                                            
+                                        $("#ec1").append(ecpersen.toFixed(2)+'%');
+                                        $("#target2").append('Total EC: '+ectot+' Target: '+ectarget +' Call: '+ data.eccall);
+                                        $("#kerja1").append('Hari Kerja: '+echari) ;
+                                        $("#val2").append(numberWithCommas(val2));
+
+                                            $("#ec1Dat").val(ecpersen.toFixed(2));
+                                            $("#target2ECtotDat").val(ectot);
+                                            $("#target2ECtargetDat").val(ectarget);
+                                            $("#target2ECcallDat").val(data.eccall);
+                                            $("#kerja1Dat").val(echari) ;
+                                            $("#val2Dat").val((val2));
+
+                                        $("#insentifCall").append('HITUNG MANUAL');
+
+                                        $("#insentifNoo").append('Jumlah: '+data.noo);
+                                        $("#komisiNoo").append('x 20,000.00');
+                                        $("#val4").append(numberWithCommas(Math.floor(val4)));
+                                        $("#tagihanA").append(numberWithCommas(tgh30));
+                                        $("#tagihanB").append(numberWithCommas(tgh45));
+                                        $("#tagihanC").append(numberWithCommas(tgh60));
+                                        $("#tagihanD").append(numberWithCommas(tgh60x));
+                                        $("#val5").append(numberWithCommas(Math.floor(val5)));
+                                        $("#val6").append(numberWithCommas(Math.floor(val6)));
+                                        $("#val7").append(numberWithCommas(Math.floor(val7)));
+                                        $("#val8").append(numberWithCommas(Math.floor(val8)));
+                                        $("#totalInsentif").append(numberWithCommas(Math.floor(total)));       
+                                            
+                                            $("#totalInsentifDat").val(numberWithCommas(Math.floor(total)));       
+                                            $("#val4Dat").val((Math.floor(val4)));
+                                            $("#tagihanADat").val((tgh30));
+                                            $("#tagihanBDat").val((tgh45));
+                                            $("#tagihanCDat").val((tgh60));
+                                            $("#tagihanDDat").val((tgh60x));
+                                            $("#val5Dat").val((Math.floor(val5)));
+                                            $("#val6Dat").val((Math.floor(val6)));
+                                            $("#val7Dat").val((Math.floor(val7)));
+                                            $("#val8Dat").val((Math.floor(val8)));
+                                        
+                                        // $('#progressGIF').hide();
+                                        document.getElementById("salesman").disabled = false; 
+                                        document.getElementById("tgl").disabled = false; 
+                                        {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                            document.getElementById("cabang").disabled = false; 
+                                        {% endif %}
+                      
+                                        // Proses simpan data
+
+                                        var salesman = document.getElementById('salesman').value;
+                                        var tgl = document.getElementById('tgl').value;
+                                        var cabang = document.getElementById('cabang').value;
+
+                                        var url = "{{ base_url }}addInsentifData";
+                                        $.ajax({
+                                        url : url,
+                                        type: "POST",
+                                        data: $('#myForm').serialize(),
+                                        dataType: "JSON",
+                                            success: function(data)
+                                            {
+                                                // if(logs.usergroup=="Pusat")
+                                                // {
+                                                //     notif("warning","Data Insentif "+salesman+" Tersimpan. Mohon di Cek Kembali Perhitungan Insentif.");
+
+                                                //     var r = confirm("Data Insentif "+data.salesman+" "+data.dataTipeSalesmanDetail+" Nilai Insentif : "+data.totalInsentifDat+" Tersimpan. Mohon di Cek Kembali Perhitungan Insentif!!! Apakah akan disimpan sebagai PDF??");
+                                                    
+                                                //     if (r == true) {
+                                                //         var url = "{{ base_url }}dataSalesmanInsPdf";
+                                                //         $.ajax({
+                                                //         url : url,
+                                                //         type: "POST",
+                                                //         data: $('#myForm').serialize(),
+                                                //         dataType: "JSON",
+                                                //             success: function(data)
+                                                //             {
+
+                                                //             },
+                                                //             error: function (jqXHR, textStatus, errorThrown)
+                                                //             {
+                                                //                 $('#progressGIF').hide();
+                                                //                 document.getElementById("salesman").disabled = false; 
+                                                //                 document.getElementById("tgl").disabled = false; 
+                                                //                 {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                                //                     document.getElementById("cabang").disabled = false; 
+                                                //                 {% endif %}
+                                                //                 alert(errorThrown);
+                                                //             }
+                                                //         });
+
+                                                //     } 
+                                                //     else {
+                                                //         alert("Anda Memilih TIdak menyimpan PDF. Data Insentif "+data.salesman+""+data.dataTipeSalesmanDetail+" Nilai Insentif : "+data.totalInsentifDat+" Tersimpan. Mohon di Cek Kembali Perhitungan Insentif!!");
+                                                //     }
+                                                    
+                                                // }                                     
+
+                                                $('#progressGIF').hide();
+                                                document.getElementById("salesman").disabled = false; 
+                                                document.getElementById("tgl").disabled = false; 
+                                                {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                                    document.getElementById("cabang").disabled = false; 
+                                                {% endif %}
+                                                // notif("warning","Data Insentif "+salesman+" Tersimpan. Mohon di Cek Kembali Perhitungan Insentif.");
+
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown)
+                                            {
+                                                $('#progressGIF').hide();
+                                                document.getElementById("salesman").disabled = false; 
+                                                document.getElementById("tgl").disabled = false; 
+                                                {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                                    document.getElementById("cabang").disabled = false; 
+                                                {% endif %}
+                                                alert(errorThrown);
+                                            }
+                                        });
+
+
+
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown)
+                                    {
+                                        alert("PERHATIAN! Tarik data insentif salesman GAGAL");
+                                        $('#progressGIF').hide();    
+                                        document.getElementById("salesman").disabled = false; 
+                                        document.getElementById("tgl").disabled = false; 
+                                        {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                                            document.getElementById("cabang").disabled = false; 
+                                        {% endif %}
+                                    }
+                                });
+                                console.log();
+                            }
+                            // end hitung insentif
+                        }
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    $('#progressGIF').hide();
+                    document.getElementById("salesman").disabled = false; 
+                    document.getElementById("tgl").disabled = false; 
+                    {% if logs.usergroup == 'Admin' or logs.usergroup =='Pusat' or logs.usergroup =='Audit' %}
+                        document.getElementById("cabang").disabled = false; 
+                    {% endif %}
+                    alert(errorThrown);
+                }
+            });
+        }
+    }
+
+
+    function view(kat,no){
+
+        var salesman = document.getElementById('salesman').value;
+        var tgl = document.getElementById('tgl').value;
+        var cabang = document.getElementById('cabang').value;
+
+        $("#headOrder").empty();
+
+
+        if (tgl == "") {
+            alert("PERHATIAN! Tanggal masih kosong");
+            $('#modal_form').modal('hide'); // show bootstrap modal when complete loaded
+        }else
+        {
+            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+            // Komisi Tagihan < 30
+            // Komisi Tagihan < 45
+            // Komisi Tagihan > 45
+            // Komisi Penalti
+            if(kat == "tagihan")
+            {
+
+                if(no == "Penalti Tagihan")
+                {
+                    $("#headOrder").append('<tr><th>#</th><th>TanggalFaktur</th><th>NoFaktur</th><th>Total Value</th><th>Saldo</th><th>Penalti</th><th>Umur</th><th>Total</th></tr>');
+                    $.ajax({
+                        url : "{{ base_url }}detailInsentifData",
+                        type: "POST",
+                        data: {kode:salesman,tgl:tgl,cabang:cabang,tipe:no,umr:60,kat:kat},
+                        dataType: "JSON",
+                        success: function(data)
+                        {   
+                            var x = 0;
+                            $("#detailOrder").empty();
+                            $("#subtitle").empty();
+                            $("#keteranganReject").empty();
+                            var csal = 0;
+                            for (var i in data) {
+                                x++;
+                                csal = (csal - parseInt(((data[i].vpenalti) ? data[i].vpenalti: 0)));
+                                $("#detailOrder").append('<tr><td>'+x+'</td><td>'+((data[i].TglFaktur) ? data[i].TglFaktur : "")+'</td><td>'+((data[i].NoFaktur) ? data[i].NoFaktur : "") +'</td><td>'+((data[i].TotalValue) ? data[i].TotalValue: 0)+'</td><td>'+((data[i].saldo) ? data[i].saldo: 0)+'</td><td>'+ ((data[i].vpenalti) ? data[i].vpenalti: 0) +'</td><td>'+((data[i].umurF) ? data[i].umurF: 0)+'</td><td>'+ csal +'</td></tr>');
+                            }
+                            $("#detailOrder").append('<tr><th colspan=8>Jika Total Penalti Plus ( > 0), Maka Tidak akan Kena Penalti (Penalti = 0)</th></tr>');               
+                            $("#subtitle").append('<span style="font-size:12px">'+ no +'</span>');
+                            // if (data[0].Status == 'Reject')
+                            //     $("#keteranganReject").append('<span style="font-size:12px"> Keterangan: <i>'+data[i].KeteranganProses+'</i></span>');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            alert('Error get data from ajax');
+                        }
+                    });           
+                }else if (no == "Komisi Tagihan < 30") 
+                {            
+                    $("#headOrder").append('<tr><th>#</th><th>TanggalFaktur</th><th>NoFaktur</th><th>Salesman</th><th>Penagih</th><th>Umur</th><th>TglPelunasan</th><th>TglTransaksi</th><th>Status</th><th>Value</th><th>TotalValue</th><th>s</th><th>t</th></tr>');
+                    $.ajax({
+                        url : "{{ base_url }}detailInsentifData",
+                        type: "POST",
+                        data: {kode:salesman,tgl:tgl,cabang:cabang,tipe:no,umr:30,kat:kat},
+                        dataType: "JSON",
+                        success: function(data)
+                        {   
+                            var x = 0;
+                            $("#detailOrder").empty();
+                            $("#subtitle").empty();
+                            $("#keteranganReject").empty();
+                            var csal = 0;
+                            for (var i in data) {
+                                x++;
+                                csal = (csal + parseInt(((data[i].lunTot) ? data[i].lunTot: 0)));
+                                $("#detailOrder").append('<tr><td>'+x+'</td><td>'+((data[i].TglFaktur) ? data[i].TglFaktur : "")+'</td><td>'+((data[i].NoFaktur) ? data[i].NoFaktur : "") +'</td><td>'+((data[i].KodeSalesman) ? data[i].KodeSalesman: "")+'</td><td>'+((data[i].KodePenagih) ? data[i].KodePenagih: "")+'</td><td>'+((data[i].UmurP) ? data[i].UmurP: 0)+'</td><td>'+((data[i].TglPelunasan) ? data[i].TglPelunasan: "")+'</td><td>'+((data[i].TglTransaksi) ? data[i].TglTransaksi: "")+'</td><td>'+((data[i].Status) ? data[i].Status: "")+'</td><td>'+((data[i].lunTot) ? data[i].lunTot: 0)+'</td><td>'+csal+'</td><td>'+((data[i].vp30s) ? data[i].vp30s: 0)+'</td><<td>'+((data[i].vp30t) ? data[i].vp30t: 0)+'</td></tr>');
+                            }                
+                            $("#subtitle").append('<span style="font-size:12px">'+ no +'</span>');
+                            // if (data[0].Status == 'Reject')
+                            //     $("#keteranganReject").append('<span style="font-size:12px"> Keterangan: <i>'+data[i].KeteranganProses+'</i></span>');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            alert('Error get data from ajax');
+                        }
+                    });           
+
+                }else if (no == "Komisi Tagihan < 45") 
+                {            
+                    $("#headOrder").append('<tr><th>#</th><th>TanggalFaktur</th><th>NoFaktur</th><th>Salesman</th><th>Penagih</th><th>Umur</th><th>TglPelunasan</th><th>TglTransaksi</th><th>Status</th><th>Value</th><th>TotalValue</th><th>s</th><th>t</th></tr>');
+                    $.ajax({
+                        url : "{{ base_url }}detailInsentifData",
+                        type: "POST",
+                        data: {kode:salesman,tgl:tgl,cabang:cabang,tipe:no,umr:45,kat:kat},
+                        dataType: "JSON",
+                        success: function(data)
+                        {   
+                            var x = 0;
+                            $("#detailOrder").empty();
+                            $("#subtitle").empty();
+                            $("#keteranganReject").empty();
+                            var csal = 0;
+                            for (var i in data) {
+                                x++;
+                                csal = (csal + parseInt(((data[i].lunTot) ? data[i].lunTot: 0)));
+                                $("#detailOrder").append('<tr><td>'+x+'</td><td>'+((data[i].TglFaktur) ? data[i].TglFaktur : "")+'</td><td>'+((data[i].NoFaktur) ? data[i].NoFaktur : "") +'</td><td>'+((data[i].KodeSalesman) ? data[i].KodeSalesman: "")+'</td><td>'+((data[i].KodePenagih) ? data[i].KodePenagih: "")+'</td><td>'+((data[i].UmurP) ? data[i].UmurP: 0)+'</td><td>'+((data[i].TglPelunasan) ? data[i].TglPelunasan: "")+'</td><td>'+((data[i].TglTransaksi) ? data[i].TglTransaksi: "")+'</td><td>'+((data[i].Status) ? data[i].Status: "")+'</td><td>'+((data[i].lunTot) ? data[i].lunTot: 0)+'</td><td>'+csal+'</td><td>'+((data[i].vp45s) ? data[i].vp45s: 0)+'</td><<td>'+((data[i].vp45t) ? data[i].vp45t: 0)+'</td></tr>');
+                            }                     
+                            $("#subtitle").append('<span style="font-size:12px">'+ no +'</span>');
+                            // if (data[0].Status == 'Reject')
+                            //     $("#keteranganReject").append('<span style="font-size:12px"> Keterangan: <i>'+data[i].KeteranganProses+'</i></span>');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            alert('Error get data from ajax');
+                        }
+                    });           
+
+                }else if (no == "Komisi Tagihan > 45") 
+                {            
+                    $("#headOrder").append('<tr><th>#</th><th>TanggalFaktur</th><th>NoFaktur</th><th>Salesman</th><th>Penagih</th><th>Umur</th><th>TglPelunasan</th><th>TglTransaksi</th><th>Status</th><th>Value</th><th>TotalValue</th></tr>');
+                    $.ajax({
+                        url : "{{ base_url }}detailInsentifData",
+                        type: "POST",
+                        data: {kode:salesman,tgl:tgl,cabang:cabang,tipe:no,umr:46,kat:kat},
+                        dataType: "JSON",
+                        success: function(data)
+                        {   
+                            var x = 0;
+                            $("#detailOrder").empty();
+                            $("#subtitle").empty();
+                            $("#keteranganReject").empty();
+                            var csal = 0;
+                            for (var i in data) {
+                                x++;
+                                csal = (csal + parseInt(((data[i].lunTot) ? data[i].lunTot: 0)));
+                                $("#detailOrder").append('<tr><td>'+x+'</td><td>'+((data[i].TglFaktur) ? data[i].TglFaktur : "")+'</td><td>'+((data[i].NoFaktur) ? data[i].NoFaktur : "") +'</td><td>'+((data[i].KodeSalesman) ? data[i].KodeSalesman: "")+'</td><td>'+((data[i].KodePenagih) ? data[i].KodePenagih: "")+'</td><td>'+((data[i].UmurP) ? data[i].UmurP: 0)+'</td><td>'+((data[i].TglPelunasan) ? data[i].TglPelunasan: "")+'</td><td>'+((data[i].TglTransaksi) ? data[i].TglTransaksi: "")+'</td><td>'+((data[i].Status) ? data[i].Status: "")+'</td><td>'+((data[i].lunTot) ? data[i].lunTot: 0)+'</td><td>'+csal+'</td></tr>');
+                            }                     
+                            $("#subtitle").append('<span style="font-size:12px">'+ no +'</span>');
+                            // if (data[0].Status == 'Reject')
+                            //     $("#keteranganReject").append('<span style="font-size:12px"> Keterangan: <i>'+data[i].KeteranganProses+'</i></span>');
+                        },
+                        error: function (jqXHR, textStatus, errorThrown)
+                        {
+                            alert('Error get data from ajax');
+                        }
+                    });           
+
+                }else
+                {
+                            alert("jenis tagihan tidak ada");
+                            $("#detailOrder").empty();
+                            $("#subtitle").empty();
+                            $("#subtitle").append('<span style="font-size:12px">Data Tidak Ada</span>');
+                            $("#detailOrder").append('<span style="font-size:20px"><strong>Data Tidak Ada</strong></span>');            
+                }
+            }
+            else if(kat == "salesP")
+            {
+                $("#headOrder").append('<tr><th>#</th><th>NoFaktur</th><th>KodeProduk</th><th>NamaProduk</th><th>Prinsipal</th><th>Prinsipal2</th><th>Sales</th><th>¨TotalSales</th><th>BatasDiskon</th><th>DiskonFaktur</th><th>SalesDiskon</th><th>TotalSalesDiskon</th></tr>');
+                $.ajax({
+                    url : "{{ base_url }}detailInsentifData",
+                    type: "POST",
+                    data: {kode:salesman,tgl:tgl,cabang:cabang,tipe:no,umr:46,kat:kat},
+                    dataType: "JSON",
+                    success: function(data)
+                    {   
+                        var x = 0;
+                        $("#detailOrder").empty();
+                        $("#subtitle").empty();
+                        $("#keteranganReject").empty();
+                        var csal = 0;
+                        var csa2 = 0;
+                        for (var i in data) {
+                            x++;
+                            csal = (csal + parseInt(((data[i].valSalesP) ? data[i].valSalesP: 0)));
+                            csa2 = (csa2 + parseInt(((data[i].valSalesDisk) ? data[i].valSalesDisk: 0)));
+                            $("#detailOrder").append('<tr><td>'+x+'</td><td>'+((data[i].NoFaktur) ? data[i].NoFaktur : "") +'</td><td>'+((data[i].KodeProduk) ? data[i].KodeProduk: "")+'</td><td>'+((data[i].Produk) ? data[i].Produk: "")+'</td><td>'+((data[i].Prinsipal) ? data[i].Prinsipal: "")+'</td><td>'+((data[i].Prinsipal2) ? data[i].Prinsipal2: "")+'</td><td>'+((data[i].valSalesP) ? data[i].valSalesP: 0)+'</td><td>'+csal+'</td><td>'+((data[i].tdj) ? data[i].tdj: 0)+'</td><td>'+((data[i].DiskonFakturx) ? data[i].DiskonFakturx: 0)+'</td><td>'+((data[i].valSalesDisk) ? data[i].valSalesDisk: 0)+'</td><td>'+csa2+'</td></tr>');
+                        }                
+                        $("#detailOrder").append('<tr><th colspan=12>AlKES = EKAT = LAIN-LAIN = TRIFA (Jawa) = ARMOX (Jawa) = 0 (Tidak dapat Insentif per Prinsipal)</th></tr>');               
+                        $("#subtitle").append('<span style="font-size:12px">'+ no +'</span>');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        alert('Error get data from ajax');
+                    }
+                });           
+
+            }else
+            {
+                        $("#detailOrder").empty();
+                        $("#subtitle").empty();
+                        $("#subtitle").append('<span style="font-size:12px">Data Tidak Ada</span>');
+                        $("#detailOrder").append('<span style="font-size:20px"><strong>Data Tidak Ada</strong></span>');            
+            }
+        }
+
+    }
+
+
+    function dataSalesmanCabangPdf(no){
+
+        //$detailInsentifData
+
+
+        var salesman = document.getElementById('salesman').value;
+        var tgl = document.getElementById('tgl').value;
+        var cabang = document.getElementById('cabang').value;
+        var cabx = document.getElementById('cabx').value;
+
+        if (tgl == "") {
+            alert("PERHATIAN! Tanggal masih kosong");
+        }else
+        {
+            $.ajax({
+                url : "{{ base_url }}cekDataLapIns",
+                type: "POST",
+                data: {tgl:tgl},
+                dataType: "JSON",
+                success: function(cekdata)
+                {   
+                    // cek ststus tanggl boleh insentif
+                    if(cekdata === "xxx" && cabx !== "Pusat")
+                    {
+                        alert("Maaf, Data Insentif sedang di cek atau proses upload");
+                        
+                    }else
+                    {
+
+                            $.ajax({
+                                        url : "{{ base_url }}dataSalesmanCabangPdf",
+                                        type: "POST",
+                                        data: {cabang:cabang,tgl:tgl,cabx:cabx},
+                                        dataType: "JSON",
+                                        success: function(data)
+                                        {   
+                                            alert('PDF');
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown)
+                                        {
+                                            alert('Error get data from ajax');
+                                        }
+                                    });
+                    }
+
+                },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        alert('Error get data from ajax');
+                    }
+                });
+        }
+
+
+
+    }
+
+
+    function AllCab(no){
+
+        //$detailInsentifData
+
+
+        var salesman = document.getElementById('salesman').value;
+        var tgl = document.getElementById('tgl').value;
+        var cabang = document.getElementById('cabang').value;
+        var cabx = document.getElementById('cabx').value;
+
+        $('#modal_form').modal('hide'); // show bootstrap modal when complete loaded
+        $("#headOrder").empty();
+        $("#detailOrder").empty();
+        $("#subtitle").empty();
+        $("#keteranganReject").empty();
+
+        if (tgl == "") {
+            alert("PERHATIAN! Tanggal masih kosong");
+        }else
+        {
+            $.ajax({
+                url : "{{ base_url }}cekDataLapIns",
+                type: "POST",
+                data: {tgl:tgl},
+                dataType: "JSON",
+                success: function(cekdata)
+                {   
+                    // cek ststus tanggl boleh insentif
+                    if(cekdata === "xxx" && cabx !== "Pusat")
+                    {
+                        alert("Maaf, Data Insentif sedang di cek atau proses upload");
+                        
+                    }else
+                    {
+                            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+                            $("#headOrder").append('<tr><th>#</th><th>Cabang</th><th>Bulan</th><th>Kode Salesman</th><th>Nama Salesman</th><th>Tipe Salesman</th><th>Total Insentif</th><th>Created</th><th>Updated</th></tr>');
+                            $.ajax({
+                                        url : "{{ base_url }}dataSalesmanCabang",
+                                        type: "POST",
+                                        data: {cabang:cabang,tgl:tgl,cabx:cabx},
+                                        dataType: "JSON",
+                                        success: function(data)
+                                        {   
+                                            var x = 0;
+                                            var xsls = document.getElementById("salesman");
+                                            for (var i in data) {
+                                                x++;
+                                                $("#detailOrder").append('<tr><td>'+x+'</td><td>'+((data[i].Cabang) ? data[i].Cabang : "")+'</td><td>'+((data[i].Bulan) ? data[i].Bulan : "")+'</td><td>'+((data[i].KodeSalesman) ? data[i].KodeSalesman : "")+'</td><td>'+((data[i].NamaSalesman) ? data[i].NamaSalesman : "") +'</td><td>'+((data[i].TipeSalesman) ? data[i].TipeSalesman: "")+'</td><td>'+((data[i].TotalInsentif) ? data[i].TotalInsentif: 0)+'</td><td>'+((data[i].Created_at) ? data[i].Created_at : "Belum Proses Insentif")+'</td><td>'+((data[i].Updated_at) ? data[i].Updated_at : "")+'</td></tr>');
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown)
+                                        {
+                                            alert('Error get data from ajax');
+                                        }
+                                    });
+                    }
+
+                },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        alert('Error get data from ajax');
+                    }
+                });
+        }
+    }
+
+</script>
+{% endblock %}
